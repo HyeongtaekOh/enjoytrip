@@ -7,9 +7,6 @@ import { parseJwtPayload } from "@/util/jwt-utils";
 const user = inject("user");
 const router = useRouter();
 
-function goHome() {
-  router.push({ name: "home" });
-}
 function logout() {
   localStorage.removeItem("jwt");
   user.value = null;
@@ -204,16 +201,16 @@ function updateUserContext() {
 <template>
   <div>
     <nav class="navbar">
-      <a href="#" @click="goHome">
+      <router-link :to="{ name: 'home' }">
         <div class="logo">
           <img class="logoSvg" src="@/assets/img/logo.png" alt="Enjoy Trip" />
           Enjoy Trip
         </div>
-      </a>
+      </router-link>
       <div class="navbar_items">
-        <a href="map.html">
+        <router-link :to="{ name: 'attraction' }">
           <div class="navbar_item">관광지</div>
-        </a>
+        </router-link>
         <div class="navbar_item">
           <router-link :to="{ name: 'plan' }">여행계획</router-link>
         </div>

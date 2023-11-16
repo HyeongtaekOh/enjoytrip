@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
+import AttractionView from "../views/AttractionView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -59,6 +60,11 @@ const router = createRouter({
           component: () => import("@/components/plan/PlanRegist.vue"),
         },
       ],
+    },
+    {
+      path: "/",
+      name: "attraction",
+      component: AttractionView,
     },
   ],
 });
