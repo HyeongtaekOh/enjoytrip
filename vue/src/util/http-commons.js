@@ -56,6 +56,8 @@ function serviceApi() {
         router.push({
           name: "home",
         });
+      } else {
+        console.log("interceptor error =", error);
       }
     }
   );

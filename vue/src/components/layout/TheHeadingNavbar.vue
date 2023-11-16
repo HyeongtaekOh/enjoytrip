@@ -14,9 +14,13 @@ function logout() {
   localStorage.removeItem("jwt");
   user.value = null;
   Swal.fire({
-    title: "성공적으로 로그아웃되었어요",
-    text: "다음 방문을 기다릴게요!!",
+    position: "top-end",
+    title: "로그아웃되었습니다",
     icon: "success",
+    showConfirmButton: false,
+    timer: 2000,
+    width: "280px",
+    toast: true,
   });
   router.push({ name: "home" });
 }
@@ -28,21 +32,30 @@ const handleLogin = (username, password) => {
   login(
     { username, password },
     (res) => {
+      console.log(res);
       const header = res.headers.authorization;
       const token = extractToken(header);
       localStorage.setItem("jwt", token);
       updateUserContext();
       Swal.fire({
-        title: "성공적으로 로그인되었어요",
-        text: "EnjoyTrip과 함께 행복한 여행을 즐겨주세요!!",
+        position: "top-end",
+        title: "로그인되었습니다",
         icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
       });
     },
     () => {
       Swal.fire({
-        title: "로그인에 실패했어요",
-        text: "잠시 후 다시 시도하세요!!",
+        position: "top-end",
+        title: "로그인에 실패했습니다",
         icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "300px",
+        toast: true,
       });
     }
   );
@@ -53,16 +66,24 @@ const handleSignup = (username, password, email) => {
     { username, password, email },
     () => {
       Swal.fire({
-        title: "성공적으로 가입되었어요",
-        text: "서비스 이용을 위해 로그인하세요!!",
+        position: "top-end",
+        title: "회원가입되었습니다",
         icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
       });
     },
     (error) => {
       Swal.fire({
-        title: "회원가입에 실패했어요",
-        text: "잠시 후 다시 시도하세요!!",
+        position: "top-end",
+        title: "회원가입에 실패했습니다",
         icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "315px",
+        toast: true,
       });
     }
   );
@@ -70,13 +91,13 @@ const handleSignup = (username, password, email) => {
 
 const showLoginForm = async () => {
   const { value: formValues } = await Swal.fire({
-    title: "로그인",
+    title: "로그인하세요!",
     html: `
       <input type="text" id="username" class="swal2-input" placeholder="아이디">
       <input type="password" id="password" class="swal2-input" placeholder="비밀번호">
     `,
-    footer: `<p>계정이 없으신가요? <span id="open-signup-modal" style="text-decoration: underline; cursor: pointer;">회원가입</span>하세요!</p>`,
-    confirmButtonText: "Sign in",
+    footer: `<p>계정이 없으신가요? <span id="open-signup-modal" style="text-decoration: underline; cursor: pointer; color: #7b9c9a;"><b>회원가입</b></span>하세요!</p>`,
+    confirmButtonText: "로그인",
     focusConfirm: false,
     didOpen: () => {
       // 모달이 열렸을 때, 입력 필드에 엔터키 이벤트 리스너 추가
@@ -113,13 +134,13 @@ const showLoginForm = async () => {
 
 const showSignupModal = async () => {
   const { value: formValues } = await Swal.fire({
-    title: "회원 가입",
+    title: "회원가입하세요!",
     html: `
       <input type="text" id="signup-username" class="swal2-input" placeholder="아이디">
       <input type="password" id="signup-password" class="swal2-input" placeholder="비밀번호">
       <input type="email" id="signup-email" class="swal2-input" placeholder="이메일">
     `,
-    confirmButtonText: "Sign up",
+    confirmButtonText: "가입",
     focusConfirm: false,
     didOpen: () => {
       // 모달이 열렸을 때, 입력 필드에 엔터키 이벤트 리스너 추가
@@ -138,11 +159,14 @@ const showSignupModal = async () => {
     preConfirm: () => {
       const usernameInput = Swal.getPopup().querySelector("#signup-username").value;
       const passwordInput = Swal.getPopup().querySelector("#signup-password").value;
-      const emailInput = Swal.getPopup().querySelector("#signup-email").value;
-      if (!usernameInput || !passwordInput || !emailInput) {
+      const emailInput = Swal.getPopup().querySelector("#signup-email");
+      if (!usernameInput || !passwordInput || !emailInput.value) {
         Swal.showValidationMessage(`모두 입력하세요`);
       }
-      return { username: usernameInput, password: passwordInput, email: emailInput };
+      if (!emailInput.checkValidity()) {
+        Swal.showValidationMessage("이메일 형식이 올바르지 않습니다");
+      }
+      return { username: usernameInput, password: passwordInput, email: emailInput.value };
     },
   });
 
@@ -190,9 +214,9 @@ function updateUserContext() {
         <a href="map.html">
           <div class="navbar_item">관광지</div>
         </a>
-        <a href="plan.html">
-          <div class="navbar_item">여행계획</div>
-        </a>
+        <div class="navbar_item">
+          <router-link :to="{ name: 'plan' }">여행계획</router-link>
+        </div>
         <div class="navbar_item">
           <router-link :to="{ name: 'qna' }">게시판</router-link>
         </div>

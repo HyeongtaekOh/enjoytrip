@@ -32,7 +32,6 @@ function updateUserContext() {
   <div>
     <TheHeadingNavbar></TheHeadingNavbar>
     <router-view></router-view>
-    <!-- <SwalModal v-if="showModal" /> -->
   </div>
 </template>
 

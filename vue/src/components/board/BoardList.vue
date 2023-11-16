@@ -41,7 +41,9 @@ const getArticleList = () => {
   // API 호출
   listArticle(
     param.value,
-    ({ data }) => {
+    (res) => {
+      console.log("response =", res);
+      const { data } = res;
       console.log(data);
       articles.value = data;
     },
