@@ -41,13 +41,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginVo loginVo) {
 
-        log.info("login controller, VO : {}", loginVo);
         MemberDto member = memberService.loginMember(loginVo);
 
         if (member != null) {
             // JWT 서명 키
             SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
-            log.info("k : {}", key);
             /**
              * JWT Claims
              * iss (Issuer)         : 토큰을 발행한 주체(예: 웹 서비스의 도메인).
@@ -70,7 +68,6 @@ public class AuthController {
             map.put("userId", member.getUserId());
             map.put("username", member.getUsername());
             map.put("userType", member.getType());
-log.info("exp : {}", currentTime + 900);
             // JWT 생성
             String jwtToken = Jwts.builder()
                     .setClaims(map)
@@ -93,7 +90,7 @@ log.info("exp : {}", currentTime + 900);
         memberDto.setUsername(signupVo.getUsername());
         memberDto.setPassword(signupVo.getPassword());
         memberDto.setEmail(signupVo.getEmail());
-        memberDto.setType(MemberType.ADMIN);
+        memberDto.setType(MemberType.USER);
         memberService.registMember(memberDto);
         Map<String, Integer> response = new HashMap<>();
         response.put("userId", memberDto.getUserId());

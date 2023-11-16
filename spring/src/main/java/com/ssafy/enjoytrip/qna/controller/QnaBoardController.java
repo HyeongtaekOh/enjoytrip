@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/qna")
 @RequiredArgsConstructor
 @Api(value = "Q&A 게시판 API")
+//@CrossOrigin(origins = {"*"})
 public class QnaBoardController {
 
 	private final QnaBoardService service;

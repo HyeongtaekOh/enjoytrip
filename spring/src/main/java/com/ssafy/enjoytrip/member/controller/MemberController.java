@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RequestMapping("/member")
 @Api(value = "회원 API", description = "회원 정보")
-@CrossOrigin(origins = { "*" })
+//@CrossOrigin(origins = { "*" })
 public class MemberController {
 
 	private final MemberService memberService;

@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/comment")
 @RequiredArgsConstructor
 @Api(value = "Comment API")
-@CrossOrigin(origins = { "*" })
+//@CrossOrigin(origins = { "*" })
 public class CommentController {
 	private final CommentService service;
 

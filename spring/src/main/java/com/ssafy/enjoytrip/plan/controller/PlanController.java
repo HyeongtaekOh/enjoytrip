@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/plan")
 @RequiredArgsConstructor
 @Api(value = "여행 계획 API")
-@CrossOrigin(origins = {"*"})
+//@CrossOrigin(origins = {"*"})
 public class PlanController {
 
 	private final PlanService service;

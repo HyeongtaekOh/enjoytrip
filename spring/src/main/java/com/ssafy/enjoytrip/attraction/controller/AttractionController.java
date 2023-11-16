@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/attraction")
 @Api(value = "관광지 API", description = "관광지 정보")
-@CrossOrigin(origins = {"*"})
+//@CrossOrigin(origins = {"*"})
 public class AttractionController {
 	
 	private final AttractionService attractionService;
