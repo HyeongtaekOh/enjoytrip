@@ -45,7 +45,7 @@ function writeComment() {
       console.log(data);
       alert("등록 성공");
       comments.value = data;
-      location.reload();
+      getCommentList();
     },
     (error) => {
       console.log(error);

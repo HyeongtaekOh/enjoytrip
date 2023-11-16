@@ -75,7 +75,7 @@ const handleSignup = (username, password, email) => {
         toast: true,
       });
     },
-    (error) => {
+    () => {
       Swal.fire({
         position: "top-end",
         title: "회원가입에 실패했습니다",
