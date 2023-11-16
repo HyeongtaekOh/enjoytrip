@@ -1,0 +1,38 @@
+<script setup>
+document.body.style.overflow = 'hidden';
+</script>
+
+<template>
+  <title>EnjoyTrip</title>
+  <div class="backgroundContainer">
+      <div class="background"></div>
+      <div class="tower"></div>
+      <div class="cloudContainer">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+      </div>
+  </div>
+    <div class="cover">
+      <div class="titleContainer">
+        <h1 class="title">ENJOY TRIP</h1>
+        <input
+          type="text"
+          name="search"
+          id="search"
+          class="searchbar"
+          placeholder="관광지를 검색하세요..."
+        />
+      </div>
+    </div>
+
+
+
+</template>
+
+<style scoped>
+@import "../assets/css/common.css";
+@import "../assets/css/home.css";
+body {
+  overflow: hidden;
+}
+</style>

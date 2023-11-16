@@ -1,0 +1,223 @@
+@font-face {
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.background {
+  position: fixed;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-image: url("../img/bg.jpg");
+  backdrop-filter: blur(100px);
+  background-attachment: fixed;
+}
+
+.map {
+  margin-left: 0.1rem;
+  width: 50%;
+  height: 100%;
+}
+
+.list {
+  width: 50rem;
+  height: 48rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.search {
+  height: 4rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  border-style: inset;
+  border: none;
+  padding-top: 0.1rem;
+  z-index: 2;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.searchBar {
+  width: 40%;
+  padding: 1rem;
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  font-size: 2rem;
+  border-radius: 5px;
+}
+
+.dropdown {
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  font-size: 1.5rem;
+  width: 25%;
+  -o-appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  line-height: 4rem;
+  padding: 0rem 2rem;
+  cursor: pointer;
+  border-radius: 5px;
+  position: relative;
+}
+
+.dropdown option {
+  position: absolute;
+  top: 10px;
+  font-size: 1.5rem;
+}
+
+.keyword {
+  width: 50%;
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  font-size: 1.5rem;
+  padding: 0rem 2rem;
+}
+
+.listContainer {
+  width: 50rem;
+  height: 40rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.row::-webkit-scrollbar {
+  width: 2px;
+}
+.row::-webkit-scrollbar-thumb {
+  background-color: rgb(184, 184, 184);
+}
+.row::-webkit-scrollbar-track {
+  background-color: #fdfdfd;
+}
+
+.rowImage {
+  width: 13rem;
+  height: 10rem;
+}
+
+.row {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  width: 50rem;
+  height: 44rem;
+}
+
+.list > h1 {
+  font-size: 2rem;
+  margin-left: 1rem;
+}
+
+#my-list {
+  width: 50rem;
+  height: 40rem;
+  background-color: white;
+  margin-bottom: 1rem;
+}
+
+#my-list .row {
+  width: 50rem;
+  height: 10rem;
+  display: flex;
+  text-overflow: ellipsis;
+  overflow-wrap: break-word;
+}
+
+.rowContents {
+  width: 35rem;
+  position: relative;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.rowContents h1 {
+  font-size: 2rem;
+  margin: 0.4rem 0.1rem;
+}
+
+.delete {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 1rem;
+  color: #888;
+  cursor: pointer;
+}
+
+.delete:hover {
+  color: black;
+}
+
+.imgContainer {
+  width: 13rem;
+  height: 9rem;
+  margin: 0rem 1rem;
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#my-list td:nth-child(2) {
+  width: 10rem;
+}
+
+@media (max-aspect-ratio: 3840/2160) {
+  body {
+    overflow-y: scroll;
+  }
+
+  .searchForm {
+    flex-direction: column;
+    height: 12rem;
+  }
+
+  .searchForm * {
+    width: 100%;
+    height: 4rem;
+  }
+
+  .map {
+    width: 100%;
+    height: 100vw;
+  }
+  .list {
+    width: 100%;
+    height: 48rem;
+  }
+
+  .imgContainer {
+    display: none;
+  }
+
+  .row {
+    width: 100%;
+  }
+
+  .listContainer {
+    width: 100%;
+  }
+
+  #my-list {
+    width: 100%;
+  }
+
+  #my-list .row {
+    width: 100%;
+  }
+
+  .rowContents {
+    width: 100%;
+  }
+}

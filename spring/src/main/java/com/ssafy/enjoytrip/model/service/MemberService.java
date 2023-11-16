@@ -1,0 +1,19 @@
+package com.ssafy.enjoytrip.model.service;
+
+import java.util.Optional;
+
+import com.ssafy.enjoytrip.member.model.dto.LoginVo;
+import com.ssafy.enjoytrip.member.model.dto.MemberDto;
+
+public interface MemberService {
+
+	boolean duplicateCheck(String username);
+	
+	Optional<MemberDto> getMemberById(Integer userId);
+
+	Optional<MemberDto> getMemberByUsername(String username);
+
+	void registMember(MemberDto memberDto);
+
+	MemberDto loginMember(LoginVo loginVo);
+}

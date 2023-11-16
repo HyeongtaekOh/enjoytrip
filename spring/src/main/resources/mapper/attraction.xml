@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ssafy.enjoytrip.attraction.model.mapper.AttractionMapper">
+
+	<resultMap type="AttractionInfo" id="infoMap">
+		<id column="content_id" property="contentId" />
+		<result column="content_type_id" property="contentTypeId" />
+		<result column="title" property="title" />
+		<result column="addr1" property="addr1" />
+		<result column="addr2" property="addr2" />
+		<result column="zipcode" property="zipcode" />
+		<result column="tel" property="tel" />
+		<result column="first_image" property="firstImage" />
+		<result column="first_image2" property="firstImage2" />
+		<result column="readcount" property="readcount" />
+		<result column="sido_code" property="sidoCode" />
+		<result column="gugun_code" property="gugunCode" />
+		<result column="latitude" property="latitude" />
+		<result column="longitude" property="longitude" />
+		<result column="mlevel" property="mlevel" />
+
+		<association property="detail" javaType="AttractionDetail"
+			select="findDetailById" column="content_id" fetchType="lazy" />
+		<association property="description"
+			javaType="AttractionDescription" select="findDescriptionById"
+			column="content_id" fetchType="lazy" />
+	</resultMap>
+
+	<resultMap type="AttractionDetail" id="detailMap">
+		<id column="content_id" property="contentId" />
+		<result column="cat1" property="cat1" />
+		<result column="cat2" property="cat2" />
+		<result column="cat3" property="cat3" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="booktour" property="booktour" />
+	</resultMap>
+
+	<resultMap type="AttractionDescription" id="descriptionMap">
+		<id column="content_id" property="contentId" />
+		<result column="homepage" property="homepage" />
+		<result column="overview" property="overview" />
+		<result column="telname" property="telname" />
+	</resultMap>
+
+	<sql id="findInfo">
+		select
+		*
+		from
+		attraction_info
+	</sql>
+
+	<select id="findById" parameterType="Int" resultMap="infoMap">
+		<include refid="findInfo" />
+		where
+		content_id = #{id}
+	</select>
+
+	<select id="findByCondition" resultMap="infoMap">
+		<include refid="findInfo" />
+		<if test="condition.keyword != null and condition.keyword != ''">
+			left join
+			attraction_description using (content_id)
+		</if>
+		<where>
+			<if test="condition.sidoCode != 0">
+				and sido_code = #{condition.sidoCode}
+			</if>
+			<if test="condition.gugunCode != 0">
+				and gugun_code = #{condition.gugunCode}
+			</if>
+			<if test="condition.contentTypeId != 0">
+				and content_type_id = #{condition.contentTypeId}
+			</if>
+			<if test="condition.keyword != null and condition.keyword != ''">
+				and (title like concat('%', #{condition.keyword}, '%') or
+				addr1 like concat('%', #{condition.keyword}, '%') or
+				addr2 like concat('%', #{condition.keyword}, '%') or
+				overview like concat('%', #{condition.keyword}, '%'))
+			</if>
+		</where>
+		limit #{pageSize} offset #{offset}
+	</select>
+
+	<select id="findDetailById" resultMap="detailMap">
+		select
+		content_id,
+		cat1,
+		cat2,
+		cat3,
+		created_time,
+		modified_time,
+		booktour
+		from
+		attraction_detail
+		where
+		content_id = #{id}
+	</select>
+
+	<select id="findDescriptionById" resultMap="descriptionMap">
+		select
+		content_id,
+		homepage,
+		overview,
+		telname
+		from
+		attraction_description
+		where
+		content_id = #{id}
+	</select>
+</mapper>
