@@ -111,14 +111,14 @@ const deleteP = () => {
 
 <template>
   <div>
-    <button @click="getAttractions">관광지 조건 검색 눌러!!</button>
+    <!-- <button @click="getAttractions">관광지 조건 검색 눌러!!</button>
     <button @click="getAttraction">관광지 id 검색 눌러!!</button>
     <button @click="planById">여행 계획 id 검색 눌러!!</button>
     <button @click="plansWithAttraction">여행 계획 관광지 id 검색 눌러!!</button>
     <button @click="plansByCondition">여행 계획 조건 검색 눌러!!</button>
     <button @click="regist">여행 계획 등록 눌러!!</button>
     <button @click="update">여행 계획 수정 눌러!!</button>
-    <button @click="deleteP">여행 계획 삭제 눌러!!</button>
+    <button @click="deleteP">여행 계획 삭제 눌러!!</button> -->
     <RouterView></RouterView>
   </div>
 </template>

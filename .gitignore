@@ -78,7 +78,3 @@ Icon
 
 # Thumbnails
 ._*
-
-.env
-.env.local
-.env.*.local=

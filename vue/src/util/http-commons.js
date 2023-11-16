@@ -57,7 +57,7 @@ function serviceApi() {
           name: "home",
         });
       } else {
-        console.log("interceptor error =", error);
+        console.error("interceptor error =", error);
       }
     }
   );

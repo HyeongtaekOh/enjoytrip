@@ -41,6 +41,24 @@ const router = createRouter({
       path: "/plan",
       name: "plan",
       component: () => import("@/views/PlanView.vue"),
+      redirect: { name: "plan-list" },
+      children: [
+        {
+          path: "list",
+          name: "plan-list",
+          component: () => import("@/components/plan/PlanList.vue"),
+        },
+        {
+          path: "view/:planId",
+          name: "plan-view",
+          component: () => import("@/components/plan/PlanDetail.vue"),
+        },
+        {
+          path: "regist",
+          name: "plan-regist",
+          component: () => import("@/components/plan/PlanRegist.vue"),
+        },
+      ],
     },
   ],
 });
