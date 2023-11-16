@@ -1,18 +1,24 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
-import { defineProps, ref, onMounted } from "vue";
+import { defineProps, ref, onMounted, inject } from "vue";
 import { listComment, registComment, modifyComment, removeComment } from "@/api/comment";
+import Swal from "sweetalert2";
+
 const { comment } = defineProps({ comment: Object });
 const { commentId } = comment;
+const getCommentList = inject("getCommentList");
 const recomments = ref([]);
 const content = ref("");
 const showReplyInput = ref(false);
 const showModify = ref(false);
 const reshowModify = ref(false);
-
+const user = inject("user");
+const isUser = ref(false);
 onMounted(() => {
+  isUser.value = user.value.userId === comment.userId;
   getReCommentList();
 });
+
 console.log("comment =", comment);
 const getReCommentList = () => {
   console.log("get_ReComment");
@@ -36,18 +42,27 @@ function writeReComment() {
   console.log("writeReComment");
   registComment(
     {
-      userId: "1",
-      userName: "aa",
+      userId: user.value.userId,
+      userName: user.value.username,
       type: "comment",
       content: content.value,
       contentId: commentId,
     },
     ({ data }) => {
       console.log(data);
-      alert("등록 성공");
+      Swal.fire({
+        position: "top-end",
+        title: "대댓글 등록 완료!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
+      });
       recomments.value = data;
       showReplyInput.value = false; // 댓글 등록 후 창 숨기기
-      location.reload();
+      content.value = "";
+      getReCommentList();
     },
     (error) => {
       console.log(error);
@@ -79,17 +94,17 @@ function onModifyComment() {
     {
       commentId,
       content: content.value,
-      userId: "1",
+      userId: comment.userId,
     },
     ({ data }) => {
       console.log(data);
       alert("수정 성공");
-      location.reload();
+      getCommentList();
     },
     (error) => {
       console.log(error);
       alert("수정 실패");
-      location.reload();
+      getCommentList();
     }
   );
 }
@@ -164,8 +179,8 @@ const onRemoveReComment = (recommentId) => {
       >
         숨기기
       </span>
-      <span @click="clickModify" style="font-size: 130%">수정</span>
-      <span @click="onRemoveComment" style="font-size: 130%">삭제</span>
+      <span @click="clickModify" style="font-size: 130%" v-if="isUser">수정</span>
+      <span @click="onRemoveComment" style="font-size: 130%" v-if="isUser">삭제</span>
     </template>
     <template #author>
       <a style="font-size: 130%">{{ comment.userName }}</a>
@@ -211,8 +226,10 @@ const onRemoveReComment = (recommentId) => {
     </div>
     <a-comment v-for="recomment in recomments" :key="recomment.commentId" :recomment="recomment">
       <template #actions>
-        <span @click="reclickModify" style="font-size: 130%">수정</span>
-        <span @click="onRemoveReComment(recomment.commentId)" style="font-size: 130%">삭제</span>
+        <span @click="reclickModify" style="font-size: 130%" v-if="isUser">수정</span>
+        <span @click="onRemoveReComment(recomment.commentId)" style="font-size: 130%" v-if="isUser"
+          >삭제</span
+        >
       </template>
       <template #author>
         <a style="font-size: 130%">{{ recomment.userName }}</a>

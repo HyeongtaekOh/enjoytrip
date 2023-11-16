@@ -14,6 +14,7 @@ function detailComment(commentId, success, fail) {
 }
 
 function registComment(comment, success, fail) {
+  console.log("registComment = ", comment);
   local.post(`${url}`, comment).then(success).catch(fail);
 }
 

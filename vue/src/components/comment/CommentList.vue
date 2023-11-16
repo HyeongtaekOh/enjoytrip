@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, provide, inject } from "vue";
 import { registComment, listComment } from "@/api/comment";
+const user = inject("user");
 
 import CommentListItem from "@/components/comment/item/CommentListItem.vue";
 
@@ -8,6 +9,7 @@ const { contentId } = defineProps({ contentId: Number });
 
 const comments = ref([]);
 const content = ref("");
+const newCommentId = ref(0);
 
 onMounted(() => {
   getCommentList();
@@ -31,20 +33,31 @@ const getCommentList = () => {
   );
 };
 
+provide("getCommentList", getCommentList);
+
 function writeComment() {
   console.log("writeComment");
   registComment(
     {
-      userId: "1",
-      userName: "aa",
+      userId: user.value.userId,
+      userName: user.value.username,
       type: "board",
       content: content.value,
       contentId: contentId,
     },
     ({ data }) => {
       console.log(data);
-      alert("등록 성공");
-      comments.value = data;
+      Swal.fire({
+        position: "top-end",
+        title: "댓글 등록 완료!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
+      });
+      newCommentId.value = data.commentId;
+      content.value = "";
       getCommentList();
     },
     (error) => {
