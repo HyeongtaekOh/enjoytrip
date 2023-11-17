@@ -9,9 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.enjoytrip.exception.PlanException;
 import com.ssafy.enjoytrip.plan.model.dto.Plan;
-import com.ssafy.enjoytrip.plan.model.dto.PlanSearchCondition;
 import com.ssafy.enjoytrip.plan.model.dto.PlanDto;
-import com.ssafy.enjoytrip.plan.model.dto.PlanSimple;
+import com.ssafy.enjoytrip.plan.model.dto.PlanSearchCondition;
 import com.ssafy.enjoytrip.plan.model.mapper.PlanMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -31,16 +30,6 @@ public class PlanServiceImpl implements PlanService {
 			return mapper.findById(planId);
 		} catch (SQLException e) {
 			throw new PlanException("ID로 조회 중 오류 발생 : " + e.getMessage());
-		}
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<PlanSimple> findByName(String name) {
-		try {
-			return mapper.findByName(name);
-		} catch (SQLException e) {
-			throw new PlanException("이름으로 조회 중 오류 발생 : " + e.getMessage());
 		}
 	}
 

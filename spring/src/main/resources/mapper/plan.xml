@@ -17,23 +17,13 @@
 		<result column="departures_name" property="departuresName" />
 		<result column="arrivals_id" property="arrivalsId" />
 		<result column="arrivals_name" property="arrivalsName" />
+		<result column="hit" property="hit" />
+		<association property="username" javaType="String"
+			select="findUsernameByUserId" column="user_id" fetchType="lazy" />
 		<collection property="attractions" ofType="AttractionInfoSimple"
 			select="findAttractionListByPlanId" column="plan_id" fetchType="lazy" />
 	</resultMap>
 	
-	<resultMap type="PlanSimple" id="planSimpleMap">
-		<result column="plan_id" property="planId" />
-		<result column="user_id" property="userId" />
-		<result column="name" property="name" />
-		<result column="description" property="description" />
-		<result column="theme" property="theme" />
-		<result column="created_time" property="createdTime" />
-		<result column="modified_time" property="modifiedTime" />
-		<result column="departures_id" property="departuresId" />
-		<result column="departures_name" property="departuresName" />
-		<result column="arrivals_id" property="arrivalsId" />
-		<result column="arrivals_name" property="arrivalsName" />
-	</resultMap>
 	
 	<resultMap type="AttractionInfoSimple" id="infoMap">
 		<id column="content_id" property="contentId" />
@@ -52,6 +42,15 @@
 		<result column="longitude" property="longitude" />
 		<result column="mlevel" property="mlevel" />
 	</resultMap>
+	
+	<select id="findUsernameByUserId"  resultType="String">
+		select 
+			username
+		from
+			member
+		where
+			user_id = #{user_id}
+	</select>
 	
 	<select id="findAttractionListByPlanId" resultMap="infoMap">
 		select ai.*, ap.plan_order
@@ -73,11 +72,6 @@
 	<select id="findById" parameterType="int" resultMap="planMap">
 		select * from plan
 		where plan_id = #{planId}
-	</select>
-	
-	<select id="findByName" parameterType="String" resultMap="planSimpleMap">
-		select * from plan
-		where name like concat('%', #{name}, '%')
 	</select>
 	
 	<select id="findByAttractionId" parameterType="Integer" resultMap="planMap">

@@ -2,8 +2,6 @@ package com.ssafy.enjoytrip.plan.model.dto;
 
 import java.util.List;
 
-import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfoSimple;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +24,7 @@ public class PlanDto {
 	private String departuresName;
 	private Integer arrivalsId;
 	private String arrivalsName;
+	private Integer hit;
 
 	private List<Integer> attractionIds;
 	

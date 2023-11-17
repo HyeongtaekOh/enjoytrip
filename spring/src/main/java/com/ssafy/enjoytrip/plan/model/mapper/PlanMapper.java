@@ -8,16 +8,13 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.ssafy.enjoytrip.plan.model.dto.Plan;
-import com.ssafy.enjoytrip.plan.model.dto.PlanSearchCondition;
 import com.ssafy.enjoytrip.plan.model.dto.PlanDto;
-import com.ssafy.enjoytrip.plan.model.dto.PlanSimple;
+import com.ssafy.enjoytrip.plan.model.dto.PlanSearchCondition;
 
 @Mapper
 public interface PlanMapper {
 
 	Optional<Plan> findById(Integer planId) throws SQLException;
-
-	List<PlanSimple> findByName(String name) throws SQLException;
 
 	List<Plan> findByAttractionId(Integer attractionId) throws SQLException;
 

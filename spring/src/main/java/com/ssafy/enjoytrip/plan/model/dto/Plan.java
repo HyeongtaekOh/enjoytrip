@@ -26,8 +26,9 @@ public class Plan {
 	private String departuresName;
 	private Integer arrivalsId;
 	private String arrivalsName;
-	
+	private Integer hit;
 
+	private String username;
 	private List<AttractionInfoSimple> attractions;
 	
 }
