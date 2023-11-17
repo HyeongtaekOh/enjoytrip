@@ -97,50 +97,55 @@ watch(
 );
 </script>
 <template>
-  <link
-    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
-    rel="stylesheet"
-  />
-  <div class="container">
-    <div class="col-md-12 bootstrap snippets">
-      <div class="panel">
-        <div class="panel-body">
-          <textarea
-            class="form-control"
-            rows="2"
-            placeholder="What are you thinking?"
-            v-model="content"
-            @keyup.enter="writeComment"
-          ></textarea>
-          <div class="mar-top clearfix">
-            <button class="btn btn-sm btn-primary pull-right" @click="writeComment">
-              <i class="fa fa-pencil fa-fw"></i> 등록
-            </button>
-            <!-- <a class="btn btn-trans btn-icon fa fa-video-camera add-tooltip" href="#"></a>
+  <div>
+    <link
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+    <div class="container">
+      <div class="col-md-12 bootstrap snippets">
+        <div class="panel">
+          <div class="panel-body">
+            <textarea
+              class="form-control"
+              rows="2"
+              placeholder="What are you thinking?"
+              v-model="content"
+              @keyup.enter="writeComment"
+            ></textarea>
+            <div class="mar-top clearfix">
+              <button class="btn btn-sm btn-primary pull-right" @click="writeComment">
+                <i class="fa fa-pencil fa-fw"></i> 등록
+              </button>
+              <!-- <a class="btn btn-trans btn-icon fa fa-video-camera add-tooltip" href="#"></a>
             <a class="btn btn-trans btn-icon fa fa-camera add-tooltip" href="#"></a>
             <a class="btn btn-trans btn-icon fa fa-file add-tooltip" href="#"></a> -->
+            </div>
           </div>
         </div>
-      </div>
-      <div>
-        <h4>댓글</h4>
-        <template v-for="comment in comments">
-          <CommentListItem
-            v-if="comment.commentId == newCommentId"
-            :key="`comment-${comment.commentId}`"
-            ref="newCommentRef"
-            :comment="comment"
-            :newCommentId="newCommentId"
-            :newCommentRef="newCommentRef"
-          />
-          <CommentListItem
-            v-else
-            :key="`newComment-${comment.commentId}`"
-            :comment="comment"
-            :newCommentId="newCommentId"
-            :newCommentRef="newCommentRef"
-          />
-        </template>
+        <div>
+          <h4>댓글</h4>
+          <template v-for="comment in comments" v-if="comments">
+            <CommentListItem
+              v-if="comment.commentId == newCommentId"
+              :key="`comment-${comment.commentId}`"
+              ref="newCommentRef"
+              :comment="comment"
+              :newCommentId="newCommentId"
+              :newCommentRef="newCommentRef"
+            />
+            <CommentListItem
+              v-else
+              :key="`newComment-${comment.commentId}`"
+              :comment="comment"
+              :newCommentId="newCommentId"
+              :newCommentRef="newCommentRef"
+            />
+          </template>
+          <template v-else>
+            <p class="no-reply">아직 답변이 달리지 않았어요..</p>
+          </template>
+        </div>
       </div>
     </div>
   </div>
@@ -153,5 +158,11 @@ watch(
 }
 .panel {
   padding-right: 3em;
+}
+.no-reply {
+  padding: 40px;
+  text-align: center;
+  color: darkgray;
+  font-size: 200%;
 }
 </style>

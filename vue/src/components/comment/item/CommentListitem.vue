@@ -107,11 +107,11 @@ function hideReply() {
 }
 
 function clickModify() {
-  showModify.value = true;
+  showModify.value = !showModify.value;
 }
 
 function reclickModify() {
-  reshowModify.value = true;
+  reshowModify.value = !reshowModify.value;
 }
 
 function onModifyComment() {
@@ -280,7 +280,9 @@ watch(
       >
         숨기기
       </span>
-      <span @click="clickModify" style="font-size: 130%" v-if="isUser">수정</span>
+      <span @click="clickModify" style="font-size: 130%" v-if="isUser">{{
+        showModify ? "숨기기" : "수정"
+      }}</span>
       <span @click="onRemoveComment" style="font-size: 130%" v-if="isUser">삭제</span>
     </template>
     <template #author>
@@ -327,7 +329,9 @@ watch(
     </div>
     <a-comment v-for="recomment in recomments" :key="recomment.commentId">
       <template #actions>
-        <span @click="reclickModify" style="font-size: 130%" v-if="isUser">수정</span>
+        <span @click="reclickModify" style="font-size: 130%" v-if="isUser">{{
+          reshowModify ? "숨기기" : "수정"
+        }}</span>
         <span @click="onRemoveReComment(recomment.commentId)" style="font-size: 130%" v-if="isUser"
           >삭제</span
         >
