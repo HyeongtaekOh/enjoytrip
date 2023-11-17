@@ -1,14 +1,10 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
-import { defineProps, ref, onMounted, inject } from "vue";
+import { defineProps, ref, onMounted, inject, watch } from "vue";
 import { listComment, registComment, modifyComment, removeComment } from "@/api/comment";
 import Swal from "sweetalert2";
 
-const { comment, newCommentId, newCommentRef } = defineProps({
-  comment: Object,
-  newCommentId: Number,
-  newCommentRef: Object,
-});
+const { comment } = defineProps({ comment: Object });
 const { commentId } = comment;
 const getCommentList = inject("getCommentList");
 const recomments = ref([]);
@@ -18,6 +14,8 @@ const showModify = ref(false);
 const reshowModify = ref(false);
 const user = inject("user");
 const isUser = ref(false);
+const newRecommentId = ref(0);
+const newRecommentRef = ref(null);
 
 onMounted(() => {
   isUser.value = user.value.userId === comment.userId;
@@ -64,9 +62,8 @@ function writeReComment() {
         width: "280px",
         toast: true,
       });
-      recomments.value = data;
       showReplyInput.value = false; // 댓글 등록 후 창 숨기기
-      newCommentId.value = data.commentId;
+      newRecommentId.value = data.commentId;
       content.value = "";
       getReCommentList();
     },
@@ -164,6 +161,25 @@ const onRemoveReComment = (recommentId) => {
     }
   );
 };
+
+const scrollToNewComment = () => {
+  if (newRecommentRef.value[0]) {
+    console.log("scroll event ref =", newRecommentRef.value[0]);
+    const nRef = newRecommentRef.value[0];
+    nRef.scrollIntoView({ behavior: "smooth" });
+  }
+};
+
+watch(
+  newRecommentRef,
+  () => {
+    console.log("update", newRecommentRef.value[0]);
+    if (newRecommentRef.value) {
+      scrollToNewComment();
+    }
+  },
+  { deep: true }
+);
 </script>
 
 <template>
@@ -230,7 +246,7 @@ const onRemoveReComment = (recommentId) => {
         </div>
       </div>
     </div>
-    <a-comment v-for="recomment in recomments" :key="comment.commentId">
+    <a-comment v-for="recomment in recomments" :key="recomment.commentId">
       <template #actions>
         <span @click="reclickModify" style="font-size: 130%" v-if="isUser">수정</span>
         <span @click="onRemoveReComment(recomment.commentId)" style="font-size: 130%" v-if="isUser"
@@ -238,7 +254,13 @@ const onRemoveReComment = (recommentId) => {
         >
       </template>
       <template #author>
-        <a style="font-size: 130%">{{ recomment.userName }}</a>
+        <a
+          v-if="recomment.commentId == newRecommentId"
+          ref="newRecommentRef"
+          style="font-size: 130%"
+          >{{ recomment.userName }}</a
+        >
+        <a v-else style="font-size: 130%">{{ recomment.userName }}</a>
       </template>
       <template #avatar>
         <img src="@/assets/img/noImage.jpg" alt="@/assets/img/noImage.jpg" />

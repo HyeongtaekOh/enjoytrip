@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, provide, inject, nextTick, watch } from "vue";
+import { ref, onMounted, provide, inject, watch } from "vue";
 import { registComment, listComment } from "@/api/comment";
 import Swal from "sweetalert2";
 const user = inject("user");
