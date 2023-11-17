@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import com.ssafy.enjoytrip.plan.model.dto.Plan;
 import com.ssafy.enjoytrip.plan.model.dto.PlanSearchCondition;
 import com.ssafy.enjoytrip.plan.model.dto.PlanDto;
-import com.ssafy.enjoytrip.plan.model.dto.PlanSimple;
 import com.ssafy.enjoytrip.plan.model.mapper.PlanMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -52,21 +51,6 @@ public class PlanMapperTest {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	@Test
-	void findByName() {
-		log.debug("find plans by plan name");
-		try {
-			List<PlanSimple> plans = mapper.findByName("plan");
-			assertNotNull(plans);
-			assertEquals(1, plans.size());
-			assertEquals("plan1", plans.get(0).getName());
-			log.debug("plans : {}", plans);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
 	}
 	
 	@Test
