@@ -1,7 +1,6 @@
 import axios from "axios";
 import router from "../router";
 import Swal from "sweetalert2";
-
 const { VITE_API_BASE_URL } = import.meta.env;
 
 function authApi() {

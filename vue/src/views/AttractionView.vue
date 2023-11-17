@@ -1,39 +1,98 @@
 <script setup>
 import { ref, onMounted } from "vue";
+// import { findSidoCode } from "@/api/attraction";
 import TheHeadingNavbar from "@/components/layout/TheHeadingNavbar.vue";
 import AttractionMap from "@/components/attraction/AttractionMap.vue";
 
 // 공공 데이터 정보
-const script = document.createElement("script");
-const { VITE_KAKAO_JAVASCRIPT_APP_KEY } = import.meta.env;
-const selectedCity = ref("검색할 지역 선택");
+// const script = document.createElement("script");
+// const { VITE_KAKAO_JAVASCRIPT_APP_KEY } = import.meta.env;
+const selectedSido = ref("0");
+const selectedGugun = ref("0");
+const selectedType = ref("0");
+const selectedKeyword = ref("");
 
 onMounted(async () => {
-  script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${VITE_KAKAO_JAVASCRIPT_APP_KEY}&libraries=services,clusterer`;
-  document.head.appendChild(script);
-
-  const areaUrl =
-    "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=j%2FE9ABC0KUMH52FgTNkIMQEJIzw1gceEs%2F%2FAoU8GM%2FVlH9HttcHsU60RG%2BhVx3FQXtinkq24sosklGt2mSQ7fw%3D%3D&numOfRows=20&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json";
-  const response = await fetch(areaUrl, { method: "GET" });
-  const data = await response.json();
-
-  makeOption(data);
+  // script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f7627aabd5cfa2d2c78dd40f74607950&libraries=services,clusterer`;
+  // document.head.appendChild(script);
+  // await getAttractionByCondition({
+  //   areaCode: selectedSido.value,
+  //   gunguCode: selectedGugun.value,
+  //   contentTypeId: selectedType.value,
+  //   keyword: selectedKeyword.value,
+  // });
+  // makeSido();
 });
 
-function makeOption(data) {
-  let areas = data.response.body.items.item;
-  let sel = document.getElementById("city");
-  areas.forEach((area) => {
-    let opt = document.createElement("option");
-    opt.setAttribute("value", area.code);
-    opt.appendChild(document.createTextNode(area.name));
-    sel.appendChild(opt);
-  });
+// function makeSido(data) {
+//   console.log(data);
+//   let areas = data.response.body.items.item;
+//   let sel = document.getElementById("city");
+
+//   // 다른 옵션들 추가
+//   areas.forEach((area) => {
+//     let opt = document.createElement("option");
+//     opt.setAttribute("value", area.code);
+//     opt.appendChild(document.createTextNode(area.name));
+//     sel.appendChild(opt);
+//   });
+// }
+// const makeSido = () => {
+//   findSidoCode(
+//     ({ data }) => {
+//       console.log(data);
+//     },
+//     (e) => {
+//       console.log(e);
+//     }
+//   ); // Assuming findSidoCode returns the desired data
+// try {
+//   findSidoCode(
+//     ({ data }) => {
+//       console.log(data);
+//       areas = data;
+//     },
+//     (e) => {
+//       console.log(e);
+//     }
+//   ); // Assuming findSidoCode returns the desired data
+//   let sel = document.getElementById("city");
+
+//   // Clear existing options
+//   sel.innerHTML = "";
+
+//   // Add default option
+//   let optAll = document.createElement("option");
+//   optAll.setAttribute("value", "0");
+//   optAll.appendChild(document.createTextNode("전체 지역"));
+//   sel.appendChild(optAll);
+
+//   // Add other options
+//   // areas.forEach((area) => {
+//   //   let opt = document.createElement("option");
+//   //   opt.setAttribute("value", area.code);
+//   //   opt.appendChild(document.createTextNode(area.name));
+//   //   sel.appendChild(opt);
+//   // });
+// } catch (error) {
+//   console.error("Error fetching sido data:", error);
+// }
+// };
+
+function handlerSidoChange(event) {
+  selectedSido.value = event.target.value;
 }
 
-function handlerCityChange(event) {
-  selectedCity.value = event.target.value;
-  console.log(selectedCity.value);
+function handlerGugunChange(event) {
+  selectedSido.value = event.target.value;
+  if (selectedSido.value === "검색할 지역 선택") {
+    selectedSido.value = "0";
+  }
+}
+
+function handlerTypeChange(event) {
+  selectedType.value = event.target.value;
+  console.log(selectedType.value);
 }
 </script>
 
@@ -47,21 +106,36 @@ function handlerCityChange(event) {
           name="city"
           id="city"
           class="dropdown"
-          v-model="selectedCity"
-          @change="handlerCityChange"
+          v-model="selectedSido"
+          @change="handlerSidoChange"
         >
-          <option value="검색할 지역 선택">검색할 지역 선택</option>
+          <option value="0">전체 지역</option>
         </select>
-        <select name="type" id="type" class="dropdown">
-          <option value="관광지 유형">관광지 유형</option>
-          <option value="관광지">관광지</option>
-          <option value="문화시설">문화시설</option>
-          <option value="축제공연행사">축제공연행사</option>
-          <option value="여행코스">여행코스</option>
-          <option value="레포츠">레포츠</option>
-          <option value="숙박">숙박</option>
-          <option value="쇼핑">쇼핑</option>
-          <option value="음식점">음식점</option>
+        <select
+          name="city"
+          id="city"
+          class="dropdown"
+          v-model="selectedGugun"
+          @change="handlerGugunChange"
+        >
+          <option value="0">전체 구군</option>
+        </select>
+        <select
+          name="type"
+          id="type"
+          class="dropdown"
+          v-moddel="selectedType"
+          @change="handlerTypeChange"
+        >
+          <option value="0">전체 유형</option>
+          <option value="12">관광지</option>
+          <option value="14">문화시설</option>
+          <option value="15">축제공연행사</option>
+          <option value="25">여행코스</option>
+          <option value="28">레포츠</option>
+          <option value="32">숙박</option>
+          <option value="38">쇼핑</option>
+          <option value="39">음식점</option>
         </select>
         <input
           type="text"
