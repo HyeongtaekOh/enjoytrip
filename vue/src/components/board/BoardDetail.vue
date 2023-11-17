@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { detailArticle, deleteArticle } from "@/api/board";
 import { useAuthStore } from "@/stores/auth";
 import CommentList from "@/components/comment/CommentList.vue";
+import Swal from "sweetalert2";
 
 const route = useRoute();
 const router = useRouter();
@@ -43,19 +44,36 @@ function moveModify() {
 function onDeleteArticle() {
   // const { articleId } = route.params;
   console.log(articleId + "번글 삭제하러 가자!!!");
-  deleteArticle(
-    articleId,
-    ({ data }) => {
-      console.log(data);
-      alert("삭제 성공!");
-      moveList();
-    },
-    (e) => {
-      alert("삭제 실패");
-      console.log(e);
+  Swal.fire({
+    title: "게시글을 삭제하시겠어요?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "삭제",
+    cancelButtonText: `취소`,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deleteArticle(
+        articleId,
+        ({ data }) => {
+          console.log(data);
+          Swal.fire({
+            position: "top-end",
+            title: "Q&A 삭제 완료!",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000,
+            width: "280px",
+            toast: true,
+          });
+          moveList();
+        },
+        (e) => {
+          alert("삭제 실패");
+          console.log(e);
+        }
+      );
     }
-  );
-  // API 호출
+  });
 }
 </script>
 
