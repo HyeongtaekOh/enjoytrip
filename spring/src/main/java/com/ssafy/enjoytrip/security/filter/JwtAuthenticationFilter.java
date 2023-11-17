@@ -46,18 +46,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		
-		if (HttpMethod.OPTIONS.matches(request.getMethod())) {
-			setCorsHeaders(response);
-			response.setStatus(HttpServletResponse.SC_OK);
-			return;
-		}
 
 		String header = request.getHeader("Authorization");
 
 		if (header == null || !header.startsWith(TOKEN_PREFIX)) {
 			log.info("header 문제");
-			sendErrorResponseWithCorsHeader(response);
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 			return;
 		}
 
@@ -65,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		if (!isValidJwtFormat(jwt)) {
 			log.info("jwt 형식 문제 - token = {}", jwt);
-			sendErrorResponseWithCorsHeader(response);
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 			return;
 		}
 
@@ -76,7 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
 		} catch (ExpiredJwtException e) {
 			log.info("claims time 문제");
-			sendErrorResponseWithCorsHeader(response);
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 			return;
 		}
 
@@ -85,7 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		if (!m.isPresent()) {
 			log.info("member 문제");
-			sendErrorResponseWithCorsHeader(response);
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 			return;
 		}
 
@@ -111,17 +105,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String[] parts = token.split("\\.");
 		return parts.length == 3;
-	}
-	
-	private void setCorsHeaders(HttpServletResponse response) {
-		response.setHeader("Access-Control-Allow-Headers",
-				"Origin, X-Requested-With, Content-Type, Accept, Authorization");
-		response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-		response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
-	}
-	
-	private void sendErrorResponseWithCorsHeader(HttpServletResponse response) throws IOException {
-		setCorsHeaders(response);
-		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 	}
 }
