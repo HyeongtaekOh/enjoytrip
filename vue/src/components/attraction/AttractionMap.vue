@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted } from "vue";
-import { findSidoCode } from "@/api/attraction";
 const { VITE_KAKAO_JAVASCRIPT_APP_KEY } = import.meta.env;
 
 var map;
@@ -17,14 +16,6 @@ onMounted(() => {
     script.onload = () => kakao.maps.load(() => initMap());
     document.head.appendChild(script);
   }
-  findSidoCode(
-    ({ data }) => {
-      console.log(data);
-    },
-    (e) => {
-      console.log(e);
-    }
-  );
 });
 
 const initMap = () => {
