@@ -41,6 +41,7 @@ import TheHeadingNavbar from "@/components/layout/TheHeadingNavbar.vue";
 </template>
 
 <style scoped>
+@import "../assets/css/background.css";
 @import "../assets/css/common.css";
 @import "../assets/css/map.css";
 </style>

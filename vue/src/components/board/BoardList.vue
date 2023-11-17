@@ -66,7 +66,7 @@ const moveWrite = () => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container board-list-container">
     <div class="row justify-content-center">
       <div class="col-lg-10">
         <h2 class="my-3 py-3 shadow-sm bg-light text-center">Q&A</h2>
@@ -121,4 +121,8 @@ const moveWrite = () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.board-list-container {
+  height: 85vh;
+}
+</style>

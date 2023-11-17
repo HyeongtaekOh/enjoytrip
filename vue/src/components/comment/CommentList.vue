@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted, provide, inject } from "vue";
+import { ref, onMounted, provide, inject, nextTick, watch } from "vue";
 import { registComment, listComment } from "@/api/comment";
+import Swal from "sweetalert2";
 const user = inject("user");
 
 import CommentListItem from "@/components/comment/item/CommentListItem.vue";
@@ -10,13 +11,11 @@ const { contentId } = defineProps({ contentId: Number });
 const comments = ref([]);
 const content = ref("");
 const newCommentId = ref(0);
+const newCommentRef = ref(null);
 
-onMounted(() => {
-  getCommentList();
-});
+onMounted(() => {});
 
 const getCommentList = () => {
-  console.log("getComment");
   const condition = {
     contentId: contentId,
     type: "board",
@@ -24,7 +23,6 @@ const getCommentList = () => {
   listComment(
     condition,
     ({ data }) => {
-      console.log("listComment ->", data);
       comments.value = data;
     },
     (error) => {
@@ -32,6 +30,8 @@ const getCommentList = () => {
     }
   );
 };
+
+getCommentList();
 
 provide("getCommentList", getCommentList);
 
@@ -46,7 +46,6 @@ function writeComment() {
       contentId: contentId,
     },
     ({ data }) => {
-      console.log(data);
       Swal.fire({
         position: "top-end",
         title: "댓글 등록 완료!",
@@ -66,6 +65,25 @@ function writeComment() {
     }
   );
 }
+
+const scrollToNewComment = () => {
+  if (newCommentRef.value) {
+    console.log("scroll event ref =", newCommentRef.value[0]);
+    const nRef = newCommentRef.value[0];
+    nRef.$el.scrollIntoView({ behavior: "smooth" });
+  }
+};
+
+watch(
+  newCommentRef,
+  () => {
+    console.log("update", newCommentRef.value[0]);
+    if (newCommentRef.value) {
+      scrollToNewComment();
+    }
+  },
+  { deep: true }
+);
 </script>
 <template>
   <link
@@ -94,7 +112,23 @@ function writeComment() {
       </div>
       <div>
         <h4>댓글</h4>
-        <CommentListItem v-for="comment in comments" :key="comment.commentId" :comment="comment" />
+        <template v-for="comment in comments">
+          <CommentListItem
+            v-if="comment.commentId == newCommentId"
+            :key="`comment-${comment.commentId}`"
+            ref="newCommentRef"
+            :comment="comment"
+            :newCommentId="newCommentId"
+            :newCommentRef="newCommentRef"
+          />
+          <CommentListItem
+            v-else
+            :key="`newComment-${comment.commentId}`"
+            :comment="comment"
+            :newCommentId="newCommentId"
+            :newCommentRef="newCommentRef"
+          />
+        </template>
       </div>
     </div>
   </div>

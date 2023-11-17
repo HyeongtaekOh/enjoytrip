@@ -57,7 +57,15 @@ function serviceApi() {
           name: "home",
         });
       } else {
-        console.error("interceptor error =", error);
+        Swal.fire({
+          title: "개발자야 서버 켰니?",
+          text: "서버 켜고 테스트해라 ㅎㅎ",
+          icon: "warning",
+          timer: 3000,
+        });
+        router.push({
+          name: "home",
+        });
       }
     }
   );

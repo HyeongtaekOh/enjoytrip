@@ -4,7 +4,11 @@ import { defineProps, ref, onMounted, inject } from "vue";
 import { listComment, registComment, modifyComment, removeComment } from "@/api/comment";
 import Swal from "sweetalert2";
 
-const { comment } = defineProps({ comment: Object });
+const { comment, newCommentId, newCommentRef } = defineProps({
+  comment: Object,
+  newCommentId: Number,
+  newCommentRef: Object,
+});
 const { commentId } = comment;
 const getCommentList = inject("getCommentList");
 const recomments = ref([]);
@@ -14,14 +18,15 @@ const showModify = ref(false);
 const reshowModify = ref(false);
 const user = inject("user");
 const isUser = ref(false);
+
 onMounted(() => {
   isUser.value = user.value.userId === comment.userId;
   getReCommentList();
 });
 
-console.log("comment =", comment);
+// console.log("comment =", comment);
 const getReCommentList = () => {
-  console.log("get_ReComment");
+  // console.log("get_ReComment");
   const condition = {
     contentId: commentId,
     type: "comment",
@@ -29,7 +34,7 @@ const getReCommentList = () => {
   listComment(
     condition,
     ({ data }) => {
-      console.log("data :", data);
+      // console.log("data :", data);
       recomments.value = data;
     },
     (error) => {
@@ -61,6 +66,7 @@ function writeReComment() {
       });
       recomments.value = data;
       showReplyInput.value = false; // 댓글 등록 후 창 숨기기
+      newCommentId.value = data.commentId;
       content.value = "";
       getReCommentList();
     },
@@ -224,7 +230,7 @@ const onRemoveReComment = (recommentId) => {
         </div>
       </div>
     </div>
-    <a-comment v-for="recomment in recomments" :key="recomment.commentId" :recomment="recomment">
+    <a-comment v-for="recomment in recomments" :key="comment.commentId">
       <template #actions>
         <span @click="reclickModify" style="font-size: 130%" v-if="isUser">수정</span>
         <span @click="onRemoveReComment(recomment.commentId)" style="font-size: 130%" v-if="isUser"
