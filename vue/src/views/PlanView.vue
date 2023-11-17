@@ -3,6 +3,7 @@ import { RouterView } from "vue-router";
 import { getAttractionById, getAttractionsByCondition } from "@/api/attraction";
 import { getPlanById, getPlansWithAttraction, getPlansByCondition, registPlan } from "@/api/plan";
 import { deletePlan, updatePlan } from "../api/plan";
+import TheHeadingNavbar from "@/components/layout/TheHeadingNavbar.vue";
 
 const getAttractions = () => {
   const condition = {
@@ -110,7 +111,9 @@ const deleteP = () => {
 </script>
 
 <template>
-  <div>
+  <div class="background"></div>
+  <TheHeadingNavbar></TheHeadingNavbar>
+  <div class="container text-center mt-3 fade-container plan-container">
     <!-- <button @click="getAttractions">관광지 조건 검색 눌러!!</button>
     <button @click="getAttraction">관광지 id 검색 눌러!!</button>
     <button @click="planById">여행 계획 id 검색 눌러!!</button>
@@ -123,4 +126,24 @@ const deleteP = () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+@import "../assets/css/background.css";
+@import "../assets/css/common.css";
+
+@font-face {
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
+    format("woff");
+  font-weight: 600;
+  font-style: 600;
+}
+* {
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  font-weight: 600;
+}
+
+.plan-container {
+  background-color: white;
+  border-radius: 10px;
+}
+</style>

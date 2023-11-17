@@ -264,6 +264,10 @@ body {
   animation: fadeIn 0.8s ease-out;
 }
 
+.fade-container {
+  animation: fadeIn 0.8s ease-out;
+}
+
 @keyframes fadeIn {
   0% {
     transform: translateY(3%);

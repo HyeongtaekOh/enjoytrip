@@ -67,8 +67,8 @@ onMounted(async () => {
 
 <template>
   <div class="container">
-    <div class="row justify-content-center">
-      <div id="map" style="width: 700px; height: 500px"></div>
+    <div class="row justify-content-center p-0">
+      <div id="map" style="width: 100%; height: 80vh"></div>
     </div>
   </div>
 </template>
