@@ -1,6 +1,6 @@
 import { serviceApi } from "@/util/http-commons";
 
-const local = serviceApi(); // axios instance
+const local = serviceApi; // axios instance
 
 const url = "comment";
 

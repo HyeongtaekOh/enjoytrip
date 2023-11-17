@@ -1,6 +1,6 @@
 import { serviceApi } from "@/util/http-commons";
 
-const api = serviceApi();
+const api = serviceApi;
 
 const getPlanById = (planId, success, fail) => {
   api.get(`plan/${planId}`).then(success).catch(fail);

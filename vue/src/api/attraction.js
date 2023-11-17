@@ -1,6 +1,6 @@
 import { serviceApi } from "@/util/http-commons";
 
-const api = serviceApi();
+const api = serviceApi;
 
 const getAttractionById = (contentId, success, fail) => {
   api.get(`attraction/${contentId}`).then(success).catch(fail);
