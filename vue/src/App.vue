@@ -3,7 +3,6 @@ import { ref, provide } from "vue";
 import { RouterView } from "vue-router";
 import { validateToken } from "@/api/auth";
 import { parseJwtPayload } from "@/util/jwt-utils";
-import TheHeadingNavbar from "./components/layout/TheHeadingNavbar.vue";
 
 const user = ref(null);
 
@@ -29,10 +28,7 @@ function updateUserContext() {
 </script>
 
 <template>
-  <div>
-    <TheHeadingNavbar></TheHeadingNavbar>
-    <router-view></router-view>
-  </div>
+  <router-view></router-view>
 </template>
 
 <style scoped>

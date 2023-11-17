@@ -199,36 +199,34 @@ function updateUserContext() {
 </script>
 
 <template>
-  <div>
-    <nav class="navbar">
-      <router-link :to="{ name: 'home' }">
-        <div class="logo">
-          <img class="logoSvg" src="@/assets/img/logo.png" alt="Enjoy Trip" />
-          Enjoy Trip
-        </div>
+  <nav class="navbar">
+    <router-link :to="{ name: 'home' }">
+      <div class="logo">
+        <img class="logoSvg" src="@/assets/img/logo.png" alt="Enjoy Trip" />
+        Enjoy Trip
+      </div>
+    </router-link>
+    <div class="navbar_items">
+      <router-link :to="{ name: 'attraction' }">
+        <div class="navbar_item">관광지</div>
       </router-link>
-      <div class="navbar_items">
-        <router-link :to="{ name: 'attraction' }">
-          <div class="navbar_item">관광지</div>
-        </router-link>
-        <div class="navbar_item">
-          <router-link :to="{ name: 'plan' }">여행계획</router-link>
-        </div>
-        <div class="navbar_item">
-          <router-link :to="{ name: 'qna' }">게시판</router-link>
-        </div>
+      <div class="navbar_item">
+        <router-link :to="{ name: 'plan' }">여행계획</router-link>
       </div>
-      <div class="loginLogoutContainer">
-        <div class="logoutContainer" v-if="user">
-          <div class="navbar_item profileBtn">사용자 정보</div>
-          <div class="navbar_item logoutBtn" @click="logout">로그아웃</div>
-        </div>
-        <div class="loginContainer" v-else>
-          <div class="navbar_item loginBtn" @click="showLoginForm">로그인</div>
-        </div>
+      <div class="navbar_item">
+        <router-link :to="{ name: 'qna' }">게시판</router-link>
       </div>
-    </nav>
-  </div>
+    </div>
+    <div class="loginLogoutContainer">
+      <div class="logoutContainer" v-if="user">
+        <div class="navbar_item profileBtn">사용자 정보</div>
+        <div class="navbar_item logoutBtn" @click="logout">로그아웃</div>
+      </div>
+      <div class="loginContainer" v-else>
+        <div class="navbar_item loginBtn" @click="showLoginForm">로그인</div>
+      </div>
+    </div>
+  </nav>
 </template>
 
 <style scoped>
