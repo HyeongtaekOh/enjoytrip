@@ -18,4 +18,6 @@ public class QnaBoardDto {
 	private Integer hits;
 	private String createdTime;
 	private String modifiedTime;
+
+	private String username;
 }

@@ -12,6 +12,9 @@
 		<result column="hits" property="hits"/>
 		<result column="created_time" property="createdTime"/>
 		<result column="modified_time" property="modifiedTime"/>
+
+		<association property="username" javaType="String"
+					 select="findUsernameByUserId" column="user_id" fetchType="lazy" />
 	</resultMap>
 	
 	<select id="findById" parameterType="int" resultMap="qnaBoardMap">
@@ -35,6 +38,15 @@
 			</if>
 		</where>
 		limit #{pageSize} offset #{offset}
+	</select>
+
+	<select id="findUsernameByUserId"  resultType="String">
+		select
+			username
+		from
+			member
+		where
+			user_id = #{user_id}
 	</select>
 	
 	<insert id="insertQnaArticle" parameterType="QnaBoardDto" useGeneratedKeys="true" keyProperty="articleId">

@@ -1,6 +1,6 @@
 CREATE TABLE qna_board (
     article_id INT NOT NULL AUTO_INCREMENT,
-    user_id VARCHAR(30) NOT NULL,
+    user_id INT NOT NULL,
     subject VARCHAR(20) NOT NULL,
     content VARCHAR(10000) NOT NULL,
     hits int DEFAULT 0,
