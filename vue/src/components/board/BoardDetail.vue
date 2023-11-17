@@ -2,10 +2,12 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { detailArticle, deleteArticle } from "@/api/board";
+import { useAuthStore } from "@/stores/auth";
 import CommentList from "@/components/comment/CommentList.vue";
 
 const route = useRoute();
 const router = useRouter();
+const auth = useAuthStore();
 
 // const articleId = ref(route.params.articleId);
 console.log(route.params);
@@ -77,7 +79,7 @@ function onDeleteArticle() {
                 src="https://raw.githubusercontent.com/twbs/icons/main/icons/person-fill.svg"
               />
               <p style="font-size: 170%">
-                <span class="fw-bold">{{ article.userId }}</span> <br />
+                <span class="fw-bold">{{ article.username }}</span> <br />
                 <span class="text-secondary fw-light">
                   {{ article.createdTime }} 조회 : {{ article.hits }}
                 </span>
@@ -103,6 +105,7 @@ function onDeleteArticle() {
               type="button"
               class="btn btn-outline-success mb-3 ms-1"
               style="font-size: 130%"
+              v-if="article.userId == auth.getUser.userId"
               @click="moveModify"
             >
               글수정
@@ -111,6 +114,7 @@ function onDeleteArticle() {
               type="button"
               class="btn btn-outline-danger mb-3 ms-1"
               style="font-size: 130%"
+              v-if="article.userId == auth.getUser.userId"
               @click="onDeleteArticle"
             >
               글삭제

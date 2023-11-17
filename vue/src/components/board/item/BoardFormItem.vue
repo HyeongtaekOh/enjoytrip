@@ -3,17 +3,20 @@ import { registArticle, modifyArticle } from "@/api/board";
 import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { detailArticle } from "@/api/board";
+import { useAuthStore } from "@/stores/auth";
+import Swal from "sweetalert2";
 
 const router = useRouter();
 const route = useRoute();
+const auth = useAuthStore();
 
 const props = defineProps({ type: String, articleId: Number });
 const { type, articleId } = props;
-const isUseId = ref(false);
 
 const article = ref({
   articleId: 0,
   userId: "",
+  username: "",
   subject: "",
   content: "",
   hit: 0,
@@ -32,7 +35,9 @@ if (type === "modify") {
     (e) => console.log(e)
   );
   console.log("article =", article.value);
-  isUseId.value = true;
+} else {
+  article.value.userId = auth.getUser.userId;
+  article.value.username = auth.getUser.username;
 }
 
 const subjectErrMsg = ref("");
@@ -62,9 +67,23 @@ function onSubmit() {
   // event.preventDefault();
 
   if (subjectErrMsg.value) {
-    alert(subjectErrMsg.value);
+    Swal.fire({
+      title: subjectErrMsg.value,
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "280px",
+      toast: true,
+    });
   } else if (contentErrMsg.value) {
-    alert(contentErrMsg.value);
+    Swal.fire({
+      title: contentErrMsg.value,
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "280px",
+      toast: true,
+    });
   } else {
     type === "regist" ? writeArticle() : updateArticle();
   }
@@ -76,12 +95,28 @@ function writeArticle() {
     article.value,
     ({ data }) => {
       console.log(data);
-      alert("등록 성공");
+      Swal.fire({
+        position: "top-end",
+        title: "Q&A 등록 완료!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
+      });
       moveDetail(data.articleId);
     },
     (error) => {
       console.log(error);
-      alert("등록 실패");
+      Swal.fire({
+        position: "top-end",
+        title: "Q&A 등록 실패",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
+      });
     }
   );
 }
@@ -95,12 +130,28 @@ function updateArticle() {
     article.value,
     ({ data }) => {
       console.log(data);
-      alert("수정 성공");
+      Swal.fire({
+        position: "top-end",
+        title: "Q&A 수정 완료!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
+      });
       moveDetail(articleId);
     },
     (error) => {
       console.log(error);
-      alert("수정 실패");
+      Swal.fire({
+        position: "top-end",
+        title: "Q&A 수정 실패",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
+      });
     }
   );
 }
@@ -121,10 +172,10 @@ function moveDetail(id) {
       <input
         type="text"
         class="form-control"
-        v-model="article.userId"
-        :disabled="isUseId"
+        v-model="article.username"
         placeholder="작성자ID..."
         name="실험"
+        readonly
       />
     </div>
     <div class="mb-3">

@@ -1,15 +1,15 @@
 <script setup>
-import { inject } from "vue";
+import { useAuthStore } from "@/stores/auth"
 import { useRouter } from "vue-router";
 import { validateToken, login, signup } from "@/api/auth";
 import { parseJwtPayload } from "@/util/jwt-utils";
 
-const user = inject("user");
+const auth = useAuthStore();
 const router = useRouter();
 
 function logout() {
   localStorage.removeItem("jwt");
-  user.value = null;
+  auth.logoutUser();
   Swal.fire({
     position: "top-end",
     title: "로그아웃되었습니다",
@@ -31,7 +31,9 @@ const handleLogin = (username, password) => {
     (res) => {
       console.log(res);
       const header = res.headers.authorization;
+      console.log("header =", header)
       const token = extractToken(header);
+      console.log("token =", token)
       localStorage.setItem("jwt", token);
       updateUserContext();
       Swal.fire({
@@ -44,7 +46,8 @@ const handleLogin = (username, password) => {
         toast: true,
       });
     },
-    () => {
+    (e) => {
+      console.log(e)
       Swal.fire({
         position: "top-end",
         title: "로그인에 실패했습니다",
@@ -85,7 +88,7 @@ const handleSignup = (username, password, email) => {
     }
   );
 };
-
+console.log(auth.getUser)
 const showLoginForm = async () => {
   const { value: formValues } = await Swal.fire({
     title: "로그인하세요!",
@@ -188,10 +191,10 @@ function updateUserContext() {
     token,
     () => {
       const { userId, username, userType } = parseJwtPayload(token);
-      user.value = { userId, username, userType };
+      auth.loginUser({ userId, username, userType });
     },
-    () => {
-      user.value = null;
+    (e) => {
+      console.log("update user context error =", e)
       localStorage.removeItem("jwt");
     }
   );
@@ -218,7 +221,7 @@ function updateUserContext() {
       </div>
     </div>
     <div class="loginLogoutContainer">
-      <div class="logoutContainer" v-if="user">
+      <div class="logoutContainer" v-if="auth.getUser">
         <div class="navbar_item profileBtn">사용자 정보</div>
         <div class="navbar_item logoutBtn" @click="logout">로그아웃</div>
       </div>

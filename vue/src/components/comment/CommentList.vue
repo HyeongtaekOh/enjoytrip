@@ -1,12 +1,12 @@
 <script setup>
 import { ref, onMounted, provide, inject, watch } from "vue";
 import { registComment, listComment } from "@/api/comment";
+import { useAuthStore } from "@/stores/auth";
 import Swal from "sweetalert2";
-const user = inject("user");
-
 import CommentListItem from "@/components/comment/item/CommentListItem.vue";
 
-const { contentId } = defineProps({ contentId: Number });
+const { contentId } = defineProps({ contentId: String });
+const auth = useAuthStore();
 
 const comments = ref([]);
 const content = ref("");
@@ -36,11 +36,22 @@ getCommentList();
 provide("getCommentList", getCommentList);
 
 function writeComment() {
-  console.log("writeComment");
+  console.log("writeComment :", content.value);
+  if (!content.value) {
+    Swal.fire({
+      title: "내용을 입력하세요",
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "246px",
+      toast: true,
+    });
+    return;
+  }
   registComment(
     {
-      userId: user.value.userId,
-      userName: user.value.username,
+      userId: auth.getUser.userId,
+      userName: auth.getUser.username,
       type: "board",
       content: content.value,
       contentId: contentId,
@@ -99,6 +110,7 @@ watch(
             rows="2"
             placeholder="What are you thinking?"
             v-model="content"
+            @keyup.enter="writeComment"
           ></textarea>
           <div class="mar-top clearfix">
             <button class="btn btn-sm btn-primary pull-right" @click="writeComment">

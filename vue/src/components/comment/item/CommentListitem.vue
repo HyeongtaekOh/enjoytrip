@@ -1,8 +1,11 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
-import { defineProps, ref, onMounted, inject, watch } from "vue";
+import { ref, onMounted, inject, watch } from "vue";
 import { listComment, registComment, modifyComment, removeComment } from "@/api/comment";
+import { useAuthStore } from "@/stores/auth";
 import Swal from "sweetalert2";
+
+const auth = useAuthStore();
 
 const { comment } = defineProps({ comment: Object });
 const { commentId } = comment;
@@ -12,13 +15,12 @@ const content = ref("");
 const showReplyInput = ref(false);
 const showModify = ref(false);
 const reshowModify = ref(false);
-const user = inject("user");
 const isUser = ref(false);
 const newRecommentId = ref(0);
 const newRecommentRef = ref(null);
 
 onMounted(() => {
-  isUser.value = user.value.userId === comment.userId;
+  isUser.value = auth.getUser.userId === comment.userId;
   getReCommentList();
 });
 
@@ -43,10 +45,23 @@ const getReCommentList = () => {
 
 function writeReComment() {
   console.log("writeReComment");
+
+  if (!content.value) {
+    Swal.fire({
+      title: "내용을 입력하세요",
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "246px",
+      toast: true,
+    });
+    return;
+  }
+
   registComment(
     {
-      userId: user.value.userId,
-      userName: user.value.username,
+      userId: auth.getUser.userId,
+      userName: auth.getUser.username,
       type: "comment",
       content: content.value,
       contentId: commentId,
@@ -55,7 +70,7 @@ function writeReComment() {
       console.log(data);
       Swal.fire({
         position: "top-end",
-        title: "대댓글 등록 완료!",
+        title: "댓글 등록 완료!",
         icon: "success",
         showConfirmButton: false,
         timer: 2000,
@@ -69,7 +84,15 @@ function writeReComment() {
     },
     (error) => {
       console.log(error);
-      alert("등록 실패");
+      Swal.fire({
+        position: "top-end",
+        title: "댓글 등록 실패",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
+      });
     }
   );
 }
@@ -101,12 +124,28 @@ function onModifyComment() {
     },
     ({ data }) => {
       console.log(data);
-      alert("수정 성공");
+      Swal.fire({
+        position: "top-end",
+        title: "댓글 수정 완료!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "250px",
+        toast: true,
+      });
       getCommentList();
     },
     (error) => {
       console.log(error);
-      alert("수정 실패");
+      Swal.fire({
+        position: "top-end",
+        title: "댓글 수정 실패",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
+      });
       getCommentList();
     }
   );
@@ -118,12 +157,28 @@ function onRemoveComment() {
     commentId,
     ({ data }) => {
       console.log(data);
-      alert("삭제 성공");
-      location.reload();
+      Swal.fire({
+        position: "top-end",
+        title: "댓글 삭제 완료!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "250px",
+        toast: true,
+      });
+      getCommentList();
     },
     (error) => {
       console.log(error);
-      alert("삭제 실패");
+      Swal.fire({
+        position: "top-end",
+        title: "댓글 삭제 실패",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
+      });
     }
   );
 }
@@ -137,7 +192,15 @@ const onModifyReComment = (recommentId) => {
     },
     ({ data }) => {
       console.log(data);
-      alert("수정 성공");
+      Swal.fire({
+        position: "top-end",
+        title: "댓글 수정 완료!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "250px",
+        toast: true,
+      });
       location.reload();
     },
     (error) => {
@@ -152,12 +215,28 @@ const onRemoveReComment = (recommentId) => {
   removeComment(
     recommentId,
     ({ data }) => {
-      alert("삭제 성공");
+      Swal.fire({
+        position: "top-end",
+        title: "댓글 삭제 완료!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "250px",
+        toast: true,
+      });
       location.reload();
     },
     (error) => {
       console.log(error);
-      alert("삭제 실패");
+      Swal.fire({
+        position: "top-end",
+        title: "댓글 삭제 실패",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+        width: "280px",
+        toast: true,
+      });
     }
   );
 };

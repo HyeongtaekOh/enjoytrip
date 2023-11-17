@@ -13,7 +13,7 @@ defineProps({ article: Object });
         {{ article.subject }}
       </router-link>
     </td>
-    <td>{{ article.userId }}</td>
+    <td>{{ article.username }}</td>
     <td>{{ article.hits }}</td>
     <td>{{ article.createdTime }}</td>
   </tr>
