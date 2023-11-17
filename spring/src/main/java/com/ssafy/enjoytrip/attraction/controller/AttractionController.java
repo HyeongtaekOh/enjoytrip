@@ -5,16 +5,19 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchCondition;
 import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfo;
+import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchCondition;
+import com.ssafy.enjoytrip.attraction.model.dto.GugunCode;
+import com.ssafy.enjoytrip.attraction.model.dto.SidoCode;
 import com.ssafy.enjoytrip.attraction.model.service.AttractionService;
+import com.ssafy.enjoytrip.attraction.model.service.GugunService;
+import com.ssafy.enjoytrip.attraction.model.service.SidoService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 public class AttractionController {
 	
 	private final AttractionService attractionService;
+	private final SidoService sidoService;
+	private final GugunService gugunService;
 	
 	@ApiOperation(value = "관광지 ID 조회", notes = "고유번호(id)에 해당하는 관광지 정보 조회")
 	@ApiResponses(value = {
@@ -76,5 +81,19 @@ public class AttractionController {
 		} else {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		}
+	}
+	
+	@GetMapping("/sido")
+	public ResponseEntity<?> findSidoCode(){
+		List<SidoCode> list = sidoService.findSidoCode();
+		log.debug("list : {}", list);
+		return new ResponseEntity<List<SidoCode>>(list, HttpStatus.OK);
+	}
+	
+	@GetMapping("/sido/{sidoCode}")
+	public ResponseEntity<?> findGugunCode(@PathVariable int sidoCode){
+		List<GugunCode> list = gugunService.findGugunCode(sidoCode);
+		log.debug("list : {}", list);
+		return new ResponseEntity<List<GugunCode>>(list, HttpStatus.OK);
 	}
 }
