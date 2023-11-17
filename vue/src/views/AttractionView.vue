@@ -1,5 +1,40 @@
 <script setup>
+import { ref, onMounted } from "vue";
 import TheHeadingNavbar from "@/components/layout/TheHeadingNavbar.vue";
+import AttractionMap from "@/components/attraction/AttractionMap.vue";
+
+// 공공 데이터 정보
+const script = document.createElement("script");
+const { VITE_KAKAO_JAVASCRIPT_APP_KEY } = import.meta.env;
+const selectedCity = ref("검색할 지역 선택");
+
+onMounted(async () => {
+  script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${VITE_KAKAO_JAVASCRIPT_APP_KEY}&libraries=services,clusterer`;
+  document.head.appendChild(script);
+
+  const areaUrl =
+    "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=j%2FE9ABC0KUMH52FgTNkIMQEJIzw1gceEs%2F%2FAoU8GM%2FVlH9HttcHsU60RG%2BhVx3FQXtinkq24sosklGt2mSQ7fw%3D%3D&numOfRows=20&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json";
+  const response = await fetch(areaUrl, { method: "GET" });
+  const data = await response.json();
+
+  makeOption(data);
+});
+
+function makeOption(data) {
+  let areas = data.response.body.items.item;
+  let sel = document.getElementById("city");
+  areas.forEach((area) => {
+    let opt = document.createElement("option");
+    opt.setAttribute("value", area.code);
+    opt.appendChild(document.createTextNode(area.name));
+    sel.appendChild(opt);
+  });
+}
+
+function handlerCityChange(event) {
+  selectedCity.value = event.target.value;
+  console.log(selectedCity.value);
+}
 </script>
 
 <template>
@@ -8,7 +43,13 @@ import TheHeadingNavbar from "@/components/layout/TheHeadingNavbar.vue";
   <div class="contents">
     <div class="list">
       <form action="#" id="search" class="search">
-        <select name="city" id="city" class="dropdown">
+        <select
+          name="city"
+          id="city"
+          class="dropdown"
+          v-model="selectedCity"
+          @change="handlerCityChange"
+        >
           <option value="검색할 지역 선택">검색할 지역 선택</option>
         </select>
         <select name="type" id="type" class="dropdown">
@@ -36,7 +77,9 @@ import TheHeadingNavbar from "@/components/layout/TheHeadingNavbar.vue";
         </div>
       </div>
     </div>
-    <div id="map" class="map"></div>
+    <div id="map" class="map">
+      <AttractionMap></AttractionMap>
+    </div>
   </div>
 </template>
 
