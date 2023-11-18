@@ -143,7 +143,7 @@ const deleteP = () => {
 }
 
 .plan-container {
-  background-color: white;
   border-radius: 10px;
+  height: 83vh;
 }
 </style>

@@ -66,11 +66,57 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container">
-    <div class="row justify-content-center p-0">
-      <div id="map" style="width: 100%; height: 80vh"></div>
+  <div class="container p-0">
+    <div class="flex flex-row p-0">
+      <div id="map" style="width: 60vw; height: 80vh"></div>
+      <div class="planner-box flex flex-column">
+        <div class="plan-header">
+          <img src="@/assets/img/plan.png" alt="plan" />
+          <span>나만의 여행 계획!!</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+.flex {
+  display: flex;
+}
+.flex-row {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+#map {
+  border-radius: 8px 0 0 8px;
+}
+.planner-box {
+  width: calc(100% - 60vw);
+  border-radius: 0 8px 8px 0;
+  background-color: rgb(249, 219, 239);
+
+  .plan-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    border-bottom: 1px solid dimgray;
+
+    img {
+      width: 33px;
+      margin-right: 12px;
+    }
+    span {
+      transform: translateY(1px);
+      font-size: 125%;
+    }
+  }
+}
+</style>

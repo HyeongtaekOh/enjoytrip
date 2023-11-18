@@ -28,33 +28,64 @@ getPlanList();
 </script>
 
 <template>
-  <div class="button-wrapper">
-    <a-button class="to-map-button" type="primary" @click="moveToRegist">
-      <template #icon>
-        <EditOutlined />
-      </template>
-      계획 짜기
-    </a-button>
-  </div>
-  <div class="grid-container">
-    <PlanListItem v-for="plan in plans" :key="plan.planId" :plan="plan" />
+  <div class="plan-list-container">
+    <div class="button-wrapper">
+      <a-button class="to-map-button" type="primary" @click="moveToRegist">
+        <template #icon>
+          <EditOutlined class="regist-icon" />
+        </template>
+        계획 짜기
+      </a-button>
+    </div>
+    <div class="grid-container">
+      <PlanListItem v-for="plan in plans" :key="plan.planId" :plan="plan" />
+    </div>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@font-face {
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
+    format("woff");
+  font-weight: 600;
+  font-style: 600;
+}
+* {
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  font-weight: 600;
+}
+.plan-list-container {
+  margin-top: 20px;
+  height: 80vh;
+}
+
 .grid-container {
+  height: calc(100% - 55px);
   display: grid;
+  background-color: white;
+  border-radius: 10px;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   grid-auto-flow: row; /* 오른쪽에서 시작하여 자리가 없으면 아래로 이어지도록 */
   gap: 20px; /* 각 아이템 사이의 간격 */
-  padding: 10px 7px 50px 7px;
+  padding: 10px 7px 10px 7px;
 }
 
 .button-wrapper {
-  padding-top: 5px;
   width: 100%;
+  height: 45px;
+  margin-bottom: 10px;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
+
+  button {
+    height: 45px;
+    font-size: 125%;
+
+    .regist-icon {
+      transform: translateY(-4px);
+    }
+  }
 }
 
 .grid-item {
