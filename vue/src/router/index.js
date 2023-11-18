@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-import AttractionView from "../views/AttractionView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,9 +61,17 @@ const router = createRouter({
       ],
     },
     {
-      path: "/",
+      path: "/attraction",
       name: "attraction",
-      component: AttractionView,
+      component: () => import("@/views/AttractionView.vue"),
+      redirect: { name: "attraction-map" },
+      children: [
+        {
+          path: "map",
+          name: "attraction-map",
+          component: () => import("@/components/attraction/AttractionMap.vue"),
+        }
+      ]
     },
   ],
 });
