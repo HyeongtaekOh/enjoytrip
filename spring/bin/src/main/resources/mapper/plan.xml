@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ssafy.enjoytrip.plan.model.mapper.PlanMapper">
+
+	<resultMap type="Plan" id="planMap">
+		<result column="plan_id" property="planId" />
+		<result column="user_id" property="userId" />
+		<result column="name" property="name" />
+		<result column="description" property="description" />
+		<result column="theme" property="theme" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="departures_id" property="departuresId" />
+		<result column="departures_name" property="departuresName" />
+		<result column="arrivals_id" property="arrivalsId" />
+		<result column="arrivals_name" property="arrivalsName" />
+		<result column="hit" property="hit" />
+		<association property="username" javaType="String"
+			select="findUsernameByUserId" column="user_id" fetchType="lazy" />
+		<collection property="attractions" ofType="AttractionInfoSimple"
+			select="findAttractionListByPlanId" column="plan_id" fetchType="lazy" />
+	</resultMap>
+	
+	
+	<resultMap type="AttractionInfoSimple" id="infoMap">
+		<id column="content_id" property="contentId" />
+		<result column="content_type_id" property="contentTypeId" />
+		<result column="title" property="title" />
+		<result column="addr1" property="addr1" />
+		<result column="addr2" property="addr2" />
+		<result column="zipcode" property="zipcode" />
+		<result column="tel" property="tel" />
+		<result column="first_image" property="firstImage" />
+		<result column="first_image2" property="firstImage2" />
+		<result column="readcount" property="readcount" />
+		<result column="sido_code" property="sidoCode" />
+		<result column="gugun_code" property="gugunCode" />
+		<result column="latitude" property="latitude" />
+		<result column="longitude" property="longitude" />
+		<result column="mlevel" property="mlevel" />
+	</resultMap>
+	
+	<select id="findUsernameByUserId"  resultType="String">
+		select 
+			username
+		from
+			member
+		where
+			user_id = #{user_id}
+	</select>
+	
+	<select id="findAttractionListByPlanId" resultMap="infoMap">
+		select ai.*, ap.plan_order
+		from 
+			attraction_info as ai
+				inner join
+			(select
+				content_id, plan_order
+			 from
+			 	attraction_plan
+			 where
+			 	plan_id = #{plan_id}
+			 ) ap
+			 on
+			 	ai.content_id = ap.content_id
+		order by plan_order asc;
+	</select>
+	
+	<select id="findById" parameterType="int" resultMap="planMap">
+		select * from plan
+		where plan_id = #{planId}
+	</select>
+	
+	<select id="findByAttractionId" parameterType="Integer" resultMap="planMap">
+		select * 
+		from 
+			plan
+		where 
+			plan_id in (select 
+							distinct plan_id
+						from
+							attraction_plan
+						where 
+							content_id = #{attractionId})
+	</select>
+	
+	<select id="findByCondition" resultMap="planMap">
+		select 
+			*
+		from
+			plan
+		<where>
+			<if test="condition.userId != null and condition.userId != 0">
+				and user_id = #{condition.userId}
+			</if>
+			<if test="condition.theme != null and condition.theme != ''">
+				and theme = #{condition.theme}
+			</if>
+			<if test="condition.keyword != null and condition.keyword != ''">
+				and (name like concat('%', #{condition.keyword}, '%')
+				or description like concat('%', #{condition.keyword}, '%')
+				or departures_name like concat('%', #{condition.keyword}, '%')
+				or arrivals_name like concat('%', #{condition.keyword}, '%'))
+			</if>
+			<if test="condition.attractionIds != null and !condition.attractionIds.isEmpty()">
+				and plan_id in (select
+									plan_id
+								from
+									attraction_plan
+								where
+									content_id in
+									<foreach collection="condition.attractionIds" item="aid" open="(" separator=", " close=")">
+										#{aid}
+									</foreach>
+								group by
+									plan_id
+								having
+									count(distinct content_id) = ${condition.attractionIds.size()}
+								)
+			</if>
+		</where>
+		limit #{pageSize} offset #{offset}
+	</select>
+	
+	<insert id="insertPlan" parameterType="PlanDto" useGeneratedKeys="true" keyProperty="planId">
+		insert into plan (user_id, name, description, theme, departures_id, departures_name, arrivals_id, arrivals_name)
+		values (#{userId}, #{name}, #{description}, #{theme}, #{departuresId}, #{departuresName}, #{arrivalsId}, #{arrivalsName})
+	</insert>
+	
+	<insert id="insertAttractionPlan">
+		insert into attraction_plan (content_id, plan_id, plan_order)
+		values
+		<foreach collection="attractionIds" item="attractionId" index="index" separator=", ">
+			(#{attractionId}, #{planId}, #{index, javaType=int, jdbcType=INTEGER} + 1)
+		</foreach>
+	</insert>
+	
+	<update id="updatePlan" parameterType="PlanDto">
+		update
+			plan
+		set
+			modified_time = now()
+			<if test="name != null and name != ''">
+				, name = #{name}
+			</if>
+			<if test="description != null">
+				, description = #{description}
+			</if>
+			<if test="theme != null and theme != ''">
+				, theme = #{theme}
+			</if>
+			<if test="departuresId != null and departuresId != 0">
+				, departures_id = #{departuresId}
+			</if>
+			<if test="departuresName != null and departuresName != ''">
+				, departures_name = #{departuresName}
+			</if>
+			<if test="arrivalsId != null and arrivalsId != 0">
+				, arrivals_id = #{arrivalsId}
+			</if>
+			<if test="arrivalsName != null and arrivalsName != ''">
+				, arrivals_name = #{arrivalsName}
+			</if>
+		where
+			plan_id = #{planId}
+	</update>
+	
+	<delete id="deletePlan" parameterType="int">
+		delete from plan
+		where plan_id = #{planId}
+	</delete>
+	
+	<delete id="deleteAttractionPlan" parameterType="int">
+		delete from attraction_plan
+		where plan_id = #{planId}
+	</delete>
+</mapper>

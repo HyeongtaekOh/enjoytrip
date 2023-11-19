@@ -7,7 +7,8 @@ const getAttractionById = (contentId, success, fail) => {
 };
 
 const getAttractionsByCondition = (condition, success, fail) => {
-  api.get("attraction", { condition }).then(success).catch(fail);
+  console.log("condition:",condition);
+  api.get("attraction", { params:condition }).then(success).catch(fail);
 };
 
 const findSidoCode = (success, fail) => {
