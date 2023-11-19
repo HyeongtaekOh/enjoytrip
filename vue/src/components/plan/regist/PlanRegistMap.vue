@@ -67,7 +67,10 @@ onMounted(async () => {
 
 <template>
   <div class="container p-0">
-    <div class="flex flex-row p-0">
+    <div class="d-flex flex-column justify-content-start">
+      <div class="d-flex justify-content-start"></div>
+    </div>
+    <div class="flex flex-row justify-content-between p-0">
       <div id="map" style="width: 60vw; height: 80vh"></div>
       <div class="planner-box flex flex-column">
         <div class="plan-header">
@@ -85,7 +88,6 @@ onMounted(async () => {
 }
 .flex-row {
   flex-direction: row;
-  justify-content: space-between;
 }
 
 .flex-column {

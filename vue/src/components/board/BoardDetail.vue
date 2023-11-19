@@ -106,7 +106,7 @@ function onDeleteArticle() {
           </div>
           <div class="col-md-4 align-self-center text-end" style="font-size: 175%">댓글 : 17</div>
           <div class="divider mb-3"></div>
-          <div class="text-secondary" style="font-size: 200%">
+          <div class="text-secondary" style="font-size: 200%; white-space: pre-line">
             {{ article.content }}
           </div>
           <div class="divider mt-3 mb-3"></div>
