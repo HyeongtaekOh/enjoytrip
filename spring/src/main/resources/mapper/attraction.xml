@@ -78,8 +78,7 @@
 			<if test="condition.keyword != null and condition.keyword != ''">
 				and (title like concat('%', #{condition.keyword}, '%') or
 				addr1 like concat('%', #{condition.keyword}, '%') or
-				addr2 like concat('%', #{condition.keyword}, '%') or
-				overview like concat('%', #{condition.keyword}, '%'))
+				addr2 like concat('%', #{condition.keyword}, '%'))
 			</if>
 		</where>
 		limit #{pageSize} offset #{offset}
