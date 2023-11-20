@@ -14,7 +14,6 @@ const recomments = ref([]);
 const content = ref("");
 const showReplyInput = ref(false);
 const showModify = ref(false);
-const reshowModify = ref(false);
 const isUser = ref(false);
 const newRecommentId = ref(0);
 const newRecommentRef = ref(null);
@@ -57,10 +56,6 @@ function hideReply() {
 
 function clickModify() {
   showModify.value = !showModify.value;
-}
-
-function reclickModify() {
-  reshowModify.value = !reshowModify.value;
 }
 
 function onModifyComment() {
