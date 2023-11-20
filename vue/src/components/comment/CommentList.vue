@@ -35,6 +35,13 @@ getCommentList();
 
 provide("getCommentList", getCommentList);
 
+function onEnter(event) {
+  if (!event.shiftKey) {
+    event.preventDefault();
+    writeComment();
+  }
+}
+
 function writeComment() {
   console.log("writeComment :", content.value);
   if (!content.value) {
@@ -111,7 +118,7 @@ watch(
               rows="2"
               placeholder="What are you thinking?"
               v-model="content"
-              @keyup.enter="writeComment"
+              @keydown.enter="onEnter"
             ></textarea>
             <div class="mar-top clearfix">
               <button class="btn btn-sm btn-primary pull-right" @click="writeComment">
