@@ -261,6 +261,7 @@ function handlerTypeChange(event) {
               v-for="attraction in attractions"
               :key="attraction.contentId"
               :attraction="attraction"
+              :map="map"
             ></AttractionItem>
           </div>
         </div>

@@ -98,7 +98,7 @@
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
   width: 50rem;
-  height: 44rem;
+  /* height: 20rem; */
 }
 
 #trip-list {
