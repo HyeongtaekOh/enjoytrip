@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { Carousel, Slide, Pagination, Navigation } from "vue3-carousel";
 
 const { plan } = defineProps({ plan: Object });
 const router = useRouter();
