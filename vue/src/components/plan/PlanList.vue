@@ -65,7 +65,7 @@ getPlanList();
   display: grid;
   background-color: white;
   border-radius: 10px;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
   grid-auto-flow: row; /* 오른쪽에서 시작하여 자리가 없으면 아래로 이어지도록 */
   gap: 20px; /* 각 아이템 사이의 간격 */
   padding: 10px 7px 10px 7px;
@@ -92,7 +92,7 @@ getPlanList();
   /* 게시물 스타일링 */
   background-color: cadetblue;
   border-radius: 10px;
-  height: 30rem;
+  height: 14rem;
 }
 
 /* 화면이 작을 때 (예: 600px 미만) 한 열로 표시 */
