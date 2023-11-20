@@ -1,7 +1,11 @@
-<script setup></script>
+<script setup>
+import PlanRegistList from "./regist/PlanRegistList.vue";
+</script>
 
 <template>
-  <div></div>
+  <div>
+    <PlanRegistList></PlanRegistList>
+  </div>
 </template>
 
 <style scoped></style>

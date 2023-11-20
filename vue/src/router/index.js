@@ -58,6 +58,11 @@ const router = createRouter({
           name: "plan-regist",
           component: () => import("@/components/plan/PlanRegist.vue"),
         },
+        {
+          path: "modify",
+          name: "plan-modify",
+          component: () => import("@/components/plan/PlanModify.vue"),
+        },
       ],
     },
     {
@@ -70,8 +75,8 @@ const router = createRouter({
           path: "map",
           name: "attraction-map",
           component: () => import("@/components/attraction/AttractionMap.vue"),
-        }
-      ]
+        },
+      ],
     },
   ],
 });
