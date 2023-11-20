@@ -1,18 +1,16 @@
 <script setup>
-import { ref, onMounted, watch, defineProps } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { findSidoCode, findGugunCode, getAttractionsByCondition } from "@/api/attraction.js";
 import { useRoute } from "vue-router";
 import AttractionItem from "@/components/attraction/item/AttractionItem.vue";
-import AttractionSideBar from "@/components/attraction/item/AttractionSideBar.vue";
-
-const props = defineProps(["productInfos"]);
-const newPlan = ref([]);
 
 const selectedSido = ref("0");
 const selectedGugun = ref("0");
 const selectedType = ref("0");
 const selectedKeyword = ref("");
 const attractions = ref([]);
+
+const newPlan = ref([]);
 
 let map = null;
 const infoWindow = ref(null);
@@ -237,14 +235,18 @@ function handlerTypeChange(event) {
   selectedType.value = event.target.value;
 }
 
-const updateNewPlan = (updatedPlan) => {
-  newPlan.value = updatedPlan;
-};
+function updateNewPlan(data) {
+  console.log("data:", data);
+  newPlan.value.push({
+    plan: data.plan,
+    index: newPlan.value.length,
+  });
+  console.log("newPlan:", newPlan.value);
+}
 </script>
 
 <template>
   <div class="contents">
-    <AttractionSideBar :newPlan="newPlan"></AttractionSideBar>
     <div class="list">
       <form action="#" id="search" class="search">
         <select
