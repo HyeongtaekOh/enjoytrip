@@ -1,11 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import AttractionItem from "@/components/attraction/item/AttractionItem.vue";
-import {
-  findSidoCode,
-  findGugunCode,
-  getAttractionsByCondition,
-} from "@/api/attraction.js";
+import { findSidoCode, findGugunCode, getAttractionsByCondition } from "@/api/attraction.js";
 
 const selectedSido = ref("0");
 const selectedGugun = ref("0");
@@ -22,10 +18,7 @@ watch(
   () => attractions.value,
   () => {
     // 이동할 위도 경도 위치를 생성합니다
-    var moveLatLon = new kakao.maps.LatLng(
-      attractions.value.lat,
-      attractions.value.lng
-    );
+    var moveLatLon = new kakao.maps.LatLng(attractions.value.lat, attractions.value.lng);
 
     // 지도 중심을 부드럽게 이동시킵니다
     // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
@@ -59,13 +52,9 @@ watch(
     attractions.value.forEach((attraction) => {
       console.log("attractionmap:", attraction);
       let obj = {};
-      obj.latlng = new kakao.maps.LatLng(
-        attraction.latitude,
-        attraction.longitude
-      );
+      obj.latlng = new kakao.maps.LatLng(attraction.latitude, attraction.longitude);
       obj.title = attraction.title;
       obj.addr1 = attraction.addr1;
-	  obj.addr2 = attraction.addr2;
       obj.firstImage = attraction.firstImage;
 
       positions.value.push(obj);
@@ -106,25 +95,25 @@ const loadMarkers = () => {
       position: position.latlng, // 마커를 표시할 위치
       title: position.title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됨.
       img: position.firstImage,
-      addr1: position.addr1,
-	  addr2: position.addr2,
+      addr: position.addr1,
 
       clickable: true, // // 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정합니다
       // image: markerImage, // 마커의 이미지
     });
-	marker.title = position.title;
-	marker.img = position.firstImage;
-	marker.addr1 = position.addr1;
-	marker.addr2 = position.addr2;
-	// 마커에 클릭이벤트를 등록합니다
-	kakao.maps.event.addListener(marker, "click", function () {
-    // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-    infowindow.setContent(
-	'<img src="marker.img"/>' +
-    '<div style="padding:5px;font-size:12px;">' + marker.title + "</div>"
-    );
-    infowindow.open(map, marker);
-  });
+    marker.title = position.title;
+    marker.img = position.firstImage;
+    marker.addr = position.addr1;
+    // 마커에 클릭이벤트를 등록합니다
+    kakao.maps.event.addListener(marker, "click", function () {
+      // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
+      infowindow.setContent(
+        '<img src="${marker.img}">' +
+          '<div style="padding:5px;font-size:12px;">' +
+          marker.title +
+          "</div>"
+      );
+      infowindow.open(map, marker);
+    });
     markers.value.push(marker);
   });
 

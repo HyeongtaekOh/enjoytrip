@@ -1,9 +1,9 @@
-<!-- eslint-disable no-unused-vars -->
 <script setup>
-import { ref, onMounted, inject, watch } from "vue";
+import { ref, onMounted, inject, watch, provide } from "vue";
 import { listComment, registComment, modifyComment, removeComment } from "@/api/comment";
 import { useAuthStore } from "@/stores/auth";
 import Swal from "sweetalert2";
+import ReCommentListItem from "./ReCommentListItem.vue";
 
 const auth = useAuthStore();
 
@@ -21,7 +21,6 @@ const newRecommentRef = ref(null);
 
 onMounted(() => {
   isUser.value = auth.getUser.userId === comment.userId;
-  getReCommentList();
 });
 
 // console.log("comment =", comment);
@@ -43,59 +42,9 @@ const getReCommentList = () => {
   );
 };
 
-function writeReComment() {
-  console.log("writeReComment");
+provide("getReCommentList", getReCommentList);
 
-  if (!content.value) {
-    Swal.fire({
-      title: "내용을 입력하세요",
-      icon: "warning",
-      showConfirmButton: false,
-      timer: 1200,
-      width: "246px",
-      toast: true,
-    });
-    return;
-  }
-
-  registComment(
-    {
-      userId: auth.getUser.userId,
-      userName: auth.getUser.username,
-      type: "comment",
-      content: content.value,
-      contentId: commentId,
-    },
-    ({ data }) => {
-      console.log(data);
-      Swal.fire({
-        position: "top-end",
-        title: "댓글 등록 완료!",
-        icon: "success",
-        showConfirmButton: false,
-        timer: 2000,
-        width: "280px",
-        toast: true,
-      });
-      showReplyInput.value = false; // 댓글 등록 후 창 숨기기
-      newRecommentId.value = data.commentId;
-      content.value = "";
-      getReCommentList();
-    },
-    (error) => {
-      console.log(error);
-      Swal.fire({
-        position: "top-end",
-        title: "댓글 등록 실패",
-        icon: "error",
-        showConfirmButton: false,
-        timer: 2000,
-        width: "280px",
-        toast: true,
-      });
-    }
-  );
-}
+getReCommentList();
 
 // 댓글 입력창을 나타내는 함수
 function showReply() {
@@ -182,55 +131,50 @@ function onRemoveComment() {
     }
   );
 }
+function writeReComment() {
+  console.log("writeReComment");
 
-const onModifyReComment = (recommentId) => {
-  modifyComment(
+  if (!content.value) {
+    Swal.fire({
+      title: "내용을 입력하세요",
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "246px",
+      toast: true,
+    });
+    return;
+  }
+
+  registComment(
     {
-      commentId: recommentId,
+      userId: auth.getUser.userId,
+      userName: auth.getUser.username,
+      type: "comment",
       content: content.value,
-      userId: "1",
+      contentId: commentId,
     },
     ({ data }) => {
       console.log(data);
       Swal.fire({
         position: "top-end",
-        title: "댓글 수정 완료!",
+        title: "댓글 등록 완료!",
         icon: "success",
         showConfirmButton: false,
         timer: 2000,
-        width: "250px",
+        width: "280px",
         toast: true,
       });
-      location.reload();
-    },
-    (error) => {
-      console.log(error);
-      alert("수정 실패");
-      // location.reload();
-    }
-  );
-};
-
-const onRemoveReComment = (recommentId) => {
-  removeComment(
-    recommentId,
-    ({ data }) => {
-      Swal.fire({
-        position: "top-end",
-        title: "댓글 삭제 완료!",
-        icon: "success",
-        showConfirmButton: false,
-        timer: 2000,
-        width: "250px",
-        toast: true,
-      });
-      location.reload();
+      showReplyInput.value = false; // 댓글 등록 후 창 숨기기
+      newRecommentId.value = data.commentId;
+      content.value = "";
+      getReCommentList();
     },
     (error) => {
       console.log(error);
       Swal.fire({
         position: "top-end",
-        title: "댓글 삭제 실패",
+        title: "댓글 등록 실패",
         icon: "error",
         showConfirmButton: false,
         timer: 2000,
@@ -239,7 +183,7 @@ const onRemoveReComment = (recommentId) => {
       });
     }
   );
-};
+}
 
 const scrollToNewComment = () => {
   if (newRecommentRef.value[0]) {
@@ -327,49 +271,22 @@ watch(
         </div>
       </div>
     </div>
-    <a-comment v-for="recomment in recomments" :key="recomment.commentId">
-      <template #actions>
-        <span @click="reclickModify" style="font-size: 130%" v-if="isUser">{{
-          reshowModify ? "숨기기" : "수정"
-        }}</span>
-        <span @click="onRemoveReComment(recomment.commentId)" style="font-size: 130%" v-if="isUser"
-          >삭제</span
-        >
-      </template>
-      <template #author>
-        <a
-          v-if="recomment.commentId == newRecommentId"
-          ref="newRecommentRef"
-          style="font-size: 130%"
-          >{{ recomment.userName }}</a
-        >
-        <a v-else style="font-size: 130%">{{ recomment.userName }}</a>
-      </template>
-      <template #avatar>
-        <img src="@/assets/img/noImage.jpg" alt="@/assets/img/noImage.jpg" />
-      </template>
-      <template #content>
-        <p v-show="!reshowModify" style="font-size: 130%">{{ recomment.content }}</p>
-        <div class="panel" v-show="reshowModify">
-          <div class="panel-body">
-            <textarea
-              class="form-control"
-              rows="2"
-              placeholder="What are you thinking?"
-              v-model="content"
-            ></textarea>
-            <div class="mar-top clearfix">
-              <button
-                class="btn btn-sm btn-primary pull-right"
-                @click="onModifyReComment(recomment.commentId)"
-              >
-                <i class="fa fa-pencil fa-fw"></i> 수정
-              </button>
-            </div>
-          </div>
-        </div>
-      </template>
-    </a-comment>
+    <template v-for="recomment in recomments">
+      <ReCommentListItem
+        v-if="recomment.commentId == newReCommentId"
+        :key="`recomment-${recomment.commentId}`"
+        ref="newReCommentRef"
+        :recomment="recomment"
+        :newReCommentId="newReCommentId"
+        :newReCommentRef="newReCommentRef"
+      /><ReCommentListItem
+        v-else
+        :key="`newReComment-${recomment.commentId}`"
+        :recomment="recomment"
+        :newReCommentId="newReCommentId"
+        :newReCommentRef="newReCommentRef"
+      />
+    </template>
   </a-comment>
 </template>
 <style scoped>
