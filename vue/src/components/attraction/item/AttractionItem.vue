@@ -1,23 +1,41 @@
 <script setup>
-import { defineProps } from "vue";
+import { ref, defineProps, defineEmits } from "vue";
+const { emit } = defineEmits();
 
-const { attraction, map } = defineProps(["attraction", "map"]);
+const { attraction, map, newPlan } = defineProps(["attraction", "map", "newPlan"]);
 const moveCenter = (lat, lng) => {
   const center = new kakao.maps.LatLng(lat, lng);
   map.setCenter(center);
 };
+
+function addPlan() {
+  const plan = {
+    title: attraction.title,
+    addr1: attraction.addr1,
+    addr2: attraction.addr2,
+    latitude: attraction.latitude,
+    longitude: attraction.longitude,
+    firstImage: attraction.firstImage,
+  };
+  newPlan.push(plan);
+  emit("updateNewPlan", newPlan);
+}
 </script>
 <template>
   <div class="row" @click="moveCenter(attraction.latitude, attraction.longitude)">
     <div class="imgContainer">
       <!-- <img src="@/assets/img/noImage.jpg" alt="@/assets/img/noImage.jpg" class="rowImage" /> -->
       <img
-        :src="attraction.firstImage ? attraction.firstImage : '@/assets/img/noImage.jpg'"
+        :src="
+          attraction.firstImage
+            ? attraction.firstImage
+            : 'http://localhost:5173/src/assets/img/noImage.jpg'
+        "
         class="rowImage"
       />
     </div>
     <div class="rowContents">
-      <div class="plus">+ 추가하기</div>
+      <div class="plus" @click="addPlan">+ 추가하기</div>
       <div>
         <h1>{{ attraction.title }}</h1>
         <div>{{ attraction.addr1 }} {{ attraction.addr2 }}</div>

@@ -1,7 +1,12 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import AttractionItem from "@/components/attraction/item/AttractionItem.vue";
+import { ref, onMounted, watch, defineProps } from "vue";
 import { findSidoCode, findGugunCode, getAttractionsByCondition } from "@/api/attraction.js";
+import { useRoute } from "vue-router";
+import AttractionItem from "@/components/attraction/item/AttractionItem.vue";
+import AttractionSideBar from "@/components/attraction/item/AttractionSideBar.vue";
+
+const props = defineProps(["productInfos"]);
+const newPlan = ref([]);
 
 const selectedSido = ref("0");
 const selectedGugun = ref("0");
@@ -10,18 +15,30 @@ const selectedKeyword = ref("");
 const attractions = ref([]);
 
 let map = null;
-let infowindow = null;
+const infoWindow = ref(null);
+const info = ref({
+  title: "",
+  addr1: "",
+  addr2: "",
+  tel: "",
+  firstImage: "",
+});
 const positions = ref([]);
+const pos = ref(null);
 const markers = ref([]);
+
+const route = useRoute();
+const keyword = ref(route.query.selectedKeyword);
+if (keyword.value) {
+  selectedKeyword.value = keyword.value;
+  searchAttraction();
+}
 
 watch(
   () => attractions.value,
   () => {
-    // 이동할 위도 경도 위치를 생성합니다
-    var moveLatLon = new kakao.maps.LatLng(attractions.value.lat, attractions.value.lng);
+    const moveLatLon = new kakao.maps.LatLng(attractions.value.lat, attractions.value.lng);
 
-    // 지도 중심을 부드럽게 이동시킵니다
-    // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
     map.panTo(moveLatLon);
   },
   { deep: true }
@@ -35,14 +52,11 @@ onMounted(() => {
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${
       import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY
     }&libraries=services,clusterer`;
-    /* global kakao */
     script.onload = () => kakao.maps.load(() => initMap());
     document.head.appendChild(script);
   }
   makeSido();
-  watch([selectedSido, selectedGugun, selectedType, selectedKeyword], () => {
-    searchAttraction();
-  });
+  watch([selectedSido, selectedGugun, selectedType, selectedKeyword], searchAttraction);
 });
 
 watch(
@@ -50,12 +64,12 @@ watch(
   () => {
     positions.value = [];
     attractions.value.forEach((attraction) => {
-      console.log("attractionmap:", attraction);
       let obj = {};
       obj.latlng = new kakao.maps.LatLng(attraction.latitude, attraction.longitude);
       obj.title = attraction.title;
       obj.addr1 = attraction.addr1;
       obj.firstImage = attraction.firstImage;
+      obj.tel = attraction.tel;
 
       positions.value.push(obj);
     });
@@ -71,60 +85,82 @@ const initMap = () => {
     level: 3,
   };
   map = new kakao.maps.Map(container, options);
-  infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
-
-  //   loadMarkers();
+  infoWindow.value = new kakao.maps.CustomOverlay({
+    position: null,
+    content: null,
+  });
 };
 
+const markerStates = ref({}); // Track marker click states
+
 const loadMarkers = () => {
-  // 현재 표시되어있는 marker들이 있다면 map에 등록된 marker를 제거한다.
   deleteMarkers();
 
-  // 마커 이미지를 생성합니다
-  //   const imgSrc = require("@/assets/map/markerStar.png");
-  // 마커 이미지의 이미지 크기 입니다
-  //   const imgSize = new kakao.maps.Size(24, 35);
-  //   const markerImage = new kakao.maps.MarkerImage(imgSrc, imgSize);
-
-  // 마커를 생성합니다
   markers.value = [];
   positions.value.forEach((position) => {
-    console.log("position:", position);
     const marker = new kakao.maps.Marker({
-      map: map, // 마커를 표시할 지도
-      position: position.latlng, // 마커를 표시할 위치
-      title: position.title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됨.
+      map: map,
+      position: position.latlng,
+      title: position.title,
       img: position.firstImage,
       addr: position.addr1,
-
-      clickable: true, // // 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정합니다
-      // image: markerImage, // 마커의 이미지
-    });
-    marker.title = position.title;
-    marker.img = position.firstImage;
-    marker.addr = position.addr1;
-    // 마커에 클릭이벤트를 등록합니다
-    kakao.maps.event.addListener(marker, "click", function () {
-      // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-      infowindow.setContent(
-        '<img src="${marker.img}">' +
-          '<div style="padding:5px;font-size:12px;">' +
-          marker.title +
-          "</div>"
-      );
-      infowindow.open(map, marker);
+      tel: position.tel,
+      clickable: true,
     });
     markers.value.push(marker);
+
+    marker.addListener("click", function () {
+      if (markerStates.value[position.title]) {
+        infoWindow.value.setMap(null);
+        markerStates.value[position.title] = false;
+      } else {
+        pos.value = position.latlng;
+        info.value = {
+          title: position.title,
+          addr1: position.addr1,
+          tel: position.tel,
+          firstImage: position.firstImage,
+        };
+        if (!info.value.firstImage.includes("tong")) {
+          info.value.firstImage = "http://http://localhost:5173/src/assets/img/noImage.jpg";
+        }
+        setInfoWindow();
+        infoWindow.value.setMap(map);
+        markerStates.value[position.title] = true;
+      }
+    });
   });
 
-  // 4. 지도를 이동시켜주기
-  // 배열.reduce( (누적값, 현재값, 인덱스, 요소)=>{ return 결과값}, 초기값);
   const bounds = positions.value.reduce(
     (bounds, position) => bounds.extend(position.latlng),
     new kakao.maps.LatLngBounds()
   );
 
   map.setBounds(bounds);
+};
+
+const setInfoWindow = () => {
+  infoWindow.value.setPosition(pos.value);
+  infoWindow.value.setContent(`
+    <div class="wrap">
+      <div class="info">
+        <div class="title">${info.value.title}</div>
+        <div class="body">
+          <div class="img">
+            <img
+              src="${info.value.firstImage}"
+            />
+          </div>
+          <div class="desc">
+            <div class="ellipsis">${info.value.addr1}</div>
+            <div class="jibun ellipsis">${info.value.tel}</div>
+            <div class="link">마커 클릭 시 상세 정보</div>
+            <div class="plus">+ 추가하기</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `);
 };
 
 const deleteMarkers = () => {
@@ -137,7 +173,6 @@ function makeSido() {
   findSidoCode(
     (res) => {
       const sidoList = res.data;
-      console.log("sidoList:", sidoList);
       const selectSido = document.getElementById("sido");
       sidoList.forEach((sido) => {
         const option = document.createElement("option");
@@ -156,7 +191,6 @@ function makeGugun() {
   findGugunCode(
     selectedSido.value,
     ({ data }) => {
-      console.log(data);
       const gugunList = data;
       const selectGugun = document.getElementById("gugun");
       gugunList.forEach((gugun) => {
@@ -173,26 +207,26 @@ function makeGugun() {
 }
 
 function searchAttraction() {
-  console.log("searchAttraction");
   const condition = {
     sidoCode: selectedSido.value,
     gugunCode: selectedGugun.value,
-    contentTypeId: selectedType.value,
+    type: selectedType.value,
     keyword: selectedKeyword.value,
   };
 
-  console.log("condition:", condition);
-
   getAttractionsByCondition(condition, ({ data }) => {
-    console.log("data:", data);
-    attractions.value = data;
-    console.log("attractions:", attractions.value);
+    if (data) {
+      attractions.value = data;
+    }
   });
 }
 
 function handlerSidoChange(event) {
   selectedSido.value = event.target.value;
-  if (selectedSido.value != 0) makeGugun(selectedSido.value);
+  if (selectedSido.value != 0) {
+    selectedGugun.value = 0;
+    makeGugun(selectedSido.value);
+  }
 }
 
 function handlerGugunChange(event) {
@@ -201,12 +235,16 @@ function handlerGugunChange(event) {
 
 function handlerTypeChange(event) {
   selectedType.value = event.target.value;
-  console.log(selectedType.value);
 }
+
+const updateNewPlan = (updatedPlan) => {
+  newPlan.value = updatedPlan;
+};
 </script>
 
 <template>
   <div class="contents">
+    <AttractionSideBar :newPlan="newPlan"></AttractionSideBar>
     <div class="list">
       <form action="#" id="search" class="search">
         <select
@@ -262,6 +300,8 @@ function handlerTypeChange(event) {
               :key="attraction.contentId"
               :attraction="attraction"
               :map="map"
+              :newPlan="newPlan"
+              @updateNewPlan="updateNewPlan"
             ></AttractionItem>
           </div>
         </div>
@@ -274,23 +314,48 @@ function handlerTypeChange(event) {
 <style scoped>
 @import "@/assets/css/common.css";
 @import "@/assets/css/map.css";
-.custom-overlay-box {
+.contents {
+  position: relative;
+}
+</style>
+<style>
+@font-face {
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
+    format("woff");
+  font-weight: 600;
+  font-style: 600;
+}
+/* * {
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+} */
+.wrap {
   position: absolute;
   left: 0;
   bottom: 40px;
-  width: 288px;
-  height: 132px;
+  width: 300px;
+  height: 150px;
   margin-left: -144px;
   text-align: left;
   overflow: hidden;
-  font-size: 12px;
-  font-family: "Malgun Gothic", dotum, "돋움", sans-serif;
+  font-size: 20px;
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  /* font-family: "Malgun Gothic", dotum, "돋움", sans-serif; */
   line-height: 1.5;
 }
 
-.custom-overlay-content {
-  width: 100%;
-  height: 100%;
+.wrap * {
+  padding: 0;
+  margin: 0;
+}
+
+.wrap .body {
+  z-index: 2;
+}
+
+.wrap .info {
+  width: 300px;
+  height: 200px;
   border-radius: 5px;
   border-bottom: 2px solid #ccc;
   border-right: 1px solid #ccc;
@@ -298,50 +363,22 @@ function handlerTypeChange(event) {
   background: #fff;
 }
 
-.custom-overlay-content .title {
+.wrap .info:nth-child(1) {
+  border: 0;
+  box-shadow: 0px 1px 2px #888;
+}
+
+.info .title {
   padding: 5px 0 0 10px;
-  height: 30px;
+  height: 40px;
   background: #eee;
+  color: #333;
   border-bottom: 1px solid #ddd;
-  font-size: 18px;
+  font-size: 27px;
   font-weight: bold;
 }
 
-.custom-overlay-content .body {
-  position: relative;
-  overflow: hidden;
-}
-
-.custom-overlay-content .desc {
-  position: relative;
-  margin: 13px 0 0 90px;
-  height: 75px;
-}
-
-.custom-overlay-content .ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.custom-overlay-content .jibun {
-  font-size: 11px;
-  color: #888;
-  margin-top: -2px;
-}
-
-.custom-overlay-content .img {
-  position: absolute;
-  top: 6px;
-  left: 5px;
-  width: 73px;
-  height: 71px;
-  border: 1px solid #ddd;
-  color: #888;
-  overflow: hidden;
-}
-
-.custom-overlay-box .close {
+.info .close {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -349,6 +386,54 @@ function handlerTypeChange(event) {
   width: 17px;
   height: 17px;
   background: url("https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/overlay_close.png");
+}
+
+.info .close:hover {
   cursor: pointer;
+}
+
+.info .body {
+  position: relative;
+  overflow: hidden;
+  height: 150px;
+}
+
+.info .desc {
+  position: absolute;
+  top: 10px;
+  left: 110px;
+  width: 200px;
+  height: 130px;
+}
+.desc .ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desc .jibun {
+  font-size: 11px;
+  color: #888;
+  margin-top: -2px;
+}
+
+.info .img {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 90px;
+  height: 90px;
+  border: 1px solid #ddd;
+  color: #888;
+  overflow: hidden;
+}
+
+.info .img img {
+  width: 100%;
+  height: 100%;
+}
+
+.info .link {
+  color: #5085bb;
 }
 </style>

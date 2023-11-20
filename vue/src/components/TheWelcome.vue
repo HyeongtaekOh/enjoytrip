@@ -1,6 +1,18 @@
 <script setup>
 document.body.style.overflow = "hidden";
 import TheHeadingNavbar from "../components/layout/TheHeadingNavbar.vue";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+
+const keyword = ref("");
+const onEnter = () => {
+  console.log(keyword.value);
+  router.push({
+    name: "attraction-map",
+    query: { selectedKeyword: keyword.value },
+  });
+};
 </script>
 
 <template>
@@ -23,6 +35,8 @@ import TheHeadingNavbar from "../components/layout/TheHeadingNavbar.vue";
         id="search"
         class="searchbar"
         placeholder="관광지를 검색하세요..."
+        v-model="keyword"
+        @keydown.enter.prevent="onEnter"
       />
     </div>
   </div>
