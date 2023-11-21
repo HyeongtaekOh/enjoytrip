@@ -57,7 +57,14 @@ public class AttractionController {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);	
 		}
 	}
-	
+
+	@GetMapping("/all")
+	public ResponseEntity<?> getAttractionsByIds(@RequestParam List<Integer> attractionIds) {
+		log.debug("attractionIds : {}", attractionIds);
+		List<AttractionInfo> list = attractionService.findByIds(attractionIds);
+		return new ResponseEntity<List<AttractionInfo>>(list, HttpStatus.OK);
+	}
+
 	@ApiOperation(value = "관광지 조건 검색", notes = "검색 조건(시/도, 구/군, 관광지 유형) 기반으로 검색")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "OK", response = AttractionInfo.class, responseContainer = "List"),

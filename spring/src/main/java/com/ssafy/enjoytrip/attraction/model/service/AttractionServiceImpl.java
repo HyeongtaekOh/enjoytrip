@@ -36,6 +36,16 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 
 	@Override
+	public List<AttractionInfo> findByIds(List<Integer> ids) {
+		try {
+			return attractionMapper.findByIds(ids);
+		} catch (SQLException e) {
+			log.error("ID 리스트로 검색 중 오류 발생");
+			throw new AttractionException("ID 리스트로 검색 중 오류 발생 : " + e.getMessage());
+		}
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public List<AttractionInfo> findByCondition(AttractionSearchCondition condition, int page) {
 		try {

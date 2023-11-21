@@ -48,15 +48,24 @@
 
 	<sql id="findInfo">
 		select
-		*
+			*
 		from
-		attraction_info
+			attraction_info
 	</sql>
 
 	<select id="findById" parameterType="Int" resultMap="infoMap">
 		<include refid="findInfo" />
 		where
 		content_id = #{id}
+	</select>
+
+	<select id="findByIds" resultMap="infoMap">
+		<include refid="findInfo" />
+		where
+		content_id in
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
 	</select>
 
 	<select id="findByCondition" resultMap="infoMap">

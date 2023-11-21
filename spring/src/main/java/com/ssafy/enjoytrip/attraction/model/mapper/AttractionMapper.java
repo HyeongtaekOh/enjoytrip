@@ -14,5 +14,6 @@ import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfo;
 public interface AttractionMapper {
 
 	Optional<AttractionInfo> findById(int id) throws SQLException;
+	List<AttractionInfo> findByIds(@Param("ids") List<Integer> ids) throws SQLException;
 	List<AttractionInfo> findByCondition(@Param("condition") AttractionSearchCondition condition, @Param("pageSize") int pageSize, @Param("offset") int offset) throws SQLException;
 }

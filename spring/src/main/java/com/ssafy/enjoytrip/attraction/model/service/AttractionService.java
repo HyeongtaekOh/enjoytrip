@@ -9,5 +9,6 @@ import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfo;
 public interface AttractionService {
 
 	Optional<AttractionInfo> findById(int id);
+	List<AttractionInfo> findByIds(List<Integer> ids);
 	List<AttractionInfo> findByCondition(AttractionSearchCondition condition, int page);
 }
