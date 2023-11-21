@@ -219,7 +219,9 @@ function updateUserContext() {
     </div>
     <div class="loginLogoutContainer">
       <div class="logoutContainer" v-if="auth.getUser">
-        <div class="navbar_item profileBtn">사용자 정보</div>
+        <div class="navbar_item profileBtn">
+          <router-link :to="{ name: 'user-mypage' }">사용자 정보</router-link>
+        </div>
         <div class="navbar_item logoutBtn" @click="logout">로그아웃</div>
       </div>
       <div class="loginContainer" v-else>

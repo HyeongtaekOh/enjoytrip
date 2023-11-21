@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
+// import AppMyPage from "../views/AppMyPage.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -75,6 +76,18 @@ const router = createRouter({
           path: "map",
           name: "attraction-map",
           component: () => import("@/components/attraction/AttractionMap.vue"),
+        },
+      ],
+    },
+    {
+      path: "/user",
+      name: "user",
+      component: () => import("@/views/TheUserView.vue"),
+      children: [
+        {
+          path: "mypage",
+          name: "user-mypage",
+          component: () => import("@/components/user/UserMyPage.vue"),
         },
       ],
     },
