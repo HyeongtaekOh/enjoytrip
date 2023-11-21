@@ -5,7 +5,7 @@ import { useAuthStore } from "@/stores/auth";
 import Swal from "sweetalert2";
 import CommentListItem from "@/components/comment/item/CommentListItem.vue";
 
-const { contentId } = defineProps({ contentId: String });
+const { contentId, type } = defineProps({ contentId: String, type: String });
 const auth = useAuthStore();
 
 const comments = ref([]);
@@ -18,7 +18,7 @@ onMounted(() => {});
 const getCommentList = () => {
   const condition = {
     contentId: contentId,
-    type: "board",
+    type: type,
   };
   listComment(
     condition,
@@ -59,7 +59,7 @@ function writeComment() {
     {
       userId: auth.getUser.userId,
       userName: auth.getUser.username,
-      type: "board",
+      type: type,
       content: content.value,
       contentId: contentId,
     },

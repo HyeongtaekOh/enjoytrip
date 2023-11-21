@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import defaultImage from "@/assets/img/noImage.jpg";
 
@@ -7,24 +7,15 @@ const { plan } = defineProps({ plan: Object });
 const router = useRouter();
 const imgCarousel = ref(null);
 const titleCarousel = ref(null);
-const currentAttractionIndex = ref(0);
 
 const nextSlide = () => {
   imgCarousel.value.next();
   titleCarousel.value.next();
-  // currentAttractionIndex.value++;
-  // if (currentAttractionIndex.value == plan.attractions.length) {
-  //   currentAttractionIndex.value = 0;
-  // }
 };
 
 const prevSlide = () => {
   imgCarousel.value.prev();
   titleCarousel.value.prev();
-  // currentAttractionIndex.value--;
-  // if (currentAttractionIndex.value == -1) {
-  //   currentAttractionIndex.value = plan.attractions.length - 1;
-  // }
 };
 
 const onImageError = (e) => {
@@ -36,6 +27,9 @@ const moveToDetail = () => {
     name: "plan-view",
     params: {
       planId: plan.planId,
+    },
+    state: {
+      attractions: plan.attractions,
     },
   });
 };
@@ -61,7 +55,7 @@ const moveToDetail = () => {
       </div>
       <div class="sub-wrapper">
         <div class="title-carousel-wrapper">
-          <a-carousel arrows :dots="false" ref="titleCarousel">
+          <a-carousel class="title-carousel" arrows :dots="false" ref="titleCarousel">
             <p v-for="(attraction, index) in plan.attractions" :key="attraction.contentId">
               {{ attraction.title }}
             </p>
@@ -158,9 +152,9 @@ const moveToDetail = () => {
     .sub-wrapper {
       position: absolute;
       left: 300px;
-      top: 80px;
+      top: 60px;
       width: calc(100% - 300px);
-      height: 70px;
+      height: 160px;
       font-size: 200%;
 
       display: flex;
@@ -171,10 +165,10 @@ const moveToDetail = () => {
       .title-carousel-wrapper {
         text-align: center;
         width: 200px;
-        height: 50px;
 
         p {
           font-size: 120%;
+          height: 80px;
         }
       }
 
@@ -199,7 +193,7 @@ const moveToDetail = () => {
     }
 
     .span-description {
-      transform: translate(10rem, -4rem);
+      transform: translate(10rem, -5.5rem);
       color: black;
       font-size: 200%;
       transition-delay: 0;

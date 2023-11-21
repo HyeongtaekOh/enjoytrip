@@ -3,6 +3,14 @@ import { ref, onMounted } from "vue";
 
 const { VITE_KAKAO_JAVASCRIPT_APP_KEY } = import.meta.env;
 
+const script = document.createElement("script");
+/* global kakao */
+script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${VITE_KAKAO_JAVASCRIPT_APP_KEY}&libraries=services`;
+document.head.appendChild(script);
+script.onload = () => {
+  kakao.maps.load(initMap);
+};
+
 let map = null;
 let infowindow = null;
 let ps = null;
@@ -49,20 +57,20 @@ function displayMarker(place) {
   });
 }
 
-onMounted(async () => {
-  if (window.kakao && window.kakao.maps) {
-    initMap();
-    console.log("if b", infowindow);
-  } else {
-    const script = document.createElement("script");
-    /* global kakao */
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${VITE_KAKAO_JAVASCRIPT_APP_KEY}&libraries=services`;
-    document.head.appendChild(script);
-    script.onload = () => {
-      kakao.maps.load(initMap);
-    };
-  }
-});
+// onMounted(async () => {
+//   if (window.kakao && window.kakao.maps) {
+//     initMap();
+//     console.log("if b", infowindow);
+//   } else {
+//     const script = document.createElement("script");
+//     /* global kakao */
+//     script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${VITE_KAKAO_JAVASCRIPT_APP_KEY}&libraries=services`;
+//     document.head.appendChild(script);
+//     script.onload = () => {
+//       kakao.maps.load(initMap);
+//     };
+//   }
+// });
 </script>
 
 <template>

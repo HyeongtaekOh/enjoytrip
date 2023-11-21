@@ -58,6 +58,20 @@ function clickModify() {
   showModify.value = !showModify.value;
 }
 
+function onEnterWrite(event) {
+  if (!event.shiftKey) {
+    event.preventDefault();
+    writeReComment();
+  }
+}
+
+function onEnterModify(event) {
+  if (!event.shiftKey) {
+    event.preventDefault();
+    onModifyReComment();
+  }
+}
+
 function onModifyComment() {
   console.log("modifyComment");
   modifyComment(
@@ -237,8 +251,9 @@ watch(
           <textarea
             class="form-control"
             rows="2"
-            placeholder="What are you thinking?"
+            placeholder="What are you thinking??"
             v-model="content"
+            @keydown.enter="onEnterModify"
           ></textarea>
           <div class="mar-top clearfix">
             <button class="btn btn-sm btn-primary pull-right" @click="onModifyComment">
@@ -257,6 +272,7 @@ watch(
             rows="2"
             placeholder="What are you thinking?"
             v-model="content"
+            @keydown.enter="onEnterWrite"
           ></textarea>
           <div class="mar-top clearfix">
             <button class="btn btn-sm btn-primary pull-right" @click="writeReComment">

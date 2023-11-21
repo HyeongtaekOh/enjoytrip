@@ -46,6 +46,7 @@ function onDeleteArticle() {
   console.log(articleId + "번글 삭제하러 가자!!!");
   Swal.fire({
     title: "게시글을 삭제하시겠어요?",
+    width: "420px",
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: "삭제",
@@ -146,7 +147,7 @@ function onDeleteArticle() {
   <br />
   <br />
   <div>
-    <CommentList :contentId="articleId"></CommentList>
+    <CommentList :contentId="articleId" type="board"></CommentList>
   </div>
 </template>
 
