@@ -106,7 +106,7 @@ async function modifyUsername() {
         <div class="card mt-3 m-auto border-0" style="max-width: 900px">
           <div class="row g-0">
             <div class="col-md-4">
-              <img src="https://source.unsplash.com/random/250x250/?food" class="img-fluid rounded-start" alt="..." />
+              <img src="https://source.unsplash.com/random/250x250/?food" class="img" alt="..." />
             </div>
             <div class="col-md-8">
               <div class="card-body text-start">
@@ -146,10 +146,8 @@ async function modifyUsername() {
 }
 
 .container {
-  display: flex;
   justify-content: center;
-  align-items: center;
-  align-content: center;
+  align-items: flex-start; /* or align-items: baseline; */
   flex-wrap: wrap;
   width: 80vw;
   margin: 0 auto;
@@ -180,6 +178,13 @@ async function modifyUsername() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.img{
+  width: 250px;
+  height: 250px;
+  border-radius: 70%;
+  margin: 10px;
 }
 
 </style>

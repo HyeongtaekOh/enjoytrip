@@ -4,6 +4,7 @@ import { findSidoCode, findGugunCode, getAttractionsByCondition } from "@/api/at
 import { useRoute, useRouter } from "vue-router";
 import AttractionItem from "@/components/attraction/item/AttractionItem.vue";
 import draggable from "vuedraggable";
+import internetimg from "@/assets/img/internet.png";
 
 const router = useRouter();
 
@@ -149,14 +150,12 @@ const setInfoWindow = () => {
         <div class="title">${info.value.title}</div>
         <div class="body">
           <div class="img">
-            <img
-              src="${info.value.firstImage}"
-            />
+            <img src="${info.value.firstImage}" />
           </div>
           <div class="desc">
             <div class="ellipsis">${info.value.addr1}</div>
             <div class="jibun ellipsis">${info.value.tel}</div>
-            <div class="link">마커 클릭 시 상세 정보</div>
+            <img :src="internetimg" class="click-img" onclick="openNaverSearch('${info.value.title}')" />
             <div class="plus">+ 추가하기</div>
           </div>
         </div>
@@ -165,6 +164,10 @@ const setInfoWindow = () => {
   `);
 };
 
+window.openNaverSearch = (keyword) => {
+  const naverSearchURL = `https://search.naver.com/search.naver?query=${encodeURIComponent(keyword)}`;
+  window.open(naverSearchURL, '_blank');
+};
 const deleteMarkers = () => {
   if (markers.value.length > 0) {
     markers.value.forEach((marker) => marker.setMap(null));
@@ -655,5 +658,10 @@ const handleDeletePlan = (element) => {
   justify-content: center;
   width: 50px;
   height: 50px;
+}
+.click-img{
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
 }
 </style>
