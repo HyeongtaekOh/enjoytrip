@@ -1,32 +1,12 @@
 <script setup>
-import { ref, reactive, defineProps } from 'vue';
+import { defineProps } from "vue";
 
-const { attraction, map, newPlan} = defineProps(['attraction', 'map', 'newPlan']);
-const emit = defineEmits(['updateNewPlan'])
-let isSidebarOpen = false;
+const { attraction, map } = defineProps(["attraction", "map"]);
+const emit = defineEmits(["updateNewPlan"]);
 
-const state = reactive({
-  list: newPlan,
-  drag: false,
-});
-
-const handleButtonClick = () => {
-  console.log("newPlan:",newPlan);
-  if (isSidebarOpen) {
-    closeNav();
-  } else {
-    openNav();
-  }
-  isSidebarOpen = !isSidebarOpen;
-};
-
-const openNav = () => {
-  document.getElementById("mySidenav").style.width = "250px";
-};
-
-const closeNav = () => {
-  document.getElementById("mySidenav").style.width = "0";
-};
+function moveCenter(lat, lng) {
+  map.setCenter(new kakao.maps.LatLng(lat, lng));
+}
 
 const updateNewPlan = () => {
   const plan = {
@@ -38,45 +18,22 @@ const updateNewPlan = () => {
     firstImage: attraction.firstImage,
     contentId: attraction.contentId,
   };
-  console.log("plan:",plan);
-  // `emit`을 사용할 때는 `context` 객체를 이용
-  emit('updateNewPlan', { plan });
+  console.log("plan:", plan);
+  emit("updateNewPlan", { plan });
 };
 </script>
 <template>
   <div class="main">
-    <div class="button-wrapper">
-      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
-      <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-2020.css" />
-
-      <div id="app" class="w3-container">
-        <button class="w3-button w3-xlarge w3-circle w3-2020-amberglow" @click="handleButtonClick">
-          +
-        </button>
-      </div>
-      <div id="mySidenav" class="sidenav">
-        <a href="javascript:void(0)" class="closebtn" @click="closeNav">&times;</a>
-        <div class="list">
-          <h3>New Plan</h3>
-          <!-- <draggable 
-          class="list-group" 
-          :component-data="componentData" 
-          v-model="state.list"
-          v-bind="dragOptions"
-          @start="state.drag = true"
-        @end="state.drag = false"
-        item-key="order"
-        ></draggable> -->
-        </div>
-      </div>
-    </div>
     <div class="row" @click="moveCenter(attraction.latitude, attraction.longitude)">
       <div class="imgContainer">
-        <img :src="
-          attraction.firstImage
-            ? attraction.firstImage
-            : 'http://localhost:5173/src/assets/img/noImage.jpg'
-        " class="rowImage" />
+        <img
+          :src="
+            attraction.firstImage
+              ? attraction.firstImage
+              : 'http://localhost:5173/src/assets/img/noImage.jpg'
+          "
+          class="rowImage"
+        />
       </div>
       <div class="rowContents">
         <div class="plus" @click="updateNewPlan">+ 추가하기</div>
@@ -84,8 +41,6 @@ const updateNewPlan = () => {
           <h1>{{ attraction.title }}</h1>
           <div>{{ attraction.addr1 }} {{ attraction.addr2 }}</div>
         </div>
-        <div>{{ attraction.latitude }}</div>
-        <div>{{ attraction.longitude }}</div>
       </div>
     </div>
   </div>
@@ -96,7 +51,8 @@ const updateNewPlan = () => {
 
 @font-face {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff") format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
+    format("woff");
   font-weight: 600;
   font-style: 600;
 }
@@ -105,14 +61,12 @@ const updateNewPlan = () => {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
   font-weight: 600;
 }
-
 .button-wrapper {
   position: absolute;
   left: 2px;
   bottom: 15px;
   z-index: 3;
 }
-
 .sidenav {
   height: 100%;
   width: 0;
