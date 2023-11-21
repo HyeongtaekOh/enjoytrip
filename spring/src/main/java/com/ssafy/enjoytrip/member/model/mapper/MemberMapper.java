@@ -17,4 +17,8 @@ public interface MemberMapper {
 	Optional<MemberDto> findByUsername(String username) throws SQLException;
 
 	void insertMember(MemberDto memberDto) throws SQLException;
+	
+	void updateMember(MemberDto memberDto) throws SQLException;
+	
+	void deleteMember(Integer userId) throws SQLException;
 }

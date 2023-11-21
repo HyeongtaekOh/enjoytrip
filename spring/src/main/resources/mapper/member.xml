@@ -41,4 +41,23 @@
         insert into member (username, password, email, type, registered_time)
         values (#{username}, #{password}, #{email}, #{type}, now())
     </insert>
+    
+    <update id="updateMember" parameterType="MemberDto">
+    	update 
+    		member
+    	set
+    		<if test="password != null and password != ''">
+				, password = #{password}
+			</if>
+			<if test="email != null and email != ''">
+				, email = #{email}
+			</if>
+		where
+			user_id = #{userId}
+    </update>
+    
+    <delete id="deleteMember" parameterType="int">
+		delete from member
+		where user_id = #{userId}
+	</delete>
 </mapper>

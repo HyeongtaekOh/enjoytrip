@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.enjoytrip.exception.DuplicatedMemberException;
+import com.ssafy.enjoytrip.exception.MemberException;
 import com.ssafy.enjoytrip.member.model.dto.LoginVo;
 import com.ssafy.enjoytrip.member.model.dto.MemberDto;
 import com.ssafy.enjoytrip.member.model.mapper.MemberMapper;
@@ -25,14 +26,14 @@ public class MemberServiceImpl implements MemberService {
 
 	private final PasswordEncoder encoder;
 	private final MemberMapper memberMapper;
-	
+
 	@Override
 	public boolean duplicateCheck(String username) {
 		try {
 			int count = memberMapper.duplicateUsernameCheck(username);
 			return count > 0;
 		} catch (SQLException e) {
-			throw new DuplicatedMemberException("이미 존재하는 아이디입니다.");
+			throw new MemberException("중복 체크 중 에러 발생.");
 		}
 	}
 
@@ -90,5 +91,49 @@ public class MemberServiceImpl implements MemberService {
 		} else {
 			throw new BadCredentialsException("인증 정보가 잘못되었습니다.");
 		}
+	}
+
+	@Override
+	public void updateMember(MemberDto memberDto) {
+		log.info("update member : {}", memberDto);
+		try {
+			if (validateUpdateDto(memberDto)) {
+				memberMapper.updateMember(memberDto);
+			} else {
+				throw new MemberException("기존 정보와 동일한 정보입니다.");
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void deleteMember(Integer userId) {
+		log.info("delete member : {}", userId);
+		try {
+			memberMapper.deleteMember(userId);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private boolean validateUpdateDto(MemberDto updateDto) {
+
+		Optional<MemberDto> m = getMemberById(updateDto.getUserId());
+
+		if (!m.isPresent()) {
+			throw new MemberException("존재하지 않는 사용자 고유번호입니다.");
+		}
+
+		MemberDto member = m.get();
+		if (updateDto.getPassword() != null && encoder.matches(updateDto.getPassword(), member.getPassword())) {
+			return false;
+		}
+
+		if (updateDto.getEmail() != null && updateDto.getEmail().equals(member.getEmail())) {
+			return false;
+		}
+
+		return true;
 	}
 }

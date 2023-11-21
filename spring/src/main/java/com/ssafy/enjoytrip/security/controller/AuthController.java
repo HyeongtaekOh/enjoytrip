@@ -86,6 +86,11 @@ public class AuthController {
     public ResponseEntity<?> signup(@RequestBody SignupVo signupVo) {
 
         log.info("controller signup : {}", signupVo);
+        
+        if (!memberService.duplicateCheck(signupVo.getUsername())) {
+        	return new ResponseEntity<String>("이미 존재하는 아이디입니다.", HttpStatus.BAD_REQUEST);
+        }
+        
         MemberDto memberDto = new MemberDto();
         memberDto.setUsername(signupVo.getUsername());
         memberDto.setPassword(signupVo.getPassword());

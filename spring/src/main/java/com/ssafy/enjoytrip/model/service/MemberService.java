@@ -14,6 +14,10 @@ public interface MemberService {
 	Optional<MemberDto> getMemberByUsername(String username);
 
 	void registMember(MemberDto memberDto);
+	
+	void updateMember(MemberDto memberDto);
+	
+	void deleteMember(Integer userId);
 
 	MemberDto loginMember(LoginVo loginVo);
 }

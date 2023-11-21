@@ -4,14 +4,16 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.enjoytrip.exception.DuplicatedMemberException;
 import com.ssafy.enjoytrip.exception.MemberException;
 import com.ssafy.enjoytrip.member.model.dto.MemberDto;
 import com.ssafy.enjoytrip.model.service.MemberService;
@@ -42,10 +44,15 @@ public class MemberController {
 		if (!memberService.duplicateCheck(username)) {
 			return new ResponseEntity<String>("OK", HttpStatus.OK);
 		} else {
-			return new ResponseEntity<String>("NO", HttpStatus.BAD_REQUEST);
+			throw new DuplicatedMemberException("이미 존재하는 아이디입니다.");
 		}
 	}
 
+	@ApiOperation(value = "회원 정보 조회", notes = "고유 번호(userId)로 회원 정보 조회")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request")
+	})
 	@GetMapping("/{userId}")
 	public ResponseEntity<MemberDto> getMemberByUserId(@PathVariable Integer userId) {
 		
@@ -61,19 +68,18 @@ public class MemberController {
 		return ResponseEntity.ok(member);
 	}
 
-//	@ApiOperation(value = "회원 정보 업데이트", notes = "회원 아이디 기반으로 비밀번호 업데이트")
-//	@ApiResponses(value = {
-//			@ApiResponse(code = 200, message = "OK"),
-//			@ApiResponse(code = 400, message = "Bad Request")
-//	})
-//	@PutMapping("/{userId}")
-//	public ResponseEntity<?> updateMember(@PathVariable String userId, @RequestBody MemberDto member) {
-//		log.debug("update : {}", member);
-//		if (!member.getPassword().equals(member.getPasswordCheck()))
-//			return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
-//		memberService.updateMember(member);
-//		return new ResponseEntity<String>("OK", HttpStatus.OK);
-//	}
+	@ApiOperation(value = "회원 정보 업데이트", notes = "회원 아이디 기반으로 비밀번호 업데이트")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request")
+	})
+	@PutMapping("/{userId}")
+	public ResponseEntity<?> updateMember(@PathVariable Integer userId, @RequestBody MemberDto member) {
+		log.debug("update : {}", member);
+		member.setUserId(userId);
+		memberService.updateMember(member);
+		return new ResponseEntity<String>("OK", HttpStatus.OK);
+	}
 //
 //	@ApiOperation(value = "비밀번호 변경", notes = "회원 아이디와 전화번호를 기반으로 비밀번호 변경")
 //	@ApiResponses(value = {
@@ -89,16 +95,16 @@ public class MemberController {
 //		return new ResponseEntity<String>("OK", HttpStatus.OK);
 //	}
 //	
-//	@ApiOperation(value = "회원 삭제", notes = "회원 아이디를 기반으로 회원 정보 삭제")
-//	@ApiResponses(value = {
-//			@ApiResponse(code = 200, message = "OK"),
-//			@ApiResponse(code = 400, message = "Bad Request")
-//	})
-//	@DeleteMapping("/{userId}")
-//	public ResponseEntity<String> deleteMember(@PathVariable String userId) {
-//		log.debug("delete : {}", userId);
-//		memberService.deleteMember(userId);
-//		return new ResponseEntity<String>("OK", HttpStatus.OK);
-//	}
+	@ApiOperation(value = "회원 삭제", notes = "회원 아이디를 기반으로 회원 정보 삭제")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request")
+	})
+	@DeleteMapping("/{userId}")
+	public ResponseEntity<String> deleteMember(@PathVariable Integer userId) {
+		log.debug("delete : {}", userId);
+		memberService.deleteMember(userId);
+		return new ResponseEntity<String>("OK", HttpStatus.OK);
+	}
 
 }
