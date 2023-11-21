@@ -5,23 +5,26 @@ import defaultImage from "@/assets/img/noImage.jpg";
 
 const { plan } = defineProps({ plan: Object });
 const router = useRouter();
-const carousel = ref(null);
+const imgCarousel = ref(null);
+const titleCarousel = ref(null);
 const currentAttractionIndex = ref(0);
 
-const nextSlide = async () => {
-  await carousel.value.next();
-  currentAttractionIndex.value++;
-  if (currentAttractionIndex.value == plan.attractions.length) {
-    currentAttractionIndex.value = 0;
-  }
+const nextSlide = () => {
+  imgCarousel.value.next();
+  titleCarousel.value.next();
+  // currentAttractionIndex.value++;
+  // if (currentAttractionIndex.value == plan.attractions.length) {
+  //   currentAttractionIndex.value = 0;
+  // }
 };
 
-const prevSlide = async () => {
-  await carousel.value.prev();
-  currentAttractionIndex.value--;
-  if (currentAttractionIndex.value == -1) {
-    currentAttractionIndex.value = plan.attractions.length - 1;
-  }
+const prevSlide = () => {
+  imgCarousel.value.prev();
+  titleCarousel.value.prev();
+  // currentAttractionIndex.value--;
+  // if (currentAttractionIndex.value == -1) {
+  //   currentAttractionIndex.value = plan.attractions.length - 1;
+  // }
 };
 
 const onImageError = (e) => {
@@ -47,7 +50,7 @@ const moveToDetail = () => {
     </div>
     <div :class="{ 'hidden-wrapper': true }">
       <div class="carousel-wrapper">
-        <a-carousel arrows :dots="false" ref="carousel">
+        <a-carousel arrows :dots="false" ref="imgCarousel">
           <img
             v-for="(attraction, index) in plan.attractions"
             :src="attraction.firstImage || defaultImage"
@@ -57,7 +60,13 @@ const moveToDetail = () => {
         </a-carousel>
       </div>
       <div class="sub-wrapper">
-        <p>{{ plan.attractions[currentAttractionIndex].title }}</p>
+        <div class="title-carousel-wrapper">
+          <a-carousel arrows :dots="false" ref="titleCarousel">
+            <p v-for="(attraction, index) in plan.attractions" :key="attraction.contentId">
+              {{ attraction.title }}
+            </p>
+          </a-carousel>
+        </div>
         <div class="button-wrapper">
           <button @click="prevSlide">왼쪽</button>
           <button @click="moveToDetail">계획 상세</button>
@@ -158,6 +167,16 @@ const moveToDetail = () => {
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
+
+      .title-carousel-wrapper {
+        text-align: center;
+        width: 200px;
+        height: 50px;
+
+        p {
+          font-size: 120%;
+        }
+      }
 
       .button-wrapper {
         height: 70px;

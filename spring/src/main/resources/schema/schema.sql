@@ -1,5 +1,18 @@
+DROP TABLE IF EXISTS comment;
+DROP TABLE IF EXISTS qna_board;
 DROP TABLE IF EXISTS attraction_plan;
 DROP TABLE IF EXISTS plan;
+DROP TABLE IF EXISTS member;
+
+CREATE TABLE member (
+    user_id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(30) NOT NULL UNIQUE,
+    password VARCHAR(64) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    type VARCHAR(10),
+    registered_time TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (user_id)
+);
 
 CREATE TABLE plan (
     plan_id INT NOT NULL AUTO_INCREMENT,
@@ -35,36 +48,25 @@ CREATE TABLE attraction_plan (
     INDEX idx_plan_id (plan_id)
 );
 
-insert into plan (user_id, name, description, theme, departures_id, departures_name, arrivals_id, arrivals_name)
-values (1, "plan1", "편안한 여행", "Healing", 125266, "국립 청태산자연휴양림", 125406, "비슬산자연휴양림");
-        
-insert into attraction_plan 
-values 
-    (125266, 1, 1), 
-    (125411, 1, 2), 
-    (125412, 1, 3), 
-    (125413, 1, 4), 
-    (125414, 1, 5), 
-    (125415, 1, 6), 
-    (125416, 1, 7), 
-    (125417, 1, 8), 
-    (125418, 1, 9), 
-    (125419, 1, 10),
-    (125406, 1, 11);
+CREATE TABLE qna_board (
+    article_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    subject VARCHAR(20) NOT NULL,
+    content VARCHAR(10000) NOT NULL,
+    hits int DEFAULT 0,
+    created_time TIMESTAMP DEFAULT NOW(),
+    modified_time TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (article_id)
+);
 
-insert into plan (user_id, name, description, theme, departures_id, departures_name, arrivals_id, arrivals_name)
-values (2, "plan2", "즐거운 여행", "Trip", 125266, "국립 청태산자연휴양림", 125406, "비슬산자연휴양림");
-        
-insert into attraction_plan 
-values 
-    (125266, 1, 1), 
-    (125411, 1, 2), 
-    (125412, 1, 3), 
-    (125413, 1, 4), 
-    (125414, 1, 5), 
-    (125415, 1, 6), 
-    (125416, 1, 7), 
-    (125417, 1, 8), 
-    (125418, 1, 9), 
-    (125419, 1, 10),
-    (125406, 1, 11);
+CREATE TABLE comment (
+    comment_id INT NOT NULL AUTO_INCREMENT,
+    type VARCHAR(30) NOT NULL,
+    content_id INT NOT NULL,
+    content VARCHAR(10000) NOT NULL,
+    user_id INT NOT NULL,
+    user_name VARCHAR(30) NOT NULL,
+    created_time TIMESTAMP DEFAULT NOW(),
+    modified_time TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (comment_id)
+);
