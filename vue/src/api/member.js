@@ -2,6 +2,10 @@ import { serviceApi } from "@/util/http-commons";
 
 const api = serviceApi;
 
+const getMemberById = (userId, success, fail) => {
+  api.get(`/member/${userId}`).then(success).catch(fail);
+};
+
 const duplicateUsernameCheck = (username, success, fail) => {
   api.post("/member/duplicate-check", { username }).then(success).catch(fail);
 };
