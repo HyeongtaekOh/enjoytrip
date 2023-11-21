@@ -297,6 +297,14 @@ const handleDragEnd = () => {
   newPlan.value = updatedOrder;
   console.log("newPlan.order:", newPlan.value);
 };
+
+const handleDeletePlan = (element) => {
+  // 삭제 버튼 클릭 시 실행되는 함수
+  const index = newPlan.value.findIndex((plan) => plan.order === element.order);
+  if (index !== -1) {
+    newPlan.value.splice(index, 1);
+  }
+};
 </script>
 
 <template>
@@ -331,6 +339,7 @@ const handleDragEnd = () => {
                   aria-hidden="true"
                 ></i>
                 {{ element.plan.title }}
+                <span class="delete-button" @click="handleDeletePlan(element)"> -삭제 </span>
               </li>
             </template>
           </draggable>
