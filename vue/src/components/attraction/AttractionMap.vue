@@ -1,8 +1,11 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { findSidoCode, findGugunCode, getAttractionsByCondition } from "@/api/attraction.js";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import AttractionItem from "@/components/attraction/item/AttractionItem.vue";
+import draggable from "vuedraggable";
+
+const router = useRouter();
 
 const selectedSido = ref("0");
 const selectedGugun = ref("0");
@@ -11,6 +14,7 @@ const selectedKeyword = ref("");
 const attractions = ref([]);
 
 const newPlan = ref([]);
+const drag = ref(false);
 
 let map = null;
 const infoWindow = ref(null);
@@ -243,10 +247,102 @@ function updateNewPlan(data) {
   });
   console.log("newPlan:", newPlan.value);
 }
+
+let isSidebarOpen = false;
+
+const dragOptions = computed(() => ({
+  animation: 200,
+  group: "description",
+  disabled: false,
+  ghostClass: "ghost",
+}));
+
+const componentData = computed(() => ({
+  tag: "ul",
+  type: "transition-group",
+  name: !drag.value ? "flip-list" : null,
+}));
+
+const handleButtonClick = () => {
+  console.log("newPlan:", newPlan);
+  if (isSidebarOpen) {
+    closeNav();
+  } else {
+    openNav();
+  }
+  isSidebarOpen = !isSidebarOpen;
+};
+
+const handlePlanButtonClick = () => {
+  const contentIds = newPlan.value.map((plan) => plan.plan.contentId);
+
+  console.log("contentIds:", contentIds);
+
+  router.push({
+    name: "plan-regist",
+    query: { attractionIds: JSON.stringify(contentIds) },
+  });
+};
+
+const openNav = () => {
+  document.getElementById("mySidenav").style.width = "250px";
+};
+
+const closeNav = () => {
+  document.getElementById("mySidenav").style.width = "0";
+};
+
+const handleDragEnd = () => {
+  const updatedOrder = newPlan.value.map((plan) => ({ ...plan, order: plan.index }));
+  newPlan.value = updatedOrder;
+  console.log("newPlan.order:", newPlan.value);
+};
 </script>
 
 <template>
   <div class="contents">
+    <div class="button-wrapper">
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+      <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-2020.css" />
+
+      <div id="app" class="w3-container">
+        <button class="w3-button w3-xlarge w3-circle w3-2020-amberglow" @click="handleButtonClick">
+          +
+        </button>
+      </div>
+      <div id="mySidenav" class="sidenav">
+        <h3>NewPlan</h3>
+        <a href="javascript:void(0)" class="closebtn" @click="closeNav">&times;</a>
+        <div class="list">
+          <draggable
+            class="list-group"
+            :component-data="componentData"
+            v-model="newPlan"
+            v-bind="dragOptions"
+            @start="drag = true"
+            @end="handleDragEnd"
+            item-key="order"
+          >
+            <template #item="{ element }">
+              <li class="list-group-item">
+                <i
+                  :class="element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'"
+                  @click="element.fixed = !element.fixed"
+                  aria-hidden="true"
+                ></i>
+                {{ element.plan.title }}
+              </li>
+            </template>
+          </draggable>
+        </div>
+        <button
+          class="plan-button w3-xlarge w3-circle w3-2020-amberglow"
+          @click="handlePlanButtonClick"
+        >
+          계획 등록
+        </button>
+      </div>
+    </div>
     <div class="list">
       <form action="#" id="search" class="search">
         <select
@@ -319,8 +415,6 @@ function updateNewPlan(data) {
 .contents {
   position: relative;
 }
-</style>
-<style>
 @font-face {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
   src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
@@ -328,9 +422,34 @@ function updateNewPlan(data) {
   font-weight: 600;
   font-style: 600;
 }
-/* * {
+* {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
-} */
+}
+
+.plan-button {
+  background-color: #dc793e;
+  border: none;
+  color: white;
+  padding: 12px 12px;
+  text-align: center;
+  font-size: 16px;
+  margin: 4px 2px;
+  opacity: 0.6;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 12px;
+  width: 100px;
+  height: 50px;
+  justify-content: center; /* 추가 */
+  transform: translateX(50%); /* 추가 */
+}
+.plan-button:hover {
+  opacity: 1;
+}
+</style>
+<style>
 .wrap {
   position: absolute;
   left: 0;
@@ -437,5 +556,95 @@ function updateNewPlan(data) {
 
 .info .link {
   color: #5085bb;
+}
+
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  background-color: #ecdfd4;
+  overflow-x: hidden;
+  padding-top: 60px;
+  transition: 0.5s;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+#main {
+  transition: margin-left 0.5s;
+  padding: 20px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+
+  .sidenav a {
+    font-size: 18px;
+  }
+}
+
+.button-wrapper {
+  position: absolute;
+  left: 2px;
+  bottom: 15px;
+  z-index: 3;
+}
+.flip-list-move {
+  transition: transform 0.5s;
+}
+
+.no-move {
+  transition: transform 0s;
+}
+
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
+}
+
+.list-group {
+  min-height: 20px;
+}
+
+.list-group-item {
+  position: relative;
+  cursor: move;
+  font-size: 130%;
+}
+
+.list-group-item i {
+  cursor: pointer;
+}
+
+.w3-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
 }
 </style>
