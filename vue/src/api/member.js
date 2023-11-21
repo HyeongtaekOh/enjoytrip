@@ -18,4 +18,4 @@ const deleteMember = (userId, success, fail) => {
   api.delete(`/member/${userId}`).then(success).catch(fail);
 };
 
-export { duplicateUsernameCheck, updateMember, deleteMember };
+export { getMemberById, duplicateUsernameCheck, updateMember, deleteMember };

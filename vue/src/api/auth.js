@@ -27,7 +27,4 @@ const validateToken = (token, success, fail) => {
     .catch(fail);
 };
 
-const update = (user, success, fail) => {
-  api.put("/update", user).then(success).catch(fail);
-};
-export { login, signup, validateToken, update };
+export { login, signup, validateToken };
