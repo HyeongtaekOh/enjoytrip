@@ -3,6 +3,8 @@ import { ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { getPlanById, deletePlan } from "../../api/plan";
 import { useAuthStore } from "@/stores/auth";
+import { LoadingOutlined } from "@ant-design/icons-vue";
+import LoadingSpinner from "@/assets/img/spinner.png";
 import PlanDetailMap from "./detail/PlanDetailMap.vue";
 import CommentList from "../comment/CommentList.vue";
 import Swal from "sweetalert2";
@@ -100,7 +102,7 @@ const isUser = computed(() => {
 
 <template>
   <div class="detail-container">
-    <div class="container detail-content-container">
+    <div v-if="plan.attractions.length > 0" class="container detail-content-container">
       <div class="row justify-content-center w-100">
         <div class="col-lg-12 text-start">
           <div class="row my-2">
@@ -163,10 +165,10 @@ const isUser = computed(() => {
           </div>
         </div>
       </div>
-      <PlanDetailMap
-        v-if="plan.attractions.length > 0"
-        :attractions="attractions ? attractions : plan.attractions"
-      ></PlanDetailMap>
+      <PlanDetailMap :attractions="attractions ? attractions : plan.attractions"></PlanDetailMap>
+    </div>
+    <div v-else class="loading-container">
+      <img :src="LoadingSpinner" class="spinner" />
     </div>
     <div class="detail-comment-container w-100">
       <CommentList :content-id="plan.planId" type="plan"></CommentList>
@@ -181,6 +183,30 @@ const isUser = computed(() => {
     display: flex;
     padding-right: 0;
     border-radius: 10px 10px 0 0;
+  }
+
+  .loading-container {
+    background-color: white;
+    width: 100%;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .spinner {
+      width: 100px;
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      animation: spin 0.5s linear infinite;
+    }
   }
 
   .detail-comment-container {
