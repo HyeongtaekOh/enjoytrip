@@ -19,7 +19,7 @@ import com.ssafy.enjoytrip.member.model.dto.LoginVo;
 import com.ssafy.enjoytrip.member.model.dto.MemberDto;
 import com.ssafy.enjoytrip.member.model.dto.MemberType;
 import com.ssafy.enjoytrip.member.model.dto.SignupVo;
-import com.ssafy.enjoytrip.model.service.MemberService;
+import com.ssafy.enjoytrip.member.model.service.MemberService;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

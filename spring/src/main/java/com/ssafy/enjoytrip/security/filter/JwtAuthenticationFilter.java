@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.ssafy.enjoytrip.member.model.dto.MemberDto;
-import com.ssafy.enjoytrip.model.service.MemberService;
+import com.ssafy.enjoytrip.member.model.service.MemberService;
 import com.ssafy.enjoytrip.security.authentication.UsernamePasswordAuthentication;
 
 import io.jsonwebtoken.Claims;

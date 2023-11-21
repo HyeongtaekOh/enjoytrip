@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.enjoytrip.exception.DuplicatedMemberException;
 import com.ssafy.enjoytrip.exception.MemberException;
 import com.ssafy.enjoytrip.member.model.dto.MemberDto;
-import com.ssafy.enjoytrip.model.service.MemberService;
+import com.ssafy.enjoytrip.member.model.service.MemberService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

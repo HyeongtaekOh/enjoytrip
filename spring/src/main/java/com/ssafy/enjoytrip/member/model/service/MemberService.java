@@ -1,4 +1,4 @@
-package com.ssafy.enjoytrip.model.service;
+package com.ssafy.enjoytrip.member.model.service;
 
 import java.util.Optional;
 
