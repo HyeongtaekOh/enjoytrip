@@ -1,9 +1,35 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import defaultImage from "@/assets/img/noImage.jpg";
 
 const { plan } = defineProps({ plan: Object });
 const router = useRouter();
+const imgCarousel = ref(null);
+const titleCarousel = ref(null);
+const currentAttractionIndex = ref(0);
+
+const nextSlide = () => {
+  imgCarousel.value.next();
+  titleCarousel.value.next();
+  // currentAttractionIndex.value++;
+  // if (currentAttractionIndex.value == plan.attractions.length) {
+  //   currentAttractionIndex.value = 0;
+  // }
+};
+
+const prevSlide = () => {
+  imgCarousel.value.prev();
+  titleCarousel.value.prev();
+  // currentAttractionIndex.value--;
+  // if (currentAttractionIndex.value == -1) {
+  //   currentAttractionIndex.value = plan.attractions.length - 1;
+  // }
+};
+
+const onImageError = (e) => {
+  e.target.src = defaultImage;
+};
 
 const moveToDetail = () => {
   router.push({
@@ -16,13 +42,38 @@ const moveToDetail = () => {
 </script>
 
 <template>
-  <div class="grid-item plan-item-wrapper" @click="moveToDetail">
-    <img src="@/assets/img/plan-image-test.jpg" alt="test image" />
+  <div class="grid-item plan-item-wrapper" @mouseenter="addDelay" @mouseleave="removeDelay">
+    <img class="thumbnail" src="@/assets/img/plan-image-test.jpg" alt="test image" />
     <div class="plan-info-wrapper d-flex flex-column">
       <span class="span-description">{{ plan.description }}</span>
       <span class="span-username">{{ plan.username }}</span>
     </div>
-    <div class="hidden-wrapper"></div>
+    <div :class="{ 'hidden-wrapper': true }">
+      <div class="carousel-wrapper">
+        <a-carousel arrows :dots="false" ref="imgCarousel">
+          <img
+            v-for="(attraction, index) in plan.attractions"
+            :src="attraction.firstImage || defaultImage"
+            :key="attraction.contentId"
+            @error="onImageError"
+          />
+        </a-carousel>
+      </div>
+      <div class="sub-wrapper">
+        <div class="title-carousel-wrapper">
+          <a-carousel arrows :dots="false" ref="titleCarousel">
+            <p v-for="(attraction, index) in plan.attractions" :key="attraction.contentId">
+              {{ attraction.title }}
+            </p>
+          </a-carousel>
+        </div>
+        <div class="button-wrapper">
+          <button @click="prevSlide">왼쪽</button>
+          <button @click="moveToDetail">계획 상세</button>
+          <button @click="nextSlide">오른쪽</button>
+        </div>
+      </div>
+    </div>
     <!-- <img :src="plan.attractions[0].firstImage" /> -->
   </div>
 </template>
@@ -35,12 +86,12 @@ const moveToDetail = () => {
   position: relative;
   overflow: hidden;
 
-  img {
+  .thumbnail {
     width: 100%;
     height: auto;
     object-fit: cover;
     z-index: 3;
-    transition: all 0.4s ease-in-out, opacity 0.55s cubic-bezier(0.6, 0.04, 0.98, 0.335);
+    transition: all 0.4s ease-in-out;
   }
 
   .plan-info-wrapper {
@@ -57,7 +108,7 @@ const moveToDetail = () => {
       text-align: center;
 
       color: black;
-      transition: all 0.4s ease-in-out 0.5s;
+      transition: all 0.4s ease-in-out 0.3s;
     }
 
     p:hover {
@@ -79,11 +130,70 @@ const moveToDetail = () => {
     }
   }
 
-  &:hover {
-    img {
+  .hidden-wrapper {
+    position: absolute;
+    left: -10px;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 5;
+    transition: all 0.4s ease-in-out;
+
+    .carousel-wrapper {
+      position: absolute;
+      top: calc(50% - 105px);
+      left: 9px;
       width: 300px;
-      height: 13rem;
-      transform: translateX(-50%);
+      height: 210px;
+
+      img {
+        width: 300px;
+        height: 210px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 5px;
+      }
+    }
+
+    .sub-wrapper {
+      position: absolute;
+      left: 300px;
+      top: 80px;
+      width: calc(100% - 300px);
+      height: 70px;
+      font-size: 200%;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+
+      .title-carousel-wrapper {
+        text-align: center;
+        width: 200px;
+        height: 50px;
+
+        p {
+          font-size: 120%;
+        }
+      }
+
+      .button-wrapper {
+        height: 70px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+
+  &:hover {
+    .thumbnail {
+      width: 300px;
+      height: 210px;
+      position: absolute;
+      top: calc(50% - 105px);
+      left: 5px;
       border-radius: 5px;
       opacity: 0;
     }
@@ -92,11 +202,18 @@ const moveToDetail = () => {
       transform: translate(10rem, -4rem);
       color: black;
       font-size: 200%;
+      transition-delay: 0;
     }
 
     .span-username {
       transform: translateY(5px);
       font-size: 180%;
+    }
+
+    .hidden-wrapper {
+      transform: translateX(10px);
+      opacity: 1;
+      transition-delay: 0.3s;
     }
   }
 }
