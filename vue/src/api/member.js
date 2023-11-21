@@ -15,7 +15,7 @@ const updateMember = (member, success, fail) => {
 };
 
 const deleteMember = (userId, success, fail) => {
-  api.delete(`/member/${member.userId}`).then(success).catch(fail);
+  api.delete(`/member/${userId}`).then(success).catch(fail);
 };
 
 export { duplicateUsernameCheck, updateMember, deleteMember };
