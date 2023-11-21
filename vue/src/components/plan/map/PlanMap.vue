@@ -4,7 +4,7 @@ import courseImage from "@/assets/img/course-marker.png";
 const { VITE_KAKAO_JAVASCRIPT_APP_KEY } = import.meta.env;
 
 let map = null;
-const { attractions } = defineProps({ attractions: Array });
+const props = defineProps({ attractions: Array });
 const dots = [];
 const coursePositions = [];
 
@@ -76,6 +76,7 @@ const displayCircleDot = (position) => {
 onMounted(async () => {
   if (window.kakao && window.kakao.maps) {
     initMap();
+    drawCourse(props.attractions);
   } else {
     const script = document.createElement("script");
     /* global kakao */
@@ -84,8 +85,8 @@ onMounted(async () => {
     script.onload = () => {
       kakao.maps.load(() => {
         initMap();
-        console.log("attractions =", attractions);
-        drawCourse(attractions);
+        console.log("attractions =", props.attractions);
+        drawCourse(props.attractions);
       });
     };
   }

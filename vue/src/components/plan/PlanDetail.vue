@@ -3,9 +3,8 @@ import { ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { getPlanById, deletePlan } from "../../api/plan";
 import { useAuthStore } from "@/stores/auth";
-import { LoadingOutlined } from "@ant-design/icons-vue";
-import LoadingSpinner from "@/assets/img/spinner.png";
-import PlanDetailMap from "./detail/PlanDetailMap.vue";
+import InterParkImage from "@/assets/img/interpark-1.png";
+import PlanMap from "./map/PlanMap.vue";
 import CommentList from "../comment/CommentList.vue";
 import Swal from "sweetalert2";
 
@@ -14,8 +13,6 @@ const route = useRoute();
 const router = useRouter();
 
 const { planId } = route.params;
-const { attractions } = history.state;
-console.log(attractions);
 
 const plan = ref({
   planId: planId,
@@ -165,12 +162,12 @@ const isUser = computed(() => {
           </div>
         </div>
       </div>
-      <PlanDetailMap :attractions="attractions ? attractions : plan.attractions"></PlanDetailMap>
+      <PlanMap :attractions="plan.attractions"></PlanMap>
     </div>
     <div v-else class="loading-container">
-      <img :src="LoadingSpinner" class="spinner" />
+      <img :src="InterParkImage" class="loading" />
     </div>
-    <div class="detail-comment-container w-100">
+    <div v-if="plan.attractions.length > 0" class="detail-comment-container w-100">
       <CommentList :content-id="plan.planId" type="plan"></CommentList>
     </div>
   </div>
@@ -193,19 +190,8 @@ const isUser = computed(() => {
     justify-content: center;
     align-items: center;
 
-    .spinner {
-      width: 100px;
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      animation: spin 0.5s linear infinite;
+    .loading {
+      height: 65vh;
     }
   }
 
