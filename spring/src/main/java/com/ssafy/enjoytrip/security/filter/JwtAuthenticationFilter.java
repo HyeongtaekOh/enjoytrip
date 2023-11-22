@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -92,18 +91,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
+	private boolean isValidJwtFormat(String token) {
+		if (token == null || token.isEmpty()) {
+			return false;
+		}
+		
+		String[] parts = token.split("\\.");
+		return parts.length == 3;
+	}
+
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		String path = request.getServletPath();
 		return path.equals("/login") || path.equals("/signup");
 	}
 
-	private boolean isValidJwtFormat(String token) {
-		if (token == null || token.isEmpty()) {
-			return false;
-		}
-
-		String[] parts = token.split("\\.");
-		return parts.length == 3;
-	}
 }

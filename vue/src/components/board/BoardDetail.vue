@@ -14,7 +14,16 @@ const auth = useAuthStore();
 console.log(route.params);
 const { articleId } = route.params;
 
-const article = ref({});
+const article = ref({
+  articleId: 0,
+  userId: 0,
+  username: "",
+  subject: "",
+  content: "",
+  createdTime: "",
+  modifiedTime: "",
+  hits: 0,
+});
 
 onMounted(() => {
   getArticle();
@@ -100,7 +109,7 @@ function onDeleteArticle() {
               <p style="font-size: 170%">
                 <span class="fw-bold">{{ article.username }}</span> <br />
                 <span class="text-secondary fw-light">
-                  {{ article.createdTime }} 조회 : {{ article.hits }}
+                  {{ article.modifiedTime }} 조회 : {{ article.hits }}
                 </span>
               </p>
             </div>
