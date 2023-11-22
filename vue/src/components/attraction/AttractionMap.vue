@@ -155,7 +155,7 @@ const setInfoWindow = () => {
           <div class="desc">
             <div class="ellipsis">${info.value.addr1}</div>
             <div class="jibun ellipsis">${info.value.tel}</div>
-            <img :src="internetimg" class="click-img" onclick="openNaverSearch('${info.value.title}')" />
+            <div class="link" onclick="openNaverSearch('${info.value.title}')">네이버 검색</div>
             <div class="plus">+ 추가하기</div>
           </div>
         </div>
@@ -165,8 +165,10 @@ const setInfoWindow = () => {
 };
 
 window.openNaverSearch = (keyword) => {
-  const naverSearchURL = `https://search.naver.com/search.naver?query=${encodeURIComponent(keyword)}`;
-  window.open(naverSearchURL, '_blank');
+  const naverSearchURL = `https://search.naver.com/search.naver?query=${encodeURIComponent(
+    keyword
+  )}`;
+  window.open(naverSearchURL, "_blank");
 };
 const deleteMarkers = () => {
   if (markers.value.length > 0) {
@@ -244,10 +246,7 @@ function handlerTypeChange(event) {
 
 function updateNewPlan(data) {
   console.log("data:", data);
-  newPlan.value.push({
-    plan: data.plan,
-    index: newPlan.value.length,
-  });
+  newPlan.value.push(data.plan);
   console.log("newPlan:", newPlan.value);
 }
 
@@ -277,7 +276,7 @@ const handleButtonClick = () => {
 };
 
 const handlePlanButtonClick = () => {
-  const contentIds = newPlan.value.map((plan) => plan.plan.contentId);
+  const contentIds = newPlan.value.map((plan) => plan.contentId);
 
   console.log("contentIds:", contentIds);
 
@@ -302,9 +301,12 @@ const handleDragEnd = () => {
 };
 
 const handleDeletePlan = (element) => {
+  console.log("element:", element);
   // 삭제 버튼 클릭 시 실행되는 함수
-  const index = newPlan.value.findIndex((plan) => plan.order === element.order);
+  const index = newPlan.value.findIndex((plan) => plan.contentId === element.contentId);
+  console.log("index:", index);
   if (index !== -1) {
+    console.log("index:", index);
     newPlan.value.splice(index, 1);
   }
 };
@@ -322,7 +324,7 @@ const handleDeletePlan = (element) => {
         </button>
       </div>
       <div id="mySidenav" class="sidenav">
-        <h3>NewPlan</h3>
+        <h2>NewPlan</h2>
         <a href="javascript:void(0)" class="closebtn" @click="closeNav">&times;</a>
         <div class="list">
           <draggable
@@ -341,7 +343,7 @@ const handleDeletePlan = (element) => {
                   @click="element.fixed = !element.fixed"
                   aria-hidden="true"
                 ></i>
-                {{ element.plan.title }}
+                {{ element.title }}
                 <span class="delete-button" @click="handleDeletePlan(element)"> -삭제 </span>
               </li>
             </template>
@@ -567,7 +569,7 @@ const handleDeletePlan = (element) => {
 }
 
 .info .link {
-  color: #5085bb;
+  color: #03c75a;
 }
 
 .sidenav {
@@ -659,7 +661,7 @@ const handleDeletePlan = (element) => {
   width: 50px;
   height: 50px;
 }
-.click-img{
+.click-img {
   width: 30px;
   height: 30px;
   cursor: pointer;
