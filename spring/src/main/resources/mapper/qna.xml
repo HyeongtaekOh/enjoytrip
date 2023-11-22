@@ -22,15 +22,33 @@
 		where article_id = #{article_id}
 	</select>
 	
-	<select id="findByCondition" parameterType="QnaBoardSearchCondition" resultMap="qnaBoardMap">
+	<select id="getTotalCountWithCondition" resultType="int">
+		select
+			count(article_id)
+		from
+			qna_board
+		<where>
+			<if test="condition.userId != null and condition.userId != ''">
+				and user_id = #{userId}
+			</if>
+			<if test="condition.keyword != null and condition.keyword != ''">
+				and (
+					subject like concat('%', #{keyword}, '%') or
+					content like concat('%', #{keyword}, '%')
+				)
+			</if>
+		</where>
+	</select>
+	
+	<select id="findByCondition" resultMap="qnaBoardMap">
 		select *
 		from
 			qna_board
 		<where>
-			<if test="userId != null and userId != ''">
+			<if test="condition.userId != null and condition.userId != ''">
 				and user_id = #{userId}
 			</if>
-			<if test="keyword != null and keyword != ''">
+			<if test="condition.keyword != null and condition.keyword != ''">
 				and (
 					subject like concat('%', #{keyword}, '%') or
 					content like concat('%', #{keyword}, '%')

@@ -10,14 +10,17 @@ import org.apache.ibatis.annotations.Param;
 import com.ssafy.enjoytrip.plan.model.dto.Plan;
 import com.ssafy.enjoytrip.plan.model.dto.PlanDto;
 import com.ssafy.enjoytrip.plan.model.dto.PlanSearchCondition;
+import com.ssafy.enjoytrip.plan.model.dto.PlanSearchResult;
 
 @Mapper
 public interface PlanMapper {
 
 	Optional<Plan> findById(Integer planId) throws SQLException;
 
-	List<Plan> findByAttractionId(Integer attractionId) throws SQLException;
+	List<Plan> findByAttractionId(@Param("attractionId") Integer attractionId) throws SQLException;
 
+	Integer getTotalCountWithCondition(@Param("condition") PlanSearchCondition condition) throws SQLException;
+	
 	List<Plan> findByCondition(@Param("condition") PlanSearchCondition condition, @Param("pageSize") Integer pageSize, @Param("offset") Integer offset)
 			throws SQLException;
 
@@ -31,6 +34,16 @@ public interface PlanMapper {
 	void deletePlan(Integer planId) throws SQLException;
 
 	void deleteAttractionPlan(Integer planId) throws SQLException;
+	
+	default PlanSearchResult findByConditionWithPage(PlanSearchCondition condition, int pageSize) throws SQLException {
+		int totalCount = getTotalCountWithCondition(condition);
+		int page = condition.getPage() != null && condition.getPage() > 0 ? condition.getPage() : 1;
+		int totalPage = totalCount / pageSize + (totalCount % pageSize == 0 ? 0 : 1);
+		List<Plan> plans = findByCondition(condition, pageSize, condition.getPage() != null ? (condition.getPage() - 1) * pageSize : 0);
+		PlanSearchResult result = new PlanSearchResult(plans, plans.size(), page, pageSize, totalCount, totalPage);
+		
+		return result;
+	}
 
 	default void insertPlanWithAttractions(PlanDto planDto) throws SQLException {
 		insertPlan(planDto);

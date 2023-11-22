@@ -11,6 +11,7 @@ import com.ssafy.enjoytrip.exception.PlanException;
 import com.ssafy.enjoytrip.plan.model.dto.Plan;
 import com.ssafy.enjoytrip.plan.model.dto.PlanDto;
 import com.ssafy.enjoytrip.plan.model.dto.PlanSearchCondition;
+import com.ssafy.enjoytrip.plan.model.dto.PlanSearchResult;
 import com.ssafy.enjoytrip.plan.model.mapper.PlanMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -45,12 +46,11 @@ public class PlanServiceImpl implements PlanService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Plan> findByCondition(PlanSearchCondition condition) {
+	public PlanSearchResult findByCondition(PlanSearchCondition condition) {
 		try {
 			int pageSize = condition.getPageSize() != null && condition.getPageSize() > 0 ? condition.getPageSize()
 					: PAGE_SIZE;
-			return mapper.findByCondition(condition, pageSize,
-					condition.getPage() != null ? (condition.getPage() - 1) * pageSize : 0);
+			return mapper.findByConditionWithPage(condition, pageSize);
 		} catch (SQLException e) {
 			throw new PlanException("검색 조건으로 조회 중 오류 발생 : " + e.getMessage());
 		}

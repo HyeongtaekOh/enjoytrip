@@ -1,7 +1,6 @@
 package com.ssafy.enjoytrip.qna.model.service;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssafy.enjoytrip.exception.QnaBoardException;
 import com.ssafy.enjoytrip.qna.model.dto.QnaBoardDto;
 import com.ssafy.enjoytrip.qna.model.dto.QnaBoardSearchCondition;
+import com.ssafy.enjoytrip.qna.model.dto.QnaBoardSearchResult;
 import com.ssafy.enjoytrip.qna.model.mapper.QnaBoardMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class QnaBoardServiceImpl implements QnaBoardService {
 
 	private final QnaBoardMapper mapper;
+	private final int PAGE_SIZE = 9;
 	
 	public Optional<QnaBoardDto> getArticleById(Integer articleId) {
 		log.info("get article by id : {}", articleId);
@@ -35,11 +36,12 @@ public class QnaBoardServiceImpl implements QnaBoardService {
 	}
 
 	@Override
-	public List<QnaBoardDto> getArticlesByCondition(QnaBoardSearchCondition condition) {
+	public QnaBoardSearchResult getArticlesByCondition(QnaBoardSearchCondition condition) {
 		log.info("get articles by condition : {}", condition);
 		try {
-			int offset = (condition.getPage() - 1) * condition.getPageSize();
-			return mapper.findByCondition(condition.getUserId(), condition.getKeyword(), condition.getPageSize(), offset);
+			int pageSize = condition.getPageSize() != null && condition.getPageSize() > 0 ? condition.getPageSize()
+					: PAGE_SIZE;
+			return mapper.findByConditionWithPage(condition, pageSize);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

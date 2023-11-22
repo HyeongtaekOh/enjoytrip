@@ -87,6 +87,43 @@
 							content_id = #{attractionId})
 	</select>
 	
+	<select id="getTotalCountWithCondition" resultType="int">
+		select
+			count(plan_id)
+		from
+			plan
+		<where>
+			<if test="condition.userId != null and condition.userId != 0">
+				and user_id = #{condition.userId}
+			</if>
+			<if test="condition.theme != null and condition.theme != ''">
+				and theme = #{condition.theme}
+			</if>
+			<if test="condition.keyword != null and condition.keyword != ''">
+				and (name like concat('%', #{condition.keyword}, '%')
+				or description like concat('%', #{condition.keyword}, '%')
+				or departures_name like concat('%', #{condition.keyword}, '%')
+				or arrivals_name like concat('%', #{condition.keyword}, '%'))
+			</if>
+			<if test="condition.attractionIds != null and !condition.attractionIds.isEmpty()">
+				and plan_id in (select
+									plan_id
+								from
+									attraction_plan
+								where
+									content_id in
+									<foreach collection="condition.attractionIds" item="aid" open="(" separator=", " close=")">
+										#{aid}
+									</foreach>
+								group by
+									plan_id
+								having
+									count(distinct content_id) = ${condition.attractionIds.size()}
+								)
+			</if>
+		</where>
+	</select>
+	
 	<select id="findByCondition" resultMap="planMap">
 		select 
 			*

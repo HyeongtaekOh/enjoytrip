@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.ssafy.enjoytrip.plan.model.dto.Plan;
 import com.ssafy.enjoytrip.plan.model.dto.PlanDto;
 import com.ssafy.enjoytrip.plan.model.dto.PlanSearchCondition;
+import com.ssafy.enjoytrip.plan.model.dto.PlanSearchResult;
 
 public interface PlanService {
 
@@ -13,7 +14,7 @@ public interface PlanService {
 
 	List<Plan> findByAttractionId(Integer attractionId);
 	
-	List<Plan> findByCondition(PlanSearchCondition condition);
+	PlanSearchResult findByCondition(PlanSearchCondition condition);
 
 	void insertPlanWithAttractions(PlanDto planDto);
 	

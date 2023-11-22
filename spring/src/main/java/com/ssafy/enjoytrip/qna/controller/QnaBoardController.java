@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.enjoytrip.exception.QnaBoardException;
 import com.ssafy.enjoytrip.qna.model.dto.QnaBoardDto;
 import com.ssafy.enjoytrip.qna.model.dto.QnaBoardSearchCondition;
+import com.ssafy.enjoytrip.qna.model.dto.QnaBoardSearchResult;
 import com.ssafy.enjoytrip.qna.model.service.QnaBoardService;
 
 import io.swagger.annotations.Api;
@@ -60,18 +61,24 @@ public class QnaBoardController {
 	@ApiOperation(value = "상세 검색", notes = "검색 조건에 해당하는 Q&A 게시물 조회\n"
 			+ "검색 조건 : 게시자 ID (userId), 검색어 (keyword, 제목 or 내용), 페이지 번호 (page), 페이지 크기 (pageSize)")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "OK", response = QnaBoardDto.class, responseContainer = "List"),
+			@ApiResponse(code = 200, message = "OK", response = QnaBoardSearchResult.class),
 			@ApiResponse(code = 204, message = "No Content"),
 			@ApiResponse(code = 400, message = "Bad Request")
 	})
 	@GetMapping()
 	public ResponseEntity<?> getArticlesByCondition(QnaBoardSearchCondition condition) {
 		log.info("controller | get articles by condition : {}", condition);
-		List<QnaBoardDto> list = service.getArticlesByCondition(condition);
+		QnaBoardSearchResult result = service.getArticlesByCondition(condition);
 		
-		if (list != null && list.size() > 0) {
-			log.info("controller | list = {}", list);
-			return ResponseEntity.ok(list);
+		if (result == null) {
+			throw new QnaBoardException("qna 조건 검색 결과 오류 발생");
+		}
+		
+		List<QnaBoardDto> qnas = result.getQnas();
+		
+		if (qnas != null && qnas.size() > 0) {
+			log.info("controller | list = {}", qnas);
+			return ResponseEntity.ok(result);
 		} else {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		}

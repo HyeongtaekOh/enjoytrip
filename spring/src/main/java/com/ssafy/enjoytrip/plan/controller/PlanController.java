@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.enjoytrip.exception.PlanException;
 import com.ssafy.enjoytrip.plan.model.dto.Plan;
 import com.ssafy.enjoytrip.plan.model.dto.PlanDto;
 import com.ssafy.enjoytrip.plan.model.dto.PlanRegistDto;
 import com.ssafy.enjoytrip.plan.model.dto.PlanSearchCondition;
+import com.ssafy.enjoytrip.plan.model.dto.PlanSearchResult;
 import com.ssafy.enjoytrip.plan.model.service.PlanService;
 
 import io.swagger.annotations.Api;
@@ -84,7 +86,7 @@ public class PlanController {
 				  		+ "검색 조건 : 게시자 ID(userId), 검색어(keyword, 제목 or 내용 or 출발지 이름 or 도착지 이름), 테마 (theme), 코스 내 관광지 ID 리스트(attractionIds)\n"
 						+ "여행 계획 기본 정보 + 여행 코스에 포함된 관광지 정보 조회")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "OK", response = Plan.class, responseContainer = "List"),
+			@ApiResponse(code = 200, message = "OK", response = PlanSearchResult.class),
 			@ApiResponse(code = 204, message = "No Content"),
 			@ApiResponse(code = 400, message = "Bad Request")
 	})
@@ -93,11 +95,17 @@ public class PlanController {
 
 		log.debug("검색 조건에 맞는 plan 조회");
 		log.debug("condition : {}", condition);
-		List<Plan> plans = service.findByCondition(condition);
+		PlanSearchResult result = service.findByCondition(condition);
 
+		if (result == null) {
+			throw new PlanException("plan 조건 검색 결과 오류 발생");
+		}
+		
+		List<Plan> plans = result.getPlans();
+		
 		if (plans != null && plans.size() > 0) {
-			log.debug("plans : {}", plans);
-			return new ResponseEntity<List<Plan>>(plans, HttpStatus.OK);
+			log.debug("plan search by condition result : {}", result);
+			return new ResponseEntity<PlanSearchResult>(result, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		}
