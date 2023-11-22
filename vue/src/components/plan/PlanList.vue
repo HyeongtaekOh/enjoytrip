@@ -144,7 +144,9 @@ const onClickNextPage = () => {
     background-color: white;
     border-radius: 10px;
     grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+    grid-template-rows: repeat(3, 232px);
     grid-auto-flow: row; /* 오른쪽에서 시작하여 자리가 없으면 아래로 이어지도록 */
+    grid-auto-rows: minmax(0, 1fr); /* 각 행의 높이를 1fr로 설정 (빈틈없이 쌓임) */
     gap: 0 20px; /* 각 아이템 사이의 간격 */
     padding: 10px 10px 0 10px;
     overflow-y: auto;
