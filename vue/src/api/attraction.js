@@ -24,10 +24,14 @@ const findGugunCode = (sidocode, success, fail) => {
   api.get(`attraction/sido/${sidocode}`).then(success).catch(fail);
 };
 
+const getAttractionDetailById = (contentId, success, fail) => {
+  api.get(`attraction/detail/${contentId}`).then(success).catch(fail);
+}
 export {
   getAttractionById,
   getAttractionsByIds,
   getAttractionsByCondition,
   findGugunCode,
   findSidoCode,
+  getAttractionDetailById
 };

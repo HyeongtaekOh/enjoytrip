@@ -1,14 +1,15 @@
 <script setup>
 import { ref, defineProps, defineEmits, onMounted } from "vue";
 
-const { attraction, map, newPlan, handleDeletePlan, markers, infoWindow } = defineProps([
-  "attraction",
-  "map",
-  "newPlan",
-  "handleDeletePlan",
-  "markers",
-  "infoWindow",
-]);
+const { attraction, map, newPlan, handleDeletePlan, markers, infoWindow } =
+  defineProps([
+    "attraction",
+    "map",
+    "newPlan",
+    "handleDeletePlan",
+    "markers",
+    "infoWindow",
+  ]);
 
 const emit = defineEmits(["showOverlay", "updateNewPlan", "handleDeletePlan"]);
 
@@ -51,7 +52,10 @@ const handleDelete = () => {
 </script>
 <template>
   <div class="main">
-    <div class="row" @click="moveCenter(attraction.latitude, attraction.longitude)">
+    <div
+      class="row"
+      @click="moveCenter(attraction.latitude, attraction.longitude)"
+    >
       <div class="imgContainer">
         <img
           :src="
@@ -66,14 +70,26 @@ const handleDelete = () => {
         <div
           class="plus"
           @click="updateNewPlan"
-          v-if="!newPlan.some((plan) => plan.contentId === attraction.contentId)"
+          v-if="
+            !newPlan.some((plan) => plan.contentId === attraction.contentId)
+          "
         >
           + 추가하기
         </div>
         <div class="plus" @click="handleDelete" v-else>- 삭제하기</div>
-        <div>
+        <div class="attraction-content">
           <h1>{{ attraction.title }}</h1>
           <div>{{ attraction.addr1 }} {{ attraction.addr2 }}</div>
+          <div class="attraction-detail">
+            <router-link
+              :to="{
+                name: 'attraction-detail',
+                params: { contentId: attraction.contentId },
+              }"
+            >
+              자세히 보기</router-link
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -270,5 +286,28 @@ const handleDelete = () => {
 
 .info .link {
   color: #03c75a;
+}
+.attraction-content.clicked {
+  background-color: #e0e0e0; /* 클릭되었을 때의 배경 색상 */
+  transition: background-color 0.3s; /* 부드러운 전환을 위한 트랜지션 */
+}
+
+.attraction-content:hover {
+  background-color: #f0f0f0; /* hover 시의 배경 색상 */
+  transition: background-color 0.3s; /* 부드러운 전환을 위한 트랜지션 */
+}
+
+.attraction-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+  cursor: pointer;
+}
+.attraction-content .link {
+  color: #3cc1d8;
+  font-size: 15px;
+  margin-top: 10px;
 }
 </style>

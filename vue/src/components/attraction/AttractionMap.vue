@@ -39,7 +39,7 @@ const pos = ref(null);
 const markers = ref([]);
 
 const route = useRoute();
-const keyword = ref(null)
+const keyword = ref(null);
 if (route.query.selectedKeyword) {
   keyword.value = route.query.selectedKeyword;
 }
@@ -60,7 +60,6 @@ if (route.query.attractionIds) {
   );
 }
 const modifyPlan = ref([]);
-
 
 const attractionSearchResult = ref({
   attractions: [],
@@ -116,13 +115,17 @@ onMounted(() => {
     initMap();
   } else {
     const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY
-      }&libraries=services,clusterer`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${
+      import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY
+    }&libraries=services,clusterer`;
     script.onload = () => kakao.maps.load(() => initMap());
     document.head.appendChild(script);
   }
   makeSido();
-  watch([selectedSido, selectedGugun, selectedType, selectedKeyword], searchAttraction);
+  watch(
+    [selectedSido, selectedGugun, selectedType, selectedKeyword],
+    searchAttraction
+  );
 });
 
 watch(
@@ -137,7 +140,10 @@ watch(
     positions.value = [];
     attractionSearchResult.value.attractions.forEach((attraction) => {
       let obj = {};
-      obj.latlng = new kakao.maps.LatLng(attraction.latitude, attraction.longitude);
+      obj.latlng = new kakao.maps.LatLng(
+        attraction.latitude,
+        attraction.longitude
+      );
       obj.title = attraction.title;
       obj.addr1 = attraction.addr1;
       obj.firstImage = attraction.firstImage;
@@ -195,7 +201,8 @@ const loadMarkers = () => {
           firstImage: position.firstImage,
         };
         if (!info.value.firstImage.includes("tong")) {
-          info.value.firstImage = "http://http://localhost:5173/src/assets/img/noImage.jpg";
+          info.value.firstImage =
+            "http://http://localhost:5173/src/assets/img/noImage.jpg";
         }
         setInfoWindow();
         infoWindow.value.setMap(map);
@@ -327,37 +334,38 @@ function updateNewPlan(data) {
   console.log("data:", data);
   newPlan.value.push(data.plan);
   console.log("newPlan:", newPlan.value);
-  
+
   var linePath = [];
-  var planMarkers = [];
-function updateLinePath() {
   linePath = [];
-  planMarkers = [];
   for (var i = 0; i < newPlan.value.length; i++) {
-    linePath.push(new kakao.maps.LatLng(newPlan.value[i].latitude, newPlan.value[i].longitude));
-    planMarkers.push({
-      position: new kakao.maps.LatLng(newPlan.value[i].latitude, newPlan.value[i].longitude),
-      text: newPlan.value[i].title,
-    });
-    //마커디자인 바꾸고싶어
-    let markerImg = `<div style="position:relative;"><svg style="filter: drop-shadow(0px 0px 5px rgb(0 0 0 / 0.6));" xmlns="http://www.w3.org/2000/svg" fill="#0395a5" width="50px" height="50px" viewBox="0 0 1920 1920">
+    linePath.push(
+      new kakao.maps.LatLng(
+        newPlan.value[i].latitude,
+        newPlan.value[i].longitude
+      )
+    );
+  }
+
+  let markerImg = `<div style="position:relative;"><svg style="filter: drop-shadow(0px 0px 5px rgb(0 0 0 / 0.6));" xmlns="http://www.w3.org/2000/svg" fill="#0395a5" width="50px" height="50px" viewBox="0 0 1920 1920">
     <path d="M956.952 0c-362.4 0-657 294.6-657 656.88 0 180.6 80.28 347.88 245.4 511.56 239.76 237.96 351.6 457.68 351.6 691.56v60h120v-60c0-232.8 110.28-446.16 357.6-691.44 165.12-163.8 245.4-331.08 245.4-511.68 0-362.28-294.6-656.88-663-656.88" fill-rule="evenodd"/>
 
 </svg><span style="position:absolute; top:10%; left:50%;font-family:'NanumSquareNeo-ExtraBold';color:white;
     transform: translate(-50%, 0);">${i + 1}</span></div>`;
-  }
-}
-updateLinePath();
+  var markerImage = new kakao.maps.MarkerImage(
+    "data:image/svg+xml;charset=utf-8," + encodeURIComponent(markerImg),
+    new kakao.maps.Size(50, 50)
+  );
 
-var polyline = new kakao.maps.Polyline({
-  path: linePath, // 선을 구성하는 좌표배열 입니다
-  strokeWeight: 5, // 선의 두께 입니다
-  strokeColor: "#db4040", // 선의 색깔입니다
-  strokeOpacity: 0.7, // 선의 불투명도 입니다
-  strokeStyle: "solid", // 선의 스타일입니다
-});
 
-polyline.setMap(map);
+  var polyline = new kakao.maps.Polyline({
+    path: linePath, // 선을 구성하는 좌표배열 입니다
+    strokeWeight: 5, // 선의 두께 입니다
+    strokeColor: "#db4040", // 선의 색깔입니다
+    strokeOpacity: 0.7, // 선의 불투명도 입니다
+    strokeStyle: "solid", // 선의 스타일입니다
+  });
+
+  polyline.setMap(map);
 }
 
 let isSidebarOpen = false;
@@ -409,7 +417,10 @@ const closeNav = () => {
 };
 
 const handleDragEnd = () => {
-  const updatedOrder = newPlan.value.map((plan) => ({ ...plan, order: plan.index }));
+  const updatedOrder = newPlan.value.map((plan) => ({
+    ...plan,
+    order: plan.index,
+  }));
   newPlan.value = updatedOrder;
   console.log("newPlan.order:", newPlan.value);
 };
@@ -417,7 +428,9 @@ const handleDragEnd = () => {
 const handleDeletePlan = (element) => {
   console.log("element:", element);
   // 삭제 버튼 클릭 시 실행되는 함수
-  const index = newPlan.value.findIndex((plan) => plan.contentId === element.contentId);
+  const index = newPlan.value.findIndex(
+    (plan) => plan.contentId === element.contentId
+  );
   console.log("index:", index);
   if (index !== -1) {
     console.log("index:", index);
@@ -474,54 +487,101 @@ const showOverlay = ({ lat, lng, attraction }) => {
   });
   overlay.value.setMap(map);
 };
-
 </script>
 
 <template>
   <div class="contents">
     <div class="button-wrapper">
       <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
-      <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-2020.css" />
+      <link
+        rel="stylesheet"
+        href="https://www.w3schools.com/lib/w3-colors-2020.css"
+      />
 
       <div id="app" class="w3-container">
-        <button class="w3-button w3-xlarge w3-circle w3-2020-amberglow" @click="handleButtonClick">
+        <button
+          class="w3-button w3-xlarge w3-circle w3-2020-amberglow"
+          @click="handleButtonClick"
+        >
           +
         </button>
       </div>
       <div id="mySidenav" class="sidenav">
         <h2>NewPlan</h2>
-        <a href="javascript:void(0)" class="closebtn" @click="closeNav">&times;</a>
+        <a href="javascript:void(0)" class="closebtn" @click="closeNav"
+          >&times;</a
+        >
         <div class="list">
-          <draggable class="list-group" :component-data="componentData" v-model="newPlan" v-bind="dragOptions"
-            @start="drag = true" @end="handleDragEnd" item-key="order">
+          <draggable
+            class="list-group"
+            :component-data="componentData"
+            v-model="newPlan"
+            v-bind="dragOptions"
+            @start="drag = true"
+            @end="handleDragEnd"
+            item-key="order"
+          >
             <template #item="{ element }">
               <li class="list-group-item">
-                <i :class="element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'"
-                  @click="element.fixed = !element.fixed" aria-hidden="true"></i>
+                <i
+                  :class="
+                    element.fixed
+                      ? 'fa fa-anchor'
+                      : 'glyphicon glyphicon-pushpin'
+                  "
+                  @click="element.fixed = !element.fixed"
+                  aria-hidden="true"
+                ></i>
                 {{ element.title }}
-                <span class="delete-button" @click="handleDeletePlan(element)"> -삭제 </span>
+                <span class="delete-button" @click="handleDeletePlan(element)">
+                  -삭제
+                </span>
               </li>
             </template>
           </draggable>
         </div>
-        <button class="plan-button w3-xlarge w3-circle w3-2020-amberglow" @click="handlePlanButtonClick">
+        <button
+          class="plan-button w3-xlarge w3-circle w3-2020-amberglow"
+          @click="handlePlanButtonClick"
+        >
           계획 등록
         </button>
         <br />
-        <button class="plan-button w3-xlarge w3-circle w3-2020-amberglow" @click="resetPlan">
+        <button
+          class="plan-button w3-xlarge w3-circle w3-2020-amberglow"
+          @click="resetPlan"
+        >
           초기화
         </button>
       </div>
     </div>
     <div class="list">
       <form action="#" id="search" class="search">
-        <select name="sido" id="sido" class="dropdown" v-model="selectedSido" @change="handlerSidoChange">
+        <select
+          name="sido"
+          id="sido"
+          class="dropdown"
+          v-model="selectedSido"
+          @change="handlerSidoChange"
+        >
           <option value="0">전체 지역</option>
         </select>
-        <select name="gugun" id="gugun" class="dropdown" v-model="selectedGugun" @change="handlerGugunChange">
+        <select
+          name="gugun"
+          id="gugun"
+          class="dropdown"
+          v-model="selectedGugun"
+          @change="handlerGugunChange"
+        >
           <option value="0">전체 구군</option>
         </select>
-        <select name="type" id="type" class="dropdown" v-model="selectedType" @change="handlerTypeChange">
+        <select
+          name="type"
+          id="type"
+          class="dropdown"
+          v-model="selectedType"
+          @change="handlerTypeChange"
+        >
           <option value="0">전체 유형</option>
           <option value="12">관광지</option>
           <option value="14">문화시설</option>
@@ -532,34 +592,60 @@ const showOverlay = ({ lat, lng, attraction }) => {
           <option value="38">쇼핑</option>
           <option value="39">음식점</option>
         </select>
-        <input type="text" name="key" id="key" class="searchBar" placeholder="관광지를 검색하세요..."
-          v-bind:value="selectedKeyword" @input="selectedKeyword = $event.target.value" />
+        <input
+          type="text"
+          name="key"
+          id="key"
+          class="searchBar"
+          placeholder="관광지를 검색하세요..."
+          v-bind:value="selectedKeyword"
+          @input="selectedKeyword = $event.target.value"
+        />
       </form>
       <div class="row">
         <div class="listContainer" style="display: flex">
           <div class="trip-list">
-            <AttractionItem v-for="attraction in attractionSearchResult.attractions" :key="attraction.contentId"
-              :attraction="attraction" :map="map" :newPlan="newPlan" :handleDeletePlan="handleDeletePlan"
-              :infoWindow="infoWindow" :setInfoWindow="setInfoWindow" @showOverlay="showOverlay"
-              @updateNewPlan="updateNewPlan"></AttractionItem>
+            <AttractionItem
+              v-for="attraction in attractionSearchResult.attractions"
+              :key="attraction.contentId"
+              :attraction="attraction"
+              :map="map"
+              :newPlan="newPlan"
+              :handleDeletePlan="handleDeletePlan"
+              :infoWindow="infoWindow"
+              :setInfoWindow="setInfoWindow"
+              @showOverlay="showOverlay"
+              @updateNewPlan="updateNewPlan"
+            ></AttractionItem>
           </div>
         </div>
       </div>
     </div>
     <div class="page-util-wrapper">
       <a-button type="text" shape="round" size="large" @click="onClickPrevPage">
-        <img :src="PrevArrowImage" alt="이전 페이지" style="width: 30px; border-radius: 50%" />
+        <img
+          :src="PrevArrowImage"
+          alt="이전 페이지"
+          style="width: 30px; border-radius: 50%"
+        />
       </a-button>
-      <span style="margin: 10px 10px 0 10px; font-size: 250%; font-weight: 900">{{
-        currentPage
-      }}</span>
+      <span
+        style="margin: 10px 10px 0 10px; font-size: 250%; font-weight: 900"
+        >{{ currentPage }}</span
+      >
       <a-button type="text" shape="round" size="large" @click="onClickNextPage">
-        <img :src="NextArrowImage" alt="이전 페이지" style="width: 30px; border-radius: 50%" />
+        <img
+          :src="NextArrowImage"
+          alt="이전 페이지"
+          style="width: 30px; border-radius: 50%"
+        />
       </a-button>
     </div>
     <div id="map" class="map">
       <div class="test">
-        <button class="clear-all-btn" @click="clearAllOverlays">모두 지우기</button>
+        <button class="clear-all-btn" @click="clearAllOverlays">
+          모두 지우기
+        </button>
       </div>
     </div>
   </div>
@@ -575,7 +661,8 @@ const showOverlay = ({ lat, lng, attraction }) => {
 
 @font-face {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff") format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
+    format("woff");
   font-weight: 600;
   font-style: 600;
 }

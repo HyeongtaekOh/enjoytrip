@@ -77,6 +77,11 @@ const router = createRouter({
           name: "attraction-map",
           component: () => import("@/components/attraction/AttractionMap.vue"),
         },
+        {
+          path:"detail/:contentId",
+          name:"attraction-detail",
+          component: () => import("@/components/attraction/AttractionDetail.vue"),
+        }
       ],
     },
     {
