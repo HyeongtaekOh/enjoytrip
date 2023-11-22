@@ -49,15 +49,15 @@ if (route.query.attractionIds) {
   attractionIds = JSON.parse(route.query.attractionIds);
 
   getAttractionsByIds(
-  attractionIds,
-  ({ data }) => {
-    attractions.value = data;
-    newPlan.value = data;
-  },
-  (e) => {
-    console.log("getAttractions error :", e);
-  }
-);
+    attractionIds,
+    ({ data }) => {
+      attractions.value = data;
+      newPlan.value = data;
+    },
+    (e) => {
+      console.log("getAttractions error :", e);
+    }
+  );
 }
 const modifyPlan = ref([]);
 
@@ -327,6 +327,37 @@ function updateNewPlan(data) {
   console.log("data:", data);
   newPlan.value.push(data.plan);
   console.log("newPlan:", newPlan.value);
+  
+  var linePath = [];
+  var planMarkers = [];
+function updateLinePath() {
+  linePath = [];
+  planMarkers = [];
+  for (var i = 0; i < newPlan.value.length; i++) {
+    linePath.push(new kakao.maps.LatLng(newPlan.value[i].latitude, newPlan.value[i].longitude));
+    planMarkers.push({
+      position: new kakao.maps.LatLng(newPlan.value[i].latitude, newPlan.value[i].longitude),
+      text: newPlan.value[i].title,
+    });
+    //마커디자인 바꾸고싶어
+    let markerImg = `<div style="position:relative;"><svg style="filter: drop-shadow(0px 0px 5px rgb(0 0 0 / 0.6));" xmlns="http://www.w3.org/2000/svg" fill="#0395a5" width="50px" height="50px" viewBox="0 0 1920 1920">
+    <path d="M956.952 0c-362.4 0-657 294.6-657 656.88 0 180.6 80.28 347.88 245.4 511.56 239.76 237.96 351.6 457.68 351.6 691.56v60h120v-60c0-232.8 110.28-446.16 357.6-691.44 165.12-163.8 245.4-331.08 245.4-511.68 0-362.28-294.6-656.88-663-656.88" fill-rule="evenodd"/>
+
+</svg><span style="position:absolute; top:10%; left:50%;font-family:'NanumSquareNeo-ExtraBold';color:white;
+    transform: translate(-50%, 0);">${i + 1}</span></div>`;
+  }
+}
+updateLinePath();
+
+var polyline = new kakao.maps.Polyline({
+  path: linePath, // 선을 구성하는 좌표배열 입니다
+  strokeWeight: 5, // 선의 두께 입니다
+  strokeColor: "#db4040", // 선의 색깔입니다
+  strokeOpacity: 0.7, // 선의 불투명도 입니다
+  strokeStyle: "solid", // 선의 스타일입니다
+});
+
+polyline.setMap(map);
 }
 
 let isSidebarOpen = false;
@@ -443,6 +474,7 @@ const showOverlay = ({ lat, lng, attraction }) => {
   });
   overlay.value.setMap(map);
 };
+
 </script>
 
 <template>
