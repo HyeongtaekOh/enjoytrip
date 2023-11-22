@@ -27,4 +27,11 @@ const validateToken = (token, success, fail) => {
     .catch(fail);
 };
 
-export { login, signup, validateToken };
+const getRefreshToken = (token, success, fail) => {
+  api
+    .get("/refresh-token", { headers: { Authorization: "Bearer " + token } })
+    .then(success)
+    .catch(fail);
+};
+
+export { login, signup, validateToken, getRefreshToken };

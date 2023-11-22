@@ -1,7 +1,7 @@
 <script setup>
 import { ref, provide } from "vue";
 import { RouterView, useRouter } from "vue-router";
-import { validateToken } from "@/api/auth";
+import { validateToken, getRefreshToken } from "@/api/auth";
 import { parseJwtPayload } from "@/util/jwt-utils";
 import { serviceApi } from "./util/http-commons";
 import { useAuthStore } from "@/stores/auth";
@@ -33,23 +33,33 @@ serviceApi.interceptors.response.use(
     // 응답이 성공적으로 처리된 경우
     return response;
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
     // 오류가 발생한 경우
     if (error.response && error.response.status == 401) {
-      // 401 Unauthorized 응답 처리
-      if (localStorage.getItem("jwt")) {
-        localStorage.removeItem("jwt");
+      if (!originalRequest._retry) {
+        originalRequest._retry = true;
+        const accessToken = await refreshAccessToken();
+        if (accessToken) {
+          originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
+          return apiClient(originalRequest); // 실패한 요청 재시도
+        }
+      } else {
+        // 401 Unauthorized 응답 처리
+        if (localStorage.getItem("jwt")) {
+          localStorage.removeItem("jwt");
+        }
+        auth.logoutUser();
+        Swal.fire({
+          title: "로그인하셨나요?",
+          text: "로그인 후에 서비스를 이용하세요!",
+          icon: "warning",
+          timer: 3000,
+        });
+        router.push({
+          name: "home",
+        });
       }
-      auth.logoutUser();
-      Swal.fire({
-        title: "로그인하셨나요?",
-        text: "로그인 후에 서비스를 이용하세요!",
-        icon: "warning",
-        timer: 3000,
-      });
-      router.push({
-        name: "home",
-      });
     } else {
       Swal.fire({
         title: "개발자야 서버 켰니?",
@@ -63,6 +73,44 @@ serviceApi.interceptors.response.use(
     }
   }
 );
+
+async function refreshAccessToken() {
+  try {
+    await getRefreshToken(
+      localStorage.getItem("jwt"),
+      (res) => {
+        const token = extractToken(header);
+        localStorage.setItem("jwt", token);
+        updateUserContext();
+      },
+      (error) => {
+        console.log(error);
+        Swal.fire({
+          position: "top-end",
+          title: "토큰 갱신 실패",
+          icon: "error",
+          showConfirmButton: false,
+          timer: 2000,
+          width: "280px",
+          toast: true,
+        });
+      }
+    );
+
+    return localStorage.getItem("jwt");
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+
+function extractToken(header) {
+  if (header.startsWith("Bearer ")) {
+    return header.substring(7);
+  }
+
+  return null;
+}
 </script>
 
 <template>

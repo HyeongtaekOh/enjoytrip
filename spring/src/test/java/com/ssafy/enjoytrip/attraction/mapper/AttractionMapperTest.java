@@ -1,21 +1,17 @@
 package com.ssafy.enjoytrip.attraction.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.sql.SQLException;
-import java.util.List;
-
+import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfo;
+import com.ssafy.enjoytrip.attraction.model.mapper.AttractionMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 
-import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchCondition;
-import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfo;
-import com.ssafy.enjoytrip.attraction.model.mapper.AttractionMapper;
+import java.sql.SQLException;
 
-import lombok.extern.slf4j.Slf4j;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 @MybatisTest

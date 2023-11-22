@@ -11,6 +11,7 @@ function authApi() {
     headers: {
       "Content-Type": "application/json;charset=utf-8",
     },
+    withCredentials: true,
   });
 
   return instance;
@@ -21,6 +22,7 @@ const serviceApi = axios.create({
   headers: {
     "Content-Type": "application/json;charset=utf-8",
   },
+  withCredentials: true,
 });
 
 serviceApi.interceptors.request.use(

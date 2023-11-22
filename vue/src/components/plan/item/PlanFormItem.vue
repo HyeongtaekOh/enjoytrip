@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
-import { registPlan } from "@/api/plan";
+import { registPlan, updatePlan } from "@/api/plan";
 import RightArrowImage from "@/assets/img/right-arrow.png";
 import Swal from "sweetalert2";
 
@@ -65,7 +65,7 @@ const onSubmit = () => {
       () => {
         Swal.fire({
           position: "top-end",
-          title: "여행 계획 게시 완료!",
+          title: "여행 계획 저장 완료!",
           icon: "success",
           showConfirmButton: false,
           timer: 2000,
@@ -78,7 +78,41 @@ const onSubmit = () => {
         console.log(error);
         Swal.fire({
           position: "top-end",
-          title: "여행 계획 게시 실패",
+          title: "여행 계획 저장 실패",
+          icon: "error",
+          showConfirmButton: false,
+          timer: 2000,
+          width: "280px",
+          toast: true,
+        });
+      }
+    );
+  } else {
+    console.log("수정");
+    updatePlan(
+      plan.value,
+      () => {
+        Swal.fire({
+          position: "top-end",
+          title: "여행 계획 수정 완료!",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 2000,
+          width: "280px",
+          toast: true,
+        });
+        router.push({
+          name: "plan-view",
+          params: {
+            planId: plan.value.planId,
+          },
+        });
+      },
+      (error) => {
+        console.log(error);
+        Swal.fire({
+          position: "top-end",
+          title: "여행 계획 수정 실패",
           icon: "error",
           showConfirmButton: false,
           timer: 2000,

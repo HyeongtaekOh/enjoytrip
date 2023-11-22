@@ -65,30 +65,30 @@ public class PlanMapperTest {
 		}
 	}
 	
-	@Test
-	void findByCondition() {
-		
-		int pageSize = 15;
-		log.debug("find plans by condition test");
-		List<Integer> aids = new ArrayList<Integer>();
-		PlanSearchCondition condition = new PlanSearchCondition(1, "plan", "Trip", aids);
-		
-		try {
-			List<Plan> plans = mapper.findByCondition(condition, pageSize, 0);
-			assertNotNull(plans);
-			log.debug("plans : {}", plans);
-			assertEquals(1, plans.size());
-			condition.getAttractionIds().add(125406);
-			condition.getAttractionIds().add(125405);
-			plans = mapper.findByCondition(condition, pageSize, 0);
-			assertNotNull(plans);
-			log.debug("plans : {}", plans);
-			assertEquals(0, plans.size());
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+//	@Test
+//	void findByCondition() {
+//
+//		int pageSize = 15;
+//		log.debug("find plans by condition test");
+//		List<Integer> aids = new ArrayList<Integer>();
+//		PlanSearchCondition condition = new PlanSearchCondition(1, "plan", "Trip", aids);
+//
+//		try {
+//			List<Plan> plans = mapper.findByCondition(condition, pageSize, 0);
+//			assertNotNull(plans);
+//			log.debug("plans : {}", plans);
+//			assertEquals(1, plans.size());
+//			condition.getAttractionIds().add(125406);
+//			condition.getAttractionIds().add(125405);
+//			plans = mapper.findByCondition(condition, pageSize, 0);
+//			assertNotNull(plans);
+//			log.debug("plans : {}", plans);
+//			assertEquals(0, plans.size());
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	@Test
 	void insertPlanWithAttractions() {

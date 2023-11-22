@@ -29,6 +29,7 @@ const handleLogin = (username, password) => {
   login(
     { username, password },
     (res) => {
+      console.log("login response header =", res.headers);
       const header = res.headers.authorization;
       const token = extractToken(header);
       localStorage.setItem("jwt", token);

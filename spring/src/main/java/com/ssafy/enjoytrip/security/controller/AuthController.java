@@ -1,40 +1,43 @@
 package com.ssafy.enjoytrip.security.controller;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.crypto.SecretKey;
-
+import com.ssafy.enjoytrip.member.model.dto.LoginVo;
+import com.ssafy.enjoytrip.member.model.dto.MemberDto;
+import com.ssafy.enjoytrip.member.model.dto.MemberType;
+import com.ssafy.enjoytrip.member.model.dto.SignupVo;
+import com.ssafy.enjoytrip.member.model.service.MemberService;
+import com.ssafy.enjoytrip.member.model.service.RefreshTokenService;
+import com.ssafy.enjoytrip.security.utils.JwtUtils;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.enjoytrip.member.model.dto.LoginVo;
-import com.ssafy.enjoytrip.member.model.dto.MemberDto;
-import com.ssafy.enjoytrip.member.model.dto.MemberType;
-import com.ssafy.enjoytrip.member.model.dto.SignupVo;
-import com.ssafy.enjoytrip.member.model.service.MemberService;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final JwtUtils jwtUtils;
     private final MemberService memberService;
+    private final RefreshTokenService refreshTokenService;
 
-    @Value("${jwt.signing.key}")
-    private String signingKey;
+    @Value("${jwt.refreshToken.expire.seconds}")
+    private Long refreshTokenExpireSeconds;
 
     private final String TOKEN_PREFIX = "Bearer ";
 
@@ -44,38 +47,28 @@ public class AuthController {
         MemberDto member = memberService.loginMember(loginVo);
 
         if (member != null) {
-            // JWT 서명 키
-            SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
-            /**
-             * JWT Claims
-             * iss (Issuer)         : 토큰을 발행한 주체(예: 웹 서비스의 도메인).
-             * aud (Audience)       : 토큰의 수신자 또는 대상 audience.
-             * exp (Expiration Time): 토큰의 만료 시간. 일반적으로 UNIX 시간 형식으로 지정.
-             * nbf (Not Before)     : 토큰이 활성화되는 시간. 이 시간 이전에는 토큰이 유효하지 않음.
-             * iat (Issued At)      : 토큰이 발행된 시간. 자동으로 변경되어 토큰마다 다른 값을 가짐.
-             * jti (JWT ID)         : 토큰의 고유 식별자. 중복을 방지하는 데 사용될 수 있음.
-             * userId               : 사용자 식별자
-             * username				: 사용자 로그인에 사용되는 아이디
-             */
-            Map<String, Object> map = new HashMap<>();
-            long currentTime = getCurrentTimeInSeconds();
-            map.put("iss", "http://localhost:8080");
-            map.put("aud", "http://localhost:5173");
-            map.put("exp", currentTime + 900);
-            map.put("nbf", currentTime);
-            map.put("iat", currentTime);
-            map.put("jti", "enjoytrip-auth-jwt");
-            map.put("userId", member.getUserId());
-            map.put("username", member.getUsername());
-            map.put("userType", member.getType());
-            // JWT 생성
-            String jwtToken = Jwts.builder()
-                    .setClaims(map)
-                    .signWith(key)
-                    .compact();
+
+            String jwtAccessToken = jwtUtils.generateAccessToken(member);
+            String jwtRefreshToken = jwtUtils.generateRefreshToken();
+
+            // Redis에 Refresh Token 저장
+            refreshTokenService.setData(member.getUsername(), jwtRefreshToken);
+
+            // Access Token을 Response Header에 추가
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("Authorization", TOKEN_PREFIX + jwtAccessToken);
+
+            // Refresh Token을 Response HttpOnly Cookie에 추가
+            ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtRefreshToken)
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/")
+                    .maxAge(refreshTokenExpireSeconds)
+                    .build();
 
             return ResponseEntity.ok()
-                    .header("Authorization", TOKEN_PREFIX + jwtToken)
+                    .headers(responseHeaders)
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
                     .build();
         } else {
             throw new BadCredentialsException("인증 정보가 잘못되었습니다.");
