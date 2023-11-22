@@ -87,7 +87,7 @@ function onDeleteArticle() {
       <div class="col-lg-12 text-start">
         <div class="row my-2">
           <h2 class="text-secondary px-5" style="font-size: 250%">
-            {{ article.articleId }}. {{ article.subject }}
+            {{ article.subject }}
           </h2>
         </div>
         <div class="row">

@@ -35,11 +35,12 @@ public interface PlanMapper {
 
 	void deleteAttractionPlan(Integer planId) throws SQLException;
 	
-	default PlanSearchResult findByConditionWithPage(PlanSearchCondition condition, int pageSize) throws SQLException {
+	default PlanSearchResult findByConditionWithPaging(PlanSearchCondition condition, int pageSize) throws SQLException {
 		int totalCount = getTotalCountWithCondition(condition);
 		int page = condition.getPage() != null && condition.getPage() > 0 ? condition.getPage() : 1;
 		int totalPage = totalCount / pageSize + (totalCount % pageSize == 0 ? 0 : 1);
-		List<Plan> plans = findByCondition(condition, pageSize, condition.getPage() != null ? (condition.getPage() - 1) * pageSize : 0);
+		int offset = condition.getPage() != null ? (condition.getPage() - 1) * pageSize : 0;
+		List<Plan> plans = findByCondition(condition, pageSize, offset);
 		PlanSearchResult result = new PlanSearchResult(plans, plans.size(), page, pageSize, totalCount, totalPage);
 		
 		return result;

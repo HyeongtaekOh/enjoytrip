@@ -41,7 +41,7 @@ public class QnaBoardServiceImpl implements QnaBoardService {
 		try {
 			int pageSize = condition.getPageSize() != null && condition.getPageSize() > 0 ? condition.getPageSize()
 					: PAGE_SIZE;
-			return mapper.findByConditionWithPage(condition, pageSize);
+			return mapper.findByConditionWithPaging(condition, pageSize);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

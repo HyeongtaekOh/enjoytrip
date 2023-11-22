@@ -30,13 +30,15 @@ const plan = ref({
   attractionIds: attractions.map((attraction) => attraction.contentId),
 });
 
-if (type == "modify") {
-  console.log("plan:", props.plan);
-  plan.value.planId = props.plan.planId;
-  plan.value.name = props.plan.name;
-  plan.value.description = props.plan.description;
-  plan.value.theme = props.plan.theme;
-}
+onMounted(() => {
+  if (type == "modify") {
+    console.log("plan:", props.plan);
+    plan.value.planId = props.plan.planId;
+    plan.value.name = props.plan.name;
+    plan.value.description = props.plan.description;
+    plan.value.theme = props.plan.theme;
+  }
+});
 
 const moveAttraction = () => {
   router.push({

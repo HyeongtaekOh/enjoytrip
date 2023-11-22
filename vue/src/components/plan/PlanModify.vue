@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { getAttractionsByIds } from "@/api/attraction";
 import { getPlanById, deletePlan } from "../../api/plan";
@@ -53,7 +53,10 @@ getAttractionsByIds(
 
 <template>
   <div class="modify-container">
-    <div v-if="plan.attractions.length > 0" class="modify-content-container">
+    <div
+      v-if="plan.name.length > 0 && plan.attractions.length > 0"
+      class="modify-content-container"
+    >
       <div class="modify-content">
         <div class="modify-content-header">
           <h1 class="modify-content-title">여행 계획 수정</h1>

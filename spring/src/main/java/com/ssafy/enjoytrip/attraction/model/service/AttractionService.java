@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchCondition;
+import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchResult;
 import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfo;
 
 public interface AttractionService {
 
 	Optional<AttractionInfo> findById(int id);
 	List<AttractionInfo> findByIds(List<Integer> ids);
-	List<AttractionInfo> findByCondition(AttractionSearchCondition condition, int page);
+	AttractionSearchResult findByCondition(AttractionSearchCondition condition, int page);
 }

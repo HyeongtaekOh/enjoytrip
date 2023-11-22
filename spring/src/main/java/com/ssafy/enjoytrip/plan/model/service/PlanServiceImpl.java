@@ -50,7 +50,7 @@ public class PlanServiceImpl implements PlanService {
 		try {
 			int pageSize = condition.getPageSize() != null && condition.getPageSize() > 0 ? condition.getPageSize()
 					: PAGE_SIZE;
-			return mapper.findByConditionWithPage(condition, pageSize);
+			return mapper.findByConditionWithPaging(condition, pageSize);
 		} catch (SQLException e) {
 			throw new PlanException("검색 조건으로 조회 중 오류 발생 : " + e.getMessage());
 		}

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchCondition;
+import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchResult;
 import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfo;
 import com.ssafy.enjoytrip.attraction.model.mapper.AttractionMapper;
 import com.ssafy.enjoytrip.exception.AttractionException;
@@ -47,9 +48,11 @@ public class AttractionServiceImpl implements AttractionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AttractionInfo> findByCondition(AttractionSearchCondition condition, int page) {
+	public AttractionSearchResult findByCondition(AttractionSearchCondition condition, int page) {
 		try {
-			return attractionMapper.findByCondition(condition, PAGE_SIZE, (page - 1) * PAGE_SIZE);
+			int pageSize = condition.getPageSize() != null && condition.getPageSize() > 0 ? condition.getPageSize()
+					: PAGE_SIZE;
+			return attractionMapper.findByConditionWithPaging(condition, pageSize);
 		} catch (SQLException e) {
 			log.error("검색 조건으로 검색 중 오류 발생");
 			throw new AttractionException("검색 조건으로 검색 중 오류 발생 : " + e.getMessage());

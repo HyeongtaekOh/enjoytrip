@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfo;
 import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchCondition;
+import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchResult;
 import com.ssafy.enjoytrip.attraction.model.dto.GugunCode;
 import com.ssafy.enjoytrip.attraction.model.dto.SidoCode;
 import com.ssafy.enjoytrip.attraction.model.service.AttractionService;
 import com.ssafy.enjoytrip.attraction.model.service.GugunService;
 import com.ssafy.enjoytrip.attraction.model.service.SidoService;
+import com.ssafy.enjoytrip.exception.AttractionException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -67,24 +69,31 @@ public class AttractionController {
 
 	@ApiOperation(value = "관광지 조건 검색", notes = "검색 조건(시/도, 구/군, 관광지 유형) 기반으로 검색")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "OK", response = AttractionInfo.class, responseContainer = "List"),
+			@ApiResponse(code = 200, message = "OK", response = AttractionSearchResult.class),
 			@ApiResponse(code = 204, message = "No Content"),
 			@ApiResponse(code = 400, message = "Bad Request")
 	})
 	@GetMapping("")
-	public ResponseEntity<?> getAttractionsByCondition(@RequestParam(defaultValue = "0") int sidoCode,
-			@RequestParam(defaultValue = "0") int gugunCode, 
-			@RequestParam(defaultValue = "0") int type, 
+	public ResponseEntity<?> getAttractionsByCondition(@RequestParam(defaultValue = "0") Integer sidoCode,
+			@RequestParam(defaultValue = "0") Integer gugunCode, 
+			@RequestParam(defaultValue = "0") Integer type, 
 			@RequestParam(defaultValue = "") String keyword, 
-			@RequestParam(defaultValue = "1") int page) {
+			@RequestParam(defaultValue = "1") Integer page,
+			@RequestParam Integer pageSize) {
 		
-		log.debug("sidoCode = {}, gugunCode = {}, type = {}, keyword = {}, page = {}", sidoCode, gugunCode, type, keyword, page);
-		AttractionSearchCondition condition = new AttractionSearchCondition(sidoCode, gugunCode, type, keyword);
-		List<AttractionInfo> list = attractionService.findByCondition(condition, page);
-		log.debug("list : {}", list);
+		log.debug("sidoCode = {}, gugunCode = {}, type = {}, keyword = {}, page = {}, pageSize = {}", sidoCode, gugunCode, type, keyword, page, pageSize);
+		AttractionSearchCondition condition = new AttractionSearchCondition(sidoCode, gugunCode, type, keyword, page, pageSize);
+		AttractionSearchResult result = attractionService.findByCondition(condition, page);
 		
-		if (list != null && list.size() > 0) {
-			return new ResponseEntity<List<AttractionInfo>>(list, HttpStatus.OK);
+		if (result == null) {
+			throw new AttractionException("attraction 조건 검색 결과 오류 발생");
+		}
+		
+		List<AttractionInfo> attractions = result.getAttractions();
+		
+		if (attractions != null && attractions.size() > 0) {
+			log.debug("attraction search by condition list : {}", attractions);
+			return new ResponseEntity<AttractionSearchResult>(result, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		}

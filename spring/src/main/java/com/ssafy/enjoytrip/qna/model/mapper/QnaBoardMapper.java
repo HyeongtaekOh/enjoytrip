@@ -27,11 +27,12 @@ public interface QnaBoardMapper {
 
 	void deleteQnaArticle(Integer articleId) throws SQLException;
 	
-	default QnaBoardSearchResult findByConditionWithPage(QnaBoardSearchCondition condition, int pageSize) throws SQLException {
+	default QnaBoardSearchResult findByConditionWithPaging(QnaBoardSearchCondition condition, int pageSize) throws SQLException {
 		int totalCount = getTotalCountWithCondition(condition);
 		int page = condition.getPage() != null && condition.getPage() > 0 ? condition.getPage() : 1;
 		int totalPage = totalCount / pageSize + (totalCount % pageSize == 0 ? 0 : 1);
-		List<QnaBoardDto> qnas = findByCondition(condition, pageSize, condition.getPage() != null ? (condition.getPage() - 1) * pageSize : 0);
+		int offset = condition.getPage() != null ? (condition.getPage() - 1) * pageSize : 0;
+		List<QnaBoardDto> qnas = findByCondition(condition, pageSize, offset);
 		QnaBoardSearchResult result = new QnaBoardSearchResult(qnas, qnas.size(), page, pageSize, totalCount, totalPage);
 		
 		return result;
