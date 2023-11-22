@@ -16,6 +16,7 @@ const attractions = ref([]);
 
 const newPlan = ref([]);
 const drag = ref(false);
+const overlay = ref(null);
 
 let map = null;
 const infoWindow = ref(null);
@@ -110,6 +111,7 @@ const loadMarkers = () => {
       tel: position.tel,
       clickable: true,
     });
+
     markers.value.push(marker);
 
     marker.addListener("click", function () {
@@ -156,7 +158,6 @@ const setInfoWindow = () => {
             <div class="ellipsis">${info.value.addr1}</div>
             <div class="jibun ellipsis">${info.value.tel}</div>
             <div class="link" onclick="openNaverSearch('${info.value.title}')">네이버 검색</div>
-            <div class="plus">+ 추가하기</div>
           </div>
         </div>
       </div>
@@ -310,6 +311,56 @@ const handleDeletePlan = (element) => {
     newPlan.value.splice(index, 1);
   }
 };
+
+const clearAllOverlays = () => {
+  if (infoWindow.value) {
+    infoWindow.value.setMap(null);
+  }
+  overlay.value.setMap(null);
+  before.value = null;
+};
+const before = ref(null);
+
+const showOverlay = ({ lat, lng, attraction }) => {
+  const moveLatLon = new kakao.maps.LatLng(lat, lng);
+  console.log("moveLatLon:", moveLatLon);
+  console.log("now:", attraction);
+  console.log("overlay.value:", overlay.value);
+  if (before.value === attraction.contentId) {
+    overlay.value.setMap(null);
+    before.value = null;
+    return;
+  }
+
+  before.value = attraction.contentId;
+  if (overlay.value) {
+    overlay.value.setMap(null);
+  }
+
+  map.panTo(moveLatLon);
+  const content = `
+    <div class="wrap">
+      <div class="info">
+        <div class="title">${attraction.title}</div>
+        <div class="body">
+          <div class="img">
+            <img src="${attraction.firstImage}" />
+          </div>
+          <div class="desc">
+            <div class="ellipsis">${attraction.addr1}</div>
+            <div class="jibun ellipsis">${attraction.tel}</div>
+            <div class="link" onclick="openNaverSearch('${attraction.title}')">네이버 검색</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  overlay.value = new kakao.maps.CustomOverlay({
+    position: moveLatLon,
+    content,
+  });
+  overlay.value.setMap(map);
+};
 </script>
 
 <template>
@@ -413,13 +464,21 @@ const handleDeletePlan = (element) => {
               :attraction="attraction"
               :map="map"
               :newPlan="newPlan"
+              :handleDeletePlan="handleDeletePlan"
+              :infoWindow="infoWindow"
+              :setInfoWindow="setInfoWindow"
+              @showOverlay="showOverlay"
               @updateNewPlan="updateNewPlan"
             ></AttractionItem>
           </div>
         </div>
       </div>
     </div>
-    <div id="map" class="map"></div>
+    <div id="map" class="map">
+      <div class="test">
+        <button class="clear-all-btn" @click="clearAllOverlays">모두 지우기</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -461,6 +520,113 @@ const handleDeletePlan = (element) => {
 }
 .plan-button:hover {
   opacity: 1;
+}
+
+.button-wrapper {
+  position: absolute;
+  left: 2px;
+  bottom: 15px;
+  z-index: 3;
+}
+
+.flip-list-move {
+  transition: transform 0.5s;
+}
+
+.no-move {
+  transition: transform 0s;
+}
+
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  background-color: #ecdfd4;
+  overflow-x: hidden;
+  padding-top: 60px;
+  transition: 0.5s;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+#main {
+  transition: margin-left 0.5s;
+  padding: 20px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+
+  .sidenav a {
+    font-size: 18px;
+  }
+}
+
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
+}
+
+.list-group {
+  min-height: 20px;
+}
+
+.list-group-item {
+  position: relative;
+  cursor: move;
+  font-size: 130%;
+}
+
+.list-group-item i {
+  cursor: pointer;
+}
+
+.w3-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+}
+.click-img {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.clear-all-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #fff;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  z-index: 2;
 }
 </style>
 <style>
@@ -570,100 +736,5 @@ const handleDeletePlan = (element) => {
 
 .info .link {
   color: #03c75a;
-}
-
-.sidenav {
-  height: 100%;
-  width: 0;
-  position: fixed;
-  z-index: 3;
-  top: 0;
-  left: 0;
-  background-color: #ecdfd4;
-  overflow-x: hidden;
-  padding-top: 60px;
-  transition: 0.5s;
-}
-
-.sidenav a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
-}
-
-.sidenav a:hover {
-  color: #f1f1f1;
-}
-
-.sidenav .closebtn {
-  position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
-}
-
-#main {
-  transition: margin-left 0.5s;
-  padding: 20px;
-}
-
-@media screen and (max-height: 450px) {
-  .sidenav {
-    padding-top: 15px;
-  }
-
-  .sidenav a {
-    font-size: 18px;
-  }
-}
-
-.button-wrapper {
-  position: absolute;
-  left: 2px;
-  bottom: 15px;
-  z-index: 3;
-}
-.flip-list-move {
-  transition: transform 0.5s;
-}
-
-.no-move {
-  transition: transform 0s;
-}
-
-.ghost {
-  opacity: 0.5;
-  background: #c8ebfb;
-}
-
-.list-group {
-  min-height: 20px;
-}
-
-.list-group-item {
-  position: relative;
-  cursor: move;
-  font-size: 130%;
-}
-
-.list-group-item i {
-  cursor: pointer;
-}
-
-.w3-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-}
-.click-img {
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
 }
 </style>
