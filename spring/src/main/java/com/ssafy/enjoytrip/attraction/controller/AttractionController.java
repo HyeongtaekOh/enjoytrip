@@ -79,7 +79,7 @@ public class AttractionController {
 			@RequestParam(defaultValue = "0") Integer type, 
 			@RequestParam(defaultValue = "") String keyword, 
 			@RequestParam(defaultValue = "1") Integer page,
-			@RequestParam Integer pageSize) {
+			@RequestParam(required = false) Integer pageSize) {
 		
 		log.debug("sidoCode = {}, gugunCode = {}, type = {}, keyword = {}, page = {}, pageSize = {}", sidoCode, gugunCode, type, keyword, page, pageSize);
 		AttractionSearchCondition condition = new AttractionSearchCondition(sidoCode, gugunCode, type, keyword, page, pageSize);
