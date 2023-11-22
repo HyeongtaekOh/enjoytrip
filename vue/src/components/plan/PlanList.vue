@@ -56,43 +56,56 @@ getPlanList();
 }
 .plan-list-container {
   margin-top: 20px;
+  width: 80vw;
   height: 80vh;
-}
-
-.grid-container {
-  height: calc(100% - 55px);
-  display: grid;
-  background-color: white;
-  border-radius: 10px;
-  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
-  grid-auto-flow: row; /* 오른쪽에서 시작하여 자리가 없으면 아래로 이어지도록 */
-  gap: 0 20px; /* 각 아이템 사이의 간격 */
-  padding: 10px 7px 10px 7px;
-}
-
-.button-wrapper {
-  width: 100%;
-  height: 45px;
-  margin-bottom: 10px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: start;
 
-  button {
+  .button-wrapper {
+    width: 80vw;
     height: 45px;
-    font-size: 125%;
+    margin-bottom: 10px;
+    display: flex;
+    // flex-direction: row;
 
-    .regist-icon {
-      transform: translateY(-4px);
+    button {
+      height: 45px;
+      font-size: 125%;
+
+      .regist-icon {
+        transform: translateY(-4px);
+      }
     }
   }
-}
+  .grid-container {
+    height: calc(80vh - 55px);
+    display: grid;
+    background-color: white;
+    border-radius: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+    grid-auto-flow: row; /* 오른쪽에서 시작하여 자리가 없으면 아래로 이어지도록 */
+    gap: 0 20px; /* 각 아이템 사이의 간격 */
+    padding: 10px 10px 10px 10px;
+    overflow-y: auto;
+    .grid-item {
+      /* 게시물 스타일링 */
+      background-color: aliceblue;
+      // border: 1px solid ghostwhite;
+      border-radius: 10px;
+      height: 14rem;
+    }
 
-.grid-item {
-  /* 게시물 스타일링 */
-  background-color: aliceblue;
-  // border: 1px solid ghostwhite;
-  border-radius: 10px;
-  height: 14rem;
+    &::-webkit-scrollbar {
+      width: 2px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: rgb(184, 184, 184);
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #fdfdfd;
+    }
+  }
 }
 
 /* 화면이 작을 때 (예: 600px 미만) 한 열로 표시 */

@@ -2,7 +2,9 @@
 import { ref, onMounted, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
+import { registPlan } from "@/api/plan";
 import RightArrowImage from "@/assets/img/right-arrow.png";
+import Swal from "sweetalert2";
 
 const { attractions, type } = defineProps({ attractions: Array, type: String });
 
@@ -28,6 +30,38 @@ const moveToAttraction = () => {
       attractionIds: JSON.stringify(plan.value.attractionIds),
     },
   });
+};
+
+const onSubmit = () => {
+  if (type == "regist") {
+    registPlan(
+      plan.value,
+      () => {
+        Swal.fire({
+          position: "top-end",
+          title: "여행 계획 게시 완료!",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 2000,
+          width: "280px",
+          toast: true,
+        });
+        router.push({ name: "plan-list" });
+      },
+      (error) => {
+        console.log(error);
+        Swal.fire({
+          position: "top-end",
+          title: "여행 계획 게시 실패",
+          icon: "error",
+          showConfirmButton: false,
+          timer: 2000,
+          width: "280px",
+          toast: true,
+        });
+      }
+    );
+  }
 };
 </script>
 
@@ -68,18 +102,18 @@ const moveToAttraction = () => {
     <div class="form-item mb-3">
       <label for="plan-theme" class="form-label">테마 : </label>
       <select id="plan-theme" class="form-select" v-model="plan.theme">
-        <option value="1">1. 자연</option>
-        <option value="2">2. 문화</option>
-        <option value="3">3. 역사</option>
-        <option value="4">4. 레포츠</option>
-        <option value="5">5. 테마파크</option>
-        <option value="6">6. 쇼핑</option>
-        <option value="7">7. 음식</option>
-        <option value="8">8. 숙박</option>
-        <option value="9">9. 축제</option>
-        <option value="10">10. 건축/조형물</option>
-        <option value="11">11. 공연/행사</option>
-        <option value="12">12. 기타</option>
+        <option value="자연">1. 자연</option>
+        <option value="문화">2. 문화</option>
+        <option value="역사">3. 역사</option>
+        <option value="레포츠">4. 레포츠</option>
+        <option value="테마파크">5. 테마파크</option>
+        <option value="쇼핑">6. 쇼핑</option>
+        <option value="음식">7. 음식</option>
+        <option value="숙박">8. 숙박</option>
+        <option value="축제">9. 축제</option>
+        <option value="건축/조형물">10. 건축/조형물</option>
+        <option value="공연/행사">11. 공연/행사</option>
+        <option value="기타">12. 기타</option>
       </select>
     </div>
     <div class="form-item mb-3">
