@@ -4,12 +4,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import com.ssafy.enjoytrip.attraction.model.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchCondition;
-import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchResult;
-import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfo;
 import com.ssafy.enjoytrip.attraction.model.mapper.AttractionMapper;
 import com.ssafy.enjoytrip.exception.AttractionException;
 
@@ -57,6 +55,17 @@ public class AttractionServiceImpl implements AttractionService {
 			log.error("검색 조건으로 검색 중 오류 발생");
 			throw new AttractionException("검색 조건으로 검색 중 오류 발생 : " + e.getMessage());
 		}		
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Optional<AttractionDescription> findDescriptionById(int id) {
+		try {
+			return attractionMapper.findDescriptionById(id);
+		} catch (SQLException e) {
+			log.error("ID로 상세 정보 검색 중 오류 발생");
+			throw new AttractionException("ID로 상세 정보 검색 중 오류 발생 : " + e.getMessage());
+		}
 	}
 	
 }

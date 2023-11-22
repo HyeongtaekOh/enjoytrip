@@ -3,6 +3,7 @@ package com.ssafy.enjoytrip.attraction.controller;
 import java.util.List;
 import java.util.Optional;
 
+import com.ssafy.enjoytrip.attraction.model.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,11 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.enjoytrip.attraction.model.dto.AttractionInfo;
-import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchCondition;
-import com.ssafy.enjoytrip.attraction.model.dto.AttractionSearchResult;
-import com.ssafy.enjoytrip.attraction.model.dto.GugunCode;
-import com.ssafy.enjoytrip.attraction.model.dto.SidoCode;
 import com.ssafy.enjoytrip.attraction.model.service.AttractionService;
 import com.ssafy.enjoytrip.attraction.model.service.GugunService;
 import com.ssafy.enjoytrip.attraction.model.service.SidoService;
@@ -111,5 +107,18 @@ public class AttractionController {
 		List<GugunCode> list = gugunService.findGugunCode(sidoCode);
 		log.debug("list : {}", list);
 		return new ResponseEntity<List<GugunCode>>(list, HttpStatus.OK);
+	}
+
+	@GetMapping("detail/{id}")
+	public ResponseEntity<?> getAttractionDetailById(@PathVariable int id) {
+		log.debug("id : {}", id);
+		Optional<AttractionDescription> a = attractionService.findDescriptionById(id);
+		if (a.isPresent()) {
+			AttractionDescription attraction = a.get();
+			log.debug("attraction : {}", attraction);
+			return new ResponseEntity<AttractionDescription>(attraction, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		}
 	}
 }

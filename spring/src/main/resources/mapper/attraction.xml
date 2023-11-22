@@ -135,7 +135,7 @@
 		content_id = #{id}
 	</select>
 
-	<select id="findDescriptionById" resultMap="descriptionMap">
+	<select id="findDescriptionById" parameterType="Int" resultMap="descriptionMap">
 		select
 		content_id,
 		homepage,

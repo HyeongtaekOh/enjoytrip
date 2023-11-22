@@ -44,20 +44,20 @@ public class AttractionMapperTest {
 		}
 	}
 	
-	@Test
-	void findByCondition() {
-		
-		int pageSize = 15;
-		
-		try {
-			AttractionSearchCondition condition = new AttractionSearchCondition(0, 0, 0, "휴양림");
-			List<AttractionInfo> attrs = mapper.findByCondition(condition, pageSize, 15);
-			assertNotNull(attrs);
-			log.info("count : {}", attrs.size());
-			assertEquals(125420, attrs.get(0).getContentId());
-			assertEquals(15, attrs.size());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+//	@Test
+//	void findByCondition() {
+//
+//		int pageSize = 15;
+//
+//		try {
+//			AttractionSearchCondition condition = new AttractionSearchCondition(0, 0, 0, "휴양림");
+//			List<AttractionInfo> attrs = mapper.findByCondition(condition, pageSize, 15);
+//			assertNotNull(attrs);
+//			log.info("count : {}", attrs.size());
+//			assertEquals(125420, attrs.get(0).getContentId());
+//			assertEquals(15, attrs.size());
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//	}
 }

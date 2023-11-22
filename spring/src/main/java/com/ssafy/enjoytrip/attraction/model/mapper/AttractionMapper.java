@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import com.ssafy.enjoytrip.attraction.model.dto.AttractionDescription;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,7 +22,9 @@ public interface AttractionMapper {
 	Integer getTotalCountWithCondition(@Param("condition") AttractionSearchCondition condition) throws SQLException;
 	
 	List<AttractionInfo> findByCondition(@Param("condition") AttractionSearchCondition condition, @Param("pageSize") int pageSize, @Param("offset") int offset) throws SQLException;
-	
+
+	Optional<AttractionDescription> findDescriptionById(int id) throws SQLException;
+
 	default AttractionSearchResult findByConditionWithPaging(AttractionSearchCondition condition, int pageSize) throws SQLException {
 		int totalCount = getTotalCountWithCondition(condition);
 		int page = condition.getPage() != null && condition.getPage() > 0 ? condition.getPage() : 1;
