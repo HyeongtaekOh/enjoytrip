@@ -6,12 +6,19 @@ import { registPlan } from "@/api/plan";
 import RightArrowImage from "@/assets/img/right-arrow.png";
 import Swal from "sweetalert2";
 
-const { attractions, type } = defineProps({ attractions: Array, type: String });
+const props = defineProps({
+  attractions: Array,
+  type: String,
+  plan: Object,
+});
+
+const { attractions, type } = props;
 
 const auth = useAuthStore();
 const router = useRouter();
 
 const plan = ref({
+  planId: 0,
   userId: auth.getUser.userId,
   name: "",
   description: "",
@@ -23,11 +30,28 @@ const plan = ref({
   attractionIds: attractions.map((attraction) => attraction.contentId),
 });
 
-const moveToAttraction = () => {
+if (type == "modify") {
+  console.log("plan:", props.plan);
+  plan.value.planId = props.plan.planId;
+  plan.value.name = props.plan.name;
+  plan.value.description = props.plan.description;
+  plan.value.theme = props.plan.theme;
+}
+
+const moveAttraction = () => {
   router.push({
     name: "attraction-map",
     query: {
       attractionIds: JSON.stringify(plan.value.attractionIds),
+    },
+  });
+};
+
+const moveDetail = () => {
+  router.push({
+    name: "plan-view",
+    params: {
+      planId: plan.value.planId,
     },
   });
 };
@@ -102,18 +126,18 @@ const onSubmit = () => {
     <div class="form-item mb-3">
       <label for="plan-theme" class="form-label">테마 : </label>
       <select id="plan-theme" class="form-select" v-model="plan.theme">
-        <option value="자연">1. 자연</option>
-        <option value="문화">2. 문화</option>
-        <option value="역사">3. 역사</option>
-        <option value="레포츠">4. 레포츠</option>
-        <option value="테마파크">5. 테마파크</option>
-        <option value="쇼핑">6. 쇼핑</option>
-        <option value="음식">7. 음식</option>
-        <option value="숙박">8. 숙박</option>
-        <option value="축제">9. 축제</option>
-        <option value="건축/조형물">10. 건축/조형물</option>
-        <option value="공연/행사">11. 공연/행사</option>
-        <option value="기타">12. 기타</option>
+        <option value="자연">자연</option>
+        <option value="문화">문화</option>
+        <option value="역사">역사</option>
+        <option value="레포츠">레포츠</option>
+        <option value="테마파크">테마파크</option>
+        <option value="쇼핑">쇼핑</option>
+        <option value="음식">음식</option>
+        <option value="숙박">숙박</option>
+        <option value="축제">축제</option>
+        <option value="건축/조형물">건축/조형물</option>
+        <option value="공연/행사">공연/행사</option>
+        <option value="기타">기타</option>
       </select>
     </div>
     <div class="form-item mb-3">
@@ -125,13 +149,21 @@ const onSubmit = () => {
         rows="10"
       ></textarea>
     </div>
-    <div class="col-auto text-center">
+    <div class="col-auto text-center plan-form-button-wrapper">
+      <button type="button" class="btn btn-outline-danger mb-3 me-2" @click="moveAttraction">
+        코스 수정하기
+      </button>
       <button type="submit" class="btn btn-outline-primary mb-3" v-if="type === 'regist'">
         글작성
       </button>
       <button type="submit" class="btn btn-outline-success mb-3" v-else>글수정</button>
-      <button type="button" class="btn btn-outline-danger mb-3 ms-1" @click="moveToAttraction">
-        코스 수정하기
+      <button
+        type="button"
+        class="btn btn-outline-secondary mb-3 ms-2"
+        v-if="type == 'modify'"
+        @click="moveDetail"
+      >
+        취소
       </button>
     </div>
   </form>
@@ -142,7 +174,7 @@ form {
   display: flex;
   flex-direction: column;
   width: 32vw;
-  padding-right: 1vw;
+  padding: 1vw 1vw 0 0;
 
   .da-container {
     width: 32vw;
@@ -178,6 +210,7 @@ form {
   .form-item {
     display: flex;
     transform: translateX(-5px);
+    margin: 0.5vw 0;
 
     .form-label {
       width: 5vw;
@@ -188,6 +221,14 @@ form {
     #plan-description {
       height: 150px;
     }
+  }
+
+  .plan-form-button-wrapper {
+    margin-top: 2vh;
+  }
+
+  * {
+    font-size: 120%;
   }
 }
 </style>

@@ -8,9 +8,10 @@ const auth = useAuthStore();
 
 const { recomment } = defineProps({ recomment: Object });
 const { commentId } = recomment;
-const content = ref("");
+const content = ref(recomment.content);
 const showModify = ref(false);
 const isUser = ref(false);
+const modifyCommentInputRef = ref(null);
 const getReCommentList = inject("getReCommentList");
 
 onMounted(() => {
@@ -51,6 +52,9 @@ function onRemoveComment() {
 
 function clickModify() {
   showModify.value = !showModify.value;
+  setTimeout(() => {
+    modifyCommentInputRef.value.focus();
+  }, 0);
 }
 
 function onModifyComment() {
@@ -90,6 +94,13 @@ function onModifyComment() {
     }
   );
 }
+
+const onEnterModify = (event) => {
+  if (!event.shiftKey) {
+    event.preventDefault();
+    onModifyComment();
+  }
+};
 </script>
 
 <template>
@@ -115,6 +126,8 @@ function onModifyComment() {
             rows="2"
             placeholder="What are you thinking?"
             v-model="content"
+            ref="modifyCommentInputRef"
+            @keydown.enter="onEnterModify"
           ></textarea>
           <div class="mar-top clearfix">
             <button class="btn btn-sm btn-primary pull-right" @click="onModifyComment">

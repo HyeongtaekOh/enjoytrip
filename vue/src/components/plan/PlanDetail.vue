@@ -42,9 +42,23 @@ const getPlan = () => {
   );
 };
 
-const moveToList = () => {
+const moveList = () => {
   router.push({
     name: "plan-list",
+  });
+};
+
+const moveModify = () => {
+  router.push({
+    name: "plan-modify",
+    params: {
+      planId: planId,
+    },
+    query: {
+      attractionIds: JSON.stringify(
+        plan.value.attractions.map((attraction) => attraction.contentId)
+      ),
+    },
   });
 };
 
@@ -59,7 +73,7 @@ const removePlan = () => {
   }).then((result) => {
     if (result.isConfirmed) {
       deletePlan(
-        plan.planId,
+        planId,
         ({ data }) => {
           console.log(data);
           Swal.fire({
@@ -71,7 +85,7 @@ const removePlan = () => {
             width: "280px",
             toast: true,
           });
-          moveToList();
+          moveList();
         },
         (e) => {
           Swal.fire({
@@ -136,7 +150,7 @@ const isUser = computed(() => {
                 type="button"
                 class="btn btn-outline-primary mb-3"
                 style="font-size: 130%"
-                @click="moveToList"
+                @click="moveList"
               >
                 목록으로
               </button>

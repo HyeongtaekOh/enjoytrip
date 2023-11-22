@@ -59,13 +59,12 @@ getAttractionsByIds(
     height: 80vh;
     background-color: white;
     display: flex;
-    padding-right: 0;
     border-radius: 10px;
 
     .write-content {
       width: 50%;
       height: 100%;
-      padding: 1rem;
+      padding: 2.5rem;
       display: flex;
       flex-direction: column;
       justify-content: start;

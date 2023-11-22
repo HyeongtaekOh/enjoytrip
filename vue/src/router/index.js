@@ -60,7 +60,7 @@ const router = createRouter({
           component: () => import("@/components/plan/PlanRegist.vue"),
         },
         {
-          path: "modify",
+          path: "modify/:planId",
           name: "plan-modify",
           component: () => import("@/components/plan/PlanModify.vue"),
         },

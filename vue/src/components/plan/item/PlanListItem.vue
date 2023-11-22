@@ -39,7 +39,7 @@ const moveToDetail = () => {
   <div class="grid-item plan-item-wrapper" @mouseenter="addDelay" @mouseleave="removeDelay">
     <img class="thumbnail" src="@/assets/img/plan-image-test.jpg" alt="test image" />
     <div class="plan-info-wrapper d-flex flex-column">
-      <span class="span-description">{{ plan.description }}</span>
+      <span class="span-description">{{ plan.name }}</span>
       <span class="span-username">{{ plan.username }}</span>
     </div>
     <div :class="{ 'hidden-wrapper': true }">
@@ -61,7 +61,7 @@ const moveToDetail = () => {
             </p>
           </a-carousel>
         </div>
-        <div class="button-wrapper">
+        <div class="carousel-button-wrapper">
           <button @click="prevSlide">왼쪽</button>
           <button @click="moveToDetail">계획 상세</button>
           <button @click="nextSlide">오른쪽</button>
@@ -172,7 +172,7 @@ const moveToDetail = () => {
         }
       }
 
-      .button-wrapper {
+      .carousel-button-wrapper {
         height: 70px;
         display: flex;
         justify-content: center;

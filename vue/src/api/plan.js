@@ -11,7 +11,7 @@ const getPlansWithAttraction = (attractionId, success, fail) => {
 };
 
 const getPlansByCondition = (condition, success, fail) => {
-  api.get("plan", { condition }).then(success).catch(fail);
+  api.get("plan", { params: condition }).then(success).catch(fail);
 };
 
 const registPlan = (plan, success, fail) => {

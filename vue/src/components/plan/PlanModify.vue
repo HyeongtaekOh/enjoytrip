@@ -1,73 +1,118 @@
 <script setup>
-import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons-vue";
-import PlanRegistList from "./regist/PlanRegistList.vue";
 import { ref } from "vue";
+import { useRoute } from "vue-router";
+import { getAttractionsByIds } from "@/api/attraction";
+import { getPlanById, deletePlan } from "../../api/plan";
+import InterParkImage from "@/assets/img/interpark-1.png";
+import PlanMap from "@/components/plan/map/PlanMap.vue";
+import PlanFormItem from "@/components/plan/item/PlanFormItem.vue";
 
-const carousel = ref(null);
+const route = useRoute();
+const attractionIds = JSON.parse(route.query.attractionIds);
 
-const nextSlide = () => {
-  carousel.value.next();
-};
+const { planId } = route.params;
 
-const prevSlide = () => {
-  carousel.value.prev();
-};
+const plan = ref({
+  planId: planId,
+  name: "",
+  userId: "",
+  username: "",
+  description: "",
+  theme: "",
+  departuresId: "",
+  departuresName: "",
+  arrivalsId: "",
+  arrivalsName: "",
+  attractions: [],
+  createdTime: "",
+  modifiedTime: "",
+});
+
+getPlanById(
+  planId,
+  ({ data }) => {
+    plan.value = data;
+  },
+  (e) => {
+    console.log("getPlan error :", e);
+  }
+);
+
+getAttractionsByIds(
+  attractionIds,
+  ({ data }) => {
+    console.log("data :", data);
+    plan.value.attractions = data;
+    console.log("attractions :", plan.value.attractions);
+  },
+  (e) => {
+    console.log("getAttractions error :", e);
+  }
+);
 </script>
 
 <template>
-  <div class="carousel-wrapper">
-    <PlanRegistList></PlanRegistList>
-    <!-- <a-carousel arrows :dots="false" ref="carousel">
-      <template #prevArrow>
-        <div class="custom-slick-arrow" style="left: 10px; z-index: 10">
-          <left-circle-outlined />
+  <div class="modify-container">
+    <div v-if="plan.attractions.length > 0" class="modify-content-container">
+      <div class="modify-content">
+        <div class="modify-content-header">
+          <h1 class="modify-content-title">여행 계획 수정</h1>
         </div>
-      </template>
-      <template #nextArrow>
-        <div class="custom-slick-arrow" style="right: 10px">
-          <right-circle-outlined />
-        </div>
-      </template>
-      <img src="http://tong.visitkorea.or.kr/cms/resource/77/2704577_image2_1.jpg" />
-      <img src="@/assets/img/plan-image-test.jpg" />
-    </a-carousel>
 
-    <button @click="prevSlide">왼쪽</button>
-    <button @click="nextSlide">오른쪽</button> -->
+        <div class="modify-content-body">
+          <PlanFormItem :attractions="plan.attractions" type="modify" :plan="plan" />
+        </div>
+      </div>
+
+      <PlanMap :attractions="plan.attractions" />
+    </div>
+    <div v-else class="loading-container">
+      <img :src="InterParkImage" class="loading" />
+    </div>
   </div>
 </template>
 
-<style scoped>
-/* For demo */
-.carousel-wrapper {
-  width: 500px;
-}
+<style scoped lang="scss">
+.modify-container {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 70vw;
+  height: 80vh;
+  border-radius: 10px;
 
-.ant-carousel :deep(.slick-slide) {
-  text-align: center;
-  width: 500px;
-  height: 300px;
-  line-height: 160px;
-  background: saddlebrown;
-  overflow: hidden;
-}
+  .modify-content-container {
+    width: 100%;
+    height: 80vh;
+    background-color: white;
+    display: flex;
+    padding-right: 0;
+    border-radius: 10px;
 
-.ant-carousel :deep(.slick-arrow.custom-slick-arrow) {
-  width: 25px;
-  height: 25px;
-  font-size: 25px;
-  color: #fff;
-  background-color: rgba(31, 45, 61, 0.11);
-  opacity: 0.3;
-}
-.ant-carousel :deep(.custom-slick-arrow:before) {
-  display: none;
-}
-.ant-carousel :deep(.custom-slick-arrow:hover) {
-  opacity: 0.5;
-}
+    .modify-content {
+      width: 50%;
+      height: 100%;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+      align-items: center;
+      padding-top: 2.5rem;
+    }
+  }
 
-.ant-carousel :deep(.slick-slide h3) {
-  color: #fff;
+  .loading-container {
+    background-color: white;
+    width: 100%;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .loading {
+      height: 65vh;
+    }
+  }
 }
 </style>

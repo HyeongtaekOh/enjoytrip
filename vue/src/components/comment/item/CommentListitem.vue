@@ -11,20 +11,21 @@ const { comment } = defineProps({ comment: Object });
 const { commentId } = comment;
 const getCommentList = inject("getCommentList");
 const recomments = ref([]);
-const content = ref("");
+const modifyContent = ref(comment.content);
+const replyContent = ref("");
 const showReplyInput = ref(false);
 const showModify = ref(false);
 const isUser = ref(false);
-const newRecommentId = ref(0);
-const newRecommentRef = ref(null);
+const modifyCommentInputRef = ref(null);
+const recommentInputRef = ref(null);
+const newReCommentId = ref(0);
+const newReCommentRef = ref(null);
 
 onMounted(() => {
   isUser.value = auth.getUser.userId === comment.userId;
 });
 
-// console.log("comment =", comment);
 const getReCommentList = () => {
-  // console.log("get_ReComment");
   const condition = {
     contentId: commentId,
     type: "comment",
@@ -32,7 +33,6 @@ const getReCommentList = () => {
   listComment(
     condition,
     ({ data }) => {
-      // console.log("data :", data);
       recomments.value = data;
     },
     (error) => {
@@ -48,6 +48,9 @@ getReCommentList();
 // 댓글 입력창을 나타내는 함수
 function showReply() {
   showReplyInput.value = true;
+  setTimeout(() => {
+    recommentInputRef.value.focus();
+  }, 0);
 }
 
 function hideReply() {
@@ -56,6 +59,9 @@ function hideReply() {
 
 function clickModify() {
   showModify.value = !showModify.value;
+  setTimeout(() => {
+    modifyCommentInputRef.value.focus();
+  }, 0);
 }
 
 function onEnterWrite(event) {
@@ -68,7 +74,7 @@ function onEnterWrite(event) {
 function onEnterModify(event) {
   if (!event.shiftKey) {
     event.preventDefault();
-    onModifyReComment();
+    onModifyComment();
   }
 }
 
@@ -77,7 +83,7 @@ function onModifyComment() {
   modifyComment(
     {
       commentId,
-      content: content.value,
+      content: modifyContent.value,
       userId: comment.userId,
     },
     ({ data }) => {
@@ -91,6 +97,7 @@ function onModifyComment() {
         width: "250px",
         toast: true,
       });
+      showModify.value = !showModify.value;
       getCommentList();
     },
     (error) => {
@@ -143,7 +150,7 @@ function onRemoveComment() {
 function writeReComment() {
   console.log("writeReComment");
 
-  if (!content.value) {
+  if (!replyContent.value) {
     Swal.fire({
       title: "내용을 입력하세요",
       icon: "warning",
@@ -160,7 +167,7 @@ function writeReComment() {
       userId: auth.getUser.userId,
       userName: auth.getUser.username,
       type: "comment",
-      content: content.value,
+      content: replyContent.value,
       contentId: commentId,
     },
     ({ data }) => {
@@ -175,8 +182,8 @@ function writeReComment() {
         toast: true,
       });
       showReplyInput.value = false; // 댓글 등록 후 창 숨기기
-      newRecommentId.value = data.commentId;
-      content.value = "";
+      newReCommentId.value = data.commentId;
+      replyContent.value = "";
       getReCommentList();
     },
     (error) => {
@@ -195,18 +202,18 @@ function writeReComment() {
 }
 
 const scrollToNewComment = () => {
-  if (newRecommentRef.value[0]) {
-    console.log("scroll event ref =", newRecommentRef.value[0]);
-    const nRef = newRecommentRef.value[0];
-    nRef.scrollIntoView({ behavior: "smooth" });
+  if (newReCommentRef.value[0]) {
+    console.log("scroll event ref =", newReCommentRef.value[0]);
+    const nRef = newReCommentRef.value[0];
+    nRef.$el.scrollIntoView({ behavior: "smooth" });
   }
 };
 
 watch(
-  newRecommentRef,
+  newReCommentRef,
   () => {
-    console.log("update", newRecommentRef.value[0]);
-    if (newRecommentRef.value) {
+    console.log("update recomment", newReCommentRef.value[0]);
+    if (newReCommentRef.value) {
       scrollToNewComment();
     }
   },
@@ -251,8 +258,9 @@ watch(
           <textarea
             class="form-control"
             rows="2"
+            ref="modifyCommentInputRef"
             placeholder="What are you thinking??"
-            v-model="content"
+            v-model="modifyContent"
             @keydown.enter="onEnterModify"
           ></textarea>
           <div class="mar-top clearfix">
@@ -271,7 +279,8 @@ watch(
             class="form-control"
             rows="2"
             placeholder="What are you thinking?"
-            v-model="content"
+            v-model="replyContent"
+            ref="recommentInputRef"
             @keydown.enter="onEnterWrite"
           ></textarea>
           <div class="mar-top clearfix">
@@ -285,17 +294,13 @@ watch(
     <template v-for="recomment in recomments">
       <ReCommentListItem
         v-if="recomment.commentId == newReCommentId"
-        :key="`recomment-${recomment.commentId}`"
+        :key="`newRecomment-${recomment.commentId}`"
         ref="newReCommentRef"
         :recomment="recomment"
-        :newReCommentId="newReCommentId"
-        :newReCommentRef="newReCommentRef"
       /><ReCommentListItem
         v-else
-        :key="`newReComment-${recomment.commentId}`"
+        :key="`recomment-${recomment.commentId}`"
         :recomment="recomment"
-        :newReCommentId="newReCommentId"
-        :newReCommentRef="newReCommentRef"
       />
     </template>
   </a-comment>

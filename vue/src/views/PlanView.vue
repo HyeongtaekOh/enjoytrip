@@ -135,6 +135,9 @@ const deleteP = () => {
 }
 
 .plan-container {
+  display: flex;
+  justify-content: center;
+  align-items: start;
   width: 80vw;
   height: 70vh;
 }

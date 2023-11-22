@@ -95,7 +95,7 @@ const scrollToNewComment = () => {
 watch(
   newCommentRef,
   () => {
-    console.log("update", newCommentRef.value[0]);
+    console.log("update comment", newCommentRef.value[0]);
     if (newCommentRef.value) {
       scrollToNewComment();
     }
@@ -135,19 +135,11 @@ watch(
           <template v-for="comment in comments" v-if="comments">
             <CommentListItem
               v-if="comment.commentId == newCommentId"
-              :key="`comment-${comment.commentId}`"
+              :key="`newComment-${comment.commentId}`"
               ref="newCommentRef"
               :comment="comment"
-              :newCommentId="newCommentId"
-              :newCommentRef="newCommentRef"
             />
-            <CommentListItem
-              v-else
-              :key="`newComment-${comment.commentId}`"
-              :comment="comment"
-              :newCommentId="newCommentId"
-              :newCommentRef="newCommentRef"
-            />
+            <CommentListItem v-else :key="`comment-${comment.commentId}`" :comment="comment" />
           </template>
           <template v-else>
             <p class="no-reply">아직 답변이 달리지 않았어요..</p>
