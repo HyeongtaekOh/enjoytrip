@@ -67,6 +67,33 @@
 			#{id}
 		</foreach>
 	</select>
+	
+	<select id="getTotalCountWithCondition" resultType="int">
+		select
+			count(content_id)
+		from
+			attraction_info
+		<if test="condition.keyword != null and condition.keyword != ''">
+			left join
+			attraction_description using (content_id)
+		</if>
+		<where>
+			<if test="condition.sidoCode != 0">
+				and sido_code = #{condition.sidoCode}
+			</if>
+			<if test="condition.gugunCode != 0">
+				and gugun_code = #{condition.gugunCode}
+			</if>
+			<if test="condition.contentTypeId != 0">
+				and content_type_id = #{condition.contentTypeId}
+			</if>
+			<if test="condition.keyword != null and condition.keyword != ''">
+				and (title like concat('%', #{condition.keyword}, '%') or
+				addr1 like concat('%', #{condition.keyword}, '%') or
+				addr2 like concat('%', #{condition.keyword}, '%'))
+			</if>
+		</where>
+	</select>
 
 	<select id="findByCondition" resultMap="infoMap">
 		<include refid="findInfo" />
