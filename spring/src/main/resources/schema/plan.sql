@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS plan;
 CREATE TABLE plan (
     plan_id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
-    name VARCHAR(20) NOT NULL,
+    name VARCHAR(50) NOT NULL,
     description VARCHAR(10000),
     theme VARCHAR(50) NOT NULL,
     departures_id INT NOT NULL,

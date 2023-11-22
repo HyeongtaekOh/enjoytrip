@@ -89,11 +89,11 @@ public class PlanController {
 			@ApiResponse(code = 400, message = "Bad Request")
 	})
 	@GetMapping
-	public ResponseEntity<?> getPlansByCondition(PlanSearchCondition condition, Integer page) {
+	public ResponseEntity<?> getPlansByCondition(PlanSearchCondition condition) {
 
 		log.debug("검색 조건에 맞는 plan 조회");
 		log.debug("condition : {}", condition);
-		List<Plan> plans = service.findByCondition(condition, page);
+		List<Plan> plans = service.findByCondition(condition);
 
 		if (plans != null && plans.size() > 0) {
 			log.debug("plans : {}", plans);

@@ -19,5 +19,6 @@ public class PlanSearchCondition {
 	private String keyword;
 	private String theme;
 	private List<Integer> attractionIds;
-	
+	private Integer page;
+	private Integer pageSize;
 }

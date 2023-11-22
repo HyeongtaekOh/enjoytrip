@@ -18,10 +18,10 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PlanServiceImpl implements PlanService {
-	
+
 	private final PlanMapper mapper;
-	
-	private final int PAGE_SIZE = 15;
+
+	private final int PAGE_SIZE = 6;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -42,12 +42,15 @@ public class PlanServiceImpl implements PlanService {
 			throw new PlanException("관광지 ID로 조회 중 오류 발생 : " + e.getMessage());
 		}
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
-	public List<Plan> findByCondition(PlanSearchCondition condition, Integer page) {
+	public List<Plan> findByCondition(PlanSearchCondition condition) {
 		try {
-			return mapper.findByCondition(condition, PAGE_SIZE, page != null ? (page - 1) * PAGE_SIZE : 0);
+			int pageSize = condition.getPageSize() != null && condition.getPageSize() > 0 ? condition.getPageSize()
+					: PAGE_SIZE;
+			return mapper.findByCondition(condition, pageSize,
+					condition.getPage() != null ? (condition.getPage() - 1) * pageSize : 0);
 		} catch (SQLException e) {
 			throw new PlanException("검색 조건으로 조회 중 오류 발생 : " + e.getMessage());
 		}

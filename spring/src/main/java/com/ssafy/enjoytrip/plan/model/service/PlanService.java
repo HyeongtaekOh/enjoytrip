@@ -13,7 +13,7 @@ public interface PlanService {
 
 	List<Plan> findByAttractionId(Integer attractionId);
 	
-	List<Plan> findByCondition(PlanSearchCondition condition, Integer page);
+	List<Plan> findByCondition(PlanSearchCondition condition);
 
 	void insertPlanWithAttractions(PlanDto planDto);
 	
