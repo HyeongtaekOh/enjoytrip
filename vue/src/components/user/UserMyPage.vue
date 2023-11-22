@@ -11,7 +11,7 @@ const user = ref({
   username: "",
   email: "",
   password: "",
-  type:"",
+  type: "",
 });
 
 onMounted(() => {
@@ -31,35 +31,25 @@ const getUser = () => {
 };
 
 async function modifyUseremail() {
-  const { value: formValues } = await Swal.fire({
-    title: "사용자 정보 변경",
-    html: `
-      <input id="swal-username" class="swal2-input" value="${user.username}" placeholder="사용자 이름">
-      <input id="swal-email" class="swal2-input" value="${user.email}" placeholder="이메일">
-      <!-- 필요한 만큼 더 많은 입력 필드를 추가하세요 -->
-    `,
-    focusConfirm: false,
-    preConfirm: () => {
-      return {
-        username: document.getElementById("swal-username").value,
-        email: document.getElementById("swal-email").value,
-        // 필요한 경우 더 많은 속성을 추가하세요
-      };
-    },
+  const { value: email } = await Swal.fire({
+    title: "Input email address",
+    input: "email",
+    inputLabel: "Your email address",
+    inputPlaceholder: "Enter your email address"
   });
-  console.log("form:", formValues);
+  if (email) {
+    Swal.fire(`Entered email: ${email}`);
+  }
+  console.log("form:", email);
 
-  if (formValues) {
-    // 사용자 객체의 새로운 속성을 추가하거나 갱신하세요
-    user.value.username = formValues.username;
-    user.value.email = formValues.email;
+  if (email) {
+    user.value.email = email;
     console.log("updateuser:", user);
 
     updateMember(
-      { 
+      {
         userId,
-        username: formValues.username,
-        email: formValues.email,
+        email: email,
       },
       ({ data }) => {
         // 서버 업데이트 성공 후에 user를 업데이트합니다.
@@ -95,37 +85,38 @@ async function modifyUseremail() {
 
 async function modifyUserpassword() {
   const { value: formValues } = await Swal.fire({
-    title: "사용자 정보 변경",
+    title: "새로운 비밀번호를 입력하세요",
     html: `
-      <input id="swal-username" class="swal2-input" value="${user.username}" placeholder="사용자 이름">
-      <input id="swal-password" class="swal2-input" value="${user.password}" placeholder="비밀번호">
-      <!-- 필요한 만큼 더 많은 입력 필드를 추가하세요 -->
-    `,
+    <input id="swal-input1" class="swal2-input">
+    <input id="swal-input2" class="swal2-input">
+  `,
     focusConfirm: false,
     preConfirm: () => {
-      return {
-        username: document.getElementById("swal-username").value,
-        password: document.getElementById("swal-password").value,
-        // 필요한 경우 더 많은 속성을 추가하세요
-      };
-    },
+      return [
+        document.getElementById("swal-input1").value,
+        document.getElementById("swal-input2").value
+      ];
+    }
   });
-  console.log("form:", formValues);
-
+  if (formValues[0] !== formValues[1]) {
+    Swal.fire({
+      title: "비밀번호가 일치하지 않습니다",
+      icon: "error",
+      confirmButtonText: "확인",
+      width: "280px",
+    });
+    return;
+  }
   if (formValues) {
-    // 사용자 객체의 새로운 속성을 추가하거나 갱신하세요
-    user.value.username = formValues.username;
-    user.value.password = formValues.password;
+    user.value.password = formValues[0];
     console.log("updateuser:", user);
 
     updateMember(
-      { 
+      {
         userId,
-        username: formValues.username,
-        password: formValues.password,
+        password: formValues[0],
       },
       ({ data }) => {
-        // 서버 업데이트 성공 후에 user를 업데이트합니다.
         user.value = data;
 
         Swal.fire({
@@ -140,8 +131,6 @@ async function modifyUserpassword() {
       },
       (error) => {
         console.log(error);
-
-        // 필요에 따라 에러를 처리하세요
         Swal.fire({
           position: "top-end",
           title: "사용자 정보 변경에 실패했습니다",
@@ -156,7 +145,6 @@ async function modifyUserpassword() {
   }
 }
 </script>
-
 <template>
   <div class="container mypage-container">
     <div class="row justify-content-center">
@@ -173,11 +161,13 @@ async function modifyUserpassword() {
               <div class="card-body text-start">
                 <ul class="list-group list-group-flush">
                   <li class="list-group-item">{{ user.username }}</li>
-                  <li class="list-group-item" style="display: flex; justify-content: space-between;">{{ user.password }} <button class="btn" @click="modifyUserpassword"> 수정</button></li>
-                  <li class="list-group-item" style="display: flex; justify-content: space-between;">{{ user.email }} <button class="btn" @click="modifyUseremail"> 수정</button></li>
+                  <li class="list-group-item" style="display: flex; justify-content: space-between;">{{ user.password }}
+                    <button class="btn" @click="modifyUserpassword"> 수정</button></li>
+                  <li class="list-group-item" style="display: flex; justify-content: space-between;">{{ user.email }}
+                    <button class="btn" @click="modifyUseremail"> 수정</button></li>
                   <li class="list-group-item">{{ user.type }}</li>
                 </ul>
-                
+
               </div>
             </div>
           </div>
