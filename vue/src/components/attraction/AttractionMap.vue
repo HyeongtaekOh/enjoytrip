@@ -1,10 +1,16 @@
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
-import { findSidoCode, findGugunCode, getAttractionsByCondition } from "@/api/attraction.js";
-import { useRoute, useRouter } from "vue-router";
+import {
+  findSidoCode,
+  findGugunCode,
+  getAttractionsByCondition,
+  getAttractionsByIds,
+} from "@/api/attraction.js";
+import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
 import AttractionItem from "@/components/attraction/item/AttractionItem.vue";
 import draggable from "vuedraggable";
-import internetimg from "@/assets/img/internet.png";
+import PrevArrowImage from "@/assets/img/prev-arrow.png";
+import NextArrowImage from "@/assets/img/next-arrow.png";
 
 const router = useRouter();
 
@@ -33,20 +39,67 @@ const markers = ref([]);
 
 const route = useRoute();
 const keyword = ref(route.query.selectedKeyword);
+const attractionIds = JSON.parse(route.query.attractionIds);
+const modifyPlan = ref([]);
+
+getAttractionsByIds(
+  attractionIds,
+  ({ data }) => {
+    attractions.value = data;
+    newPlan.value = data;
+  },
+  (e) => {
+    console.log("getAttractions error :", e);
+  }
+);
+const attractionSearchResult = ref({
+  attractions: [],
+  count: 0,
+  page: 1,
+  pageSize: 0,
+  totalCount: 0,
+  totalPage: 1,
+});
+
+const currentPage = ref(parseInt(route.query.page) || 1);
+
+onBeforeRouteUpdate((to, from, next) => {
+  currentPage.value = parseInt(to.query.page) || 1;
+  searchAttraction();
+  next();
+});
+
+const onClickPrevPage = () => {
+  if (currentPage.value == 1) return;
+  router.push({
+    name: "attraction-map",
+    query: {
+      page: currentPage.value - 1,
+    },
+  });
+};
+
+const onClickNextPage = () => {
+  if (currentPage.value == attractionSearchResult.value.totalPage) return;
+  router.push({
+    name: "attraction-map",
+    query: {
+      page: currentPage.value + 1,
+    },
+  });
+};
+
 if (keyword.value) {
   selectedKeyword.value = keyword.value;
   searchAttraction();
 }
 
-watch(
-  () => attractions.value,
-  () => {
-    const moveLatLon = new kakao.maps.LatLng(attractions.value.lat, attractions.value.lng);
-
-    map.panTo(moveLatLon);
-  },
-  { deep: true }
-);
+// watch(
+//   // () => attractions.value,
+//   () => attractionSearchResult.value.attracions,
+//   () => {},
+//   { deep: true }
+// );
 
 onMounted(() => {
   if (window.kakao && window.kakao.maps) {
@@ -64,10 +117,16 @@ onMounted(() => {
 });
 
 watch(
-  () => attractions.value,
+  () => attractionSearchResult.value,
   () => {
+    const moveLatLon = new kakao.maps.LatLng(
+      attractionSearchResult.value.attractions.lat,
+      attractionSearchResult.value.attractions.lng
+    );
+
+    map.panTo(moveLatLon);
     positions.value = [];
-    attractions.value.forEach((attraction) => {
+    attractionSearchResult.value.attractions.forEach((attraction) => {
       let obj = {};
       obj.latlng = new kakao.maps.LatLng(attraction.latitude, attraction.longitude);
       obj.title = attraction.title;
@@ -220,11 +279,12 @@ function searchAttraction() {
     gugunCode: selectedGugun.value,
     type: selectedType.value,
     keyword: selectedKeyword.value,
+    page: currentPage.value,
   };
 
   getAttractionsByCondition(condition, ({ data }) => {
     if (data) {
-      attractions.value = data;
+      attractionSearchResult.value = data;
     }
   });
 }
@@ -285,6 +345,10 @@ const handlePlanButtonClick = () => {
     name: "plan-regist",
     query: { attractionIds: JSON.stringify(contentIds) },
   });
+};
+
+const resetPlan = () => {
+  newPlan.value = [];
 };
 
 const openNav = () => {
@@ -406,6 +470,10 @@ const showOverlay = ({ lat, lng, attraction }) => {
         >
           계획 등록
         </button>
+        <br />
+        <button class="plan-button w3-xlarge w3-circle w3-2020-amberglow" @click="resetPlan">
+          초기화
+        </button>
       </div>
     </div>
     <div class="list">
@@ -459,7 +527,7 @@ const showOverlay = ({ lat, lng, attraction }) => {
         <div class="listContainer" style="display: flex">
           <div class="trip-list">
             <AttractionItem
-              v-for="attraction in attractions"
+              v-for="attraction in attractionSearchResult.attractions"
               :key="attraction.contentId"
               :attraction="attraction"
               :map="map"
@@ -473,6 +541,17 @@ const showOverlay = ({ lat, lng, attraction }) => {
           </div>
         </div>
       </div>
+    </div>
+    <div class="page-util-wrapper">
+      <a-button type="text" shape="round" size="large" @click="onClickPrevPage">
+        <img :src="PrevArrowImage" alt="이전 페이지" style="width: 30px; border-radius: 50%" />
+      </a-button>
+      <span style="margin: 10px 10px 0 10px; font-size: 250%; font-weight: 900">{{
+        currentPage
+      }}</span>
+      <a-button type="text" shape="round" size="large" @click="onClickNextPage">
+        <img :src="NextArrowImage" alt="이전 페이지" style="width: 30px; border-radius: 50%" />
+      </a-button>
     </div>
     <div id="map" class="map">
       <div class="test">
@@ -499,6 +578,23 @@ const showOverlay = ({ lat, lng, attraction }) => {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
 }
 
+.page-util-wrapper {
+  width: 80vw;
+  height: 45px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 25%;
+  bottom: 0px;
+  transform: translate(-50%, -50%);
+  button {
+    height: 45px;
+    font-size: 125%;
+  }
+  z-index: 2;
+}
 .plan-button {
   background-color: #dc793e;
   border: none;
@@ -590,7 +686,10 @@ const showOverlay = ({ lat, lng, attraction }) => {
   opacity: 0.5;
   background: #c8ebfb;
 }
-
+.list {
+  display: flex;
+  flex-direction: column;
+}
 .list-group {
   min-height: 20px;
 }
