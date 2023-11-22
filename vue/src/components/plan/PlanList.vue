@@ -14,7 +14,14 @@ const moveToRegist = () => {
   router.push({ name: "attraction" });
 };
 
-const plans = ref([]);
+const planSearchResult = ref({
+  plans: [],
+  count: 0,
+  page: 1,
+  pageSize: 0,
+  totalCount: 0,
+  totalPage: 1,
+});
 const currentPage = ref(parseInt(route.query.page) || 1);
 
 onBeforeRouteUpdate((to, from, next) => {
@@ -29,8 +36,8 @@ const getPlanList = () => {
       page: currentPage.value,
     },
     ({ data }) => {
-      console.log("get plan list :", data);
-      plans.value = data;
+      console.log("get plan list :", data.plans);
+      planSearchResult.value = data;
     },
     (error) => console.log(error)
   );
@@ -49,6 +56,7 @@ const onClickPrevPage = () => {
 };
 
 const onClickNextPage = () => {
+  if (currentPage.value == planSearchResult.value.totalPage) return;
   router.push({
     name: "plan-list",
     query: {
@@ -77,7 +85,7 @@ const onClickNextPage = () => {
       </div>
     </div>
     <div class="grid-container">
-      <PlanListItem v-for="plan in plans" :key="plan.planId" :plan="plan" />
+      <PlanListItem v-for="plan in planSearchResult.plans" :key="plan.planId" :plan="plan" />
     </div>
     <div class="page-util-wrapper">
       <a-button type="text" shape="round" size="large" @click="onClickPrevPage">
