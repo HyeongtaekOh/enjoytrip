@@ -1,12 +1,35 @@
 <script setup>
-import { defineProps } from "vue";
+import { ref, defineProps, defineEmits, onMounted } from "vue";
 
-const { attraction, map } = defineProps(["attraction", "map"]);
-const emit = defineEmits(["updateNewPlan"]);
+const { attraction, map, newPlan, handleDeletePlan, markers, infoWindow } = defineProps([
+  "attraction",
+  "map",
+  "newPlan",
+  "handleDeletePlan",
+  "markers",
+  "infoWindow",
+]);
 
-function moveCenter(lat, lng) {
+const emit = defineEmits(["showOverlay", "updateNewPlan", "handleDeletePlan"]);
+
+const moveCenter = (lat, lng) => {
   map.setCenter(new kakao.maps.LatLng(lat, lng));
-}
+
+  // console.log("overlay.value !!!!", overlay.value);
+  // if (overlay.value) {
+  //   console.log("Closing overlay.value:", overlay.value);
+  //   overlay.value.setMap(null);
+  // }
+  showOverlay(lat, lng, attraction);
+};
+
+const closeOverlay = () => {
+  infoWindow.close();
+};
+
+const showOverlay = (lat, lng, attraction) => {
+  emit("showOverlay", { lat, lng, attraction });
+};
 
 const updateNewPlan = () => {
   const plan = {
@@ -20,6 +43,10 @@ const updateNewPlan = () => {
   };
   console.log("plan:", plan);
   emit("updateNewPlan", { plan });
+};
+
+const handleDelete = () => {
+  handleDeletePlan(attraction);
 };
 </script>
 <template>
@@ -36,7 +63,14 @@ const updateNewPlan = () => {
         />
       </div>
       <div class="rowContents">
-        <div class="plus" @click="updateNewPlan">+ 추가하기</div>
+        <div
+          class="plus"
+          @click="updateNewPlan"
+          v-if="!newPlan.some((plan) => plan.contentId === attraction.contentId)"
+        >
+          + 추가하기
+        </div>
+        <div class="plus" @click="handleDelete" v-else>- 삭제하기</div>
         <div>
           <h1>{{ attraction.title }}</h1>
           <div>{{ attraction.addr1 }} {{ attraction.addr2 }}</div>
@@ -45,6 +79,7 @@ const updateNewPlan = () => {
     </div>
   </div>
 </template>
+
 <style scoped>
 @import "@/assets/css/common.css";
 @import "@/assets/css/map.css";
@@ -114,5 +149,126 @@ const updateNewPlan = () => {
   .sidenav a {
     font-size: 18px;
   }
+}
+
+.clear-all-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #fff;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  z-index: 2;
+}
+</style>
+
+<style>
+.wrap {
+  position: absolute;
+  left: 0;
+  bottom: 40px;
+  width: 300px;
+  height: 150px;
+  margin-left: -144px;
+  text-align: left;
+  overflow: hidden;
+  font-size: 20px;
+  font-family: "GangwonEduHyeonokT_OTFMediumA";
+  /* font-family: "Malgun Gothic", dotum, "돋움", sans-serif; */
+  line-height: 1.5;
+}
+
+.wrap * {
+  padding: 0;
+  margin: 0;
+}
+
+.wrap .body {
+  z-index: 2;
+}
+
+.wrap .info {
+  width: 300px;
+  height: 200px;
+  border-radius: 5px;
+  border-bottom: 2px solid #ccc;
+  border-right: 1px solid #ccc;
+  overflow: hidden;
+  background: #fff;
+}
+
+.wrap .info:nth-child(1) {
+  border: 0;
+  box-shadow: 0px 1px 2px #888;
+}
+
+.info .title {
+  padding: 5px 0 0 10px;
+  height: 40px;
+  background: #eee;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  font-size: 27px;
+  font-weight: bold;
+}
+
+.info .close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #888;
+  width: 17px;
+  height: 17px;
+  background: url("https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/overlay_close.png");
+}
+
+.info .close:hover {
+  cursor: pointer;
+}
+
+.info .body {
+  position: relative;
+  overflow: hidden;
+  height: 150px;
+}
+
+.info .desc {
+  position: absolute;
+  top: 10px;
+  left: 110px;
+  width: 200px;
+  height: 130px;
+}
+.desc .ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desc .jibun {
+  font-size: 11px;
+  color: #888;
+  margin-top: -2px;
+}
+
+.info .img {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 90px;
+  height: 90px;
+  border: 1px solid #ddd;
+  color: #888;
+  overflow: hidden;
+}
+
+.info .img img {
+  width: 100%;
+  height: 100%;
+}
+
+.info .link {
+  color: #03c75a;
 }
 </style>
