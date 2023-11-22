@@ -11,6 +11,7 @@ import AttractionItem from "@/components/attraction/item/AttractionItem.vue";
 import draggable from "vuedraggable";
 import PrevArrowImage from "@/assets/img/prev-arrow.png";
 import NextArrowImage from "@/assets/img/next-arrow.png";
+import Swal from "sweetalert2";
 
 const router = useRouter();
 
@@ -38,11 +39,16 @@ const pos = ref(null);
 const markers = ref([]);
 
 const route = useRoute();
-const keyword = ref(route.query.selectedKeyword);
-const attractionIds = JSON.parse(route.query.attractionIds);
-const modifyPlan = ref([]);
+const keyword = ref(null)
+if (route.query.selectedKeyword) {
+  keyword.value = route.query.selectedKeyword;
+}
 
-getAttractionsByIds(
+let attractionIds = [];
+if (route.query.attractionIds) {
+  attractionIds = JSON.parse(route.query.attractionIds);
+
+  getAttractionsByIds(
   attractionIds,
   ({ data }) => {
     attractions.value = data;
@@ -52,6 +58,10 @@ getAttractionsByIds(
     console.log("getAttractions error :", e);
   }
 );
+}
+const modifyPlan = ref([]);
+
+
 const attractionSearchResult = ref({
   attractions: [],
   count: 0,
@@ -106,9 +116,8 @@ onMounted(() => {
     initMap();
   } else {
     const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${
-      import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY
-    }&libraries=services,clusterer`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY
+      }&libraries=services,clusterer`;
     script.onload = () => kakao.maps.load(() => initMap());
     document.head.appendChild(script);
   }
@@ -306,6 +315,15 @@ function handlerTypeChange(event) {
 }
 
 function updateNewPlan(data) {
+  if (newPlan.value.length >= 10) {
+    Swal.fire({
+      icon: "error",
+      title: "계획은 10개까지만 추가할 수 있습니다.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    return;
+  }
   console.log("data:", data);
   newPlan.value.push(data.plan);
   console.log("newPlan:", newPlan.value);
@@ -442,32 +460,19 @@ const showOverlay = ({ lat, lng, attraction }) => {
         <h2>NewPlan</h2>
         <a href="javascript:void(0)" class="closebtn" @click="closeNav">&times;</a>
         <div class="list">
-          <draggable
-            class="list-group"
-            :component-data="componentData"
-            v-model="newPlan"
-            v-bind="dragOptions"
-            @start="drag = true"
-            @end="handleDragEnd"
-            item-key="order"
-          >
+          <draggable class="list-group" :component-data="componentData" v-model="newPlan" v-bind="dragOptions"
+            @start="drag = true" @end="handleDragEnd" item-key="order">
             <template #item="{ element }">
               <li class="list-group-item">
-                <i
-                  :class="element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'"
-                  @click="element.fixed = !element.fixed"
-                  aria-hidden="true"
-                ></i>
+                <i :class="element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'"
+                  @click="element.fixed = !element.fixed" aria-hidden="true"></i>
                 {{ element.title }}
                 <span class="delete-button" @click="handleDeletePlan(element)"> -삭제 </span>
               </li>
             </template>
           </draggable>
         </div>
-        <button
-          class="plan-button w3-xlarge w3-circle w3-2020-amberglow"
-          @click="handlePlanButtonClick"
-        >
+        <button class="plan-button w3-xlarge w3-circle w3-2020-amberglow" @click="handlePlanButtonClick">
           계획 등록
         </button>
         <br />
@@ -478,31 +483,13 @@ const showOverlay = ({ lat, lng, attraction }) => {
     </div>
     <div class="list">
       <form action="#" id="search" class="search">
-        <select
-          name="sido"
-          id="sido"
-          class="dropdown"
-          v-model="selectedSido"
-          @change="handlerSidoChange"
-        >
+        <select name="sido" id="sido" class="dropdown" v-model="selectedSido" @change="handlerSidoChange">
           <option value="0">전체 지역</option>
         </select>
-        <select
-          name="gugun"
-          id="gugun"
-          class="dropdown"
-          v-model="selectedGugun"
-          @change="handlerGugunChange"
-        >
+        <select name="gugun" id="gugun" class="dropdown" v-model="selectedGugun" @change="handlerGugunChange">
           <option value="0">전체 구군</option>
         </select>
-        <select
-          name="type"
-          id="type"
-          class="dropdown"
-          v-model="selectedType"
-          @change="handlerTypeChange"
-        >
+        <select name="type" id="type" class="dropdown" v-model="selectedType" @change="handlerTypeChange">
           <option value="0">전체 유형</option>
           <option value="12">관광지</option>
           <option value="14">문화시설</option>
@@ -513,31 +500,16 @@ const showOverlay = ({ lat, lng, attraction }) => {
           <option value="38">쇼핑</option>
           <option value="39">음식점</option>
         </select>
-        <input
-          type="text"
-          name="key"
-          id="key"
-          class="searchBar"
-          placeholder="관광지를 검색하세요..."
-          v-bind:value="selectedKeyword"
-          @input="selectedKeyword = $event.target.value"
-        />
+        <input type="text" name="key" id="key" class="searchBar" placeholder="관광지를 검색하세요..."
+          v-bind:value="selectedKeyword" @input="selectedKeyword = $event.target.value" />
       </form>
       <div class="row">
         <div class="listContainer" style="display: flex">
           <div class="trip-list">
-            <AttractionItem
-              v-for="attraction in attractionSearchResult.attractions"
-              :key="attraction.contentId"
-              :attraction="attraction"
-              :map="map"
-              :newPlan="newPlan"
-              :handleDeletePlan="handleDeletePlan"
-              :infoWindow="infoWindow"
-              :setInfoWindow="setInfoWindow"
-              @showOverlay="showOverlay"
-              @updateNewPlan="updateNewPlan"
-            ></AttractionItem>
+            <AttractionItem v-for="attraction in attractionSearchResult.attractions" :key="attraction.contentId"
+              :attraction="attraction" :map="map" :newPlan="newPlan" :handleDeletePlan="handleDeletePlan"
+              :infoWindow="infoWindow" :setInfoWindow="setInfoWindow" @showOverlay="showOverlay"
+              @updateNewPlan="updateNewPlan"></AttractionItem>
           </div>
         </div>
       </div>
@@ -564,16 +536,18 @@ const showOverlay = ({ lat, lng, attraction }) => {
 <style scoped>
 @import "@/assets/css/common.css";
 @import "@/assets/css/map.css";
+
 .contents {
   position: relative;
 }
+
 @font-face {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
-    format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff") format("woff");
   font-weight: 600;
   font-style: 600;
 }
+
 * {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
 }
@@ -589,12 +563,15 @@ const showOverlay = ({ lat, lng, attraction }) => {
   left: 25%;
   bottom: 0px;
   transform: translate(-50%, -50%);
+
   button {
     height: 45px;
     font-size: 125%;
   }
+
   z-index: 2;
 }
+
 .plan-button {
   background-color: #dc793e;
   border: none;
@@ -611,9 +588,12 @@ const showOverlay = ({ lat, lng, attraction }) => {
   border-radius: 12px;
   width: 100px;
   height: 50px;
-  justify-content: center; /* 추가 */
-  transform: translateX(50%); /* 추가 */
+  justify-content: center;
+  /* 추가 */
+  transform: translateX(50%);
+  /* 추가 */
 }
+
 .plan-button:hover {
   opacity: 1;
 }
@@ -686,10 +666,12 @@ const showOverlay = ({ lat, lng, attraction }) => {
   opacity: 0.5;
   background: #c8ebfb;
 }
+
 .list {
   display: flex;
   flex-direction: column;
 }
+
 .list-group {
   min-height: 20px;
 }
@@ -711,6 +693,7 @@ const showOverlay = ({ lat, lng, attraction }) => {
   width: 50px;
   height: 50px;
 }
+
 .click-img {
   width: 30px;
   height: 30px;
@@ -805,6 +788,7 @@ const showOverlay = ({ lat, lng, attraction }) => {
   width: 200px;
   height: 130px;
 }
+
 .desc .ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
