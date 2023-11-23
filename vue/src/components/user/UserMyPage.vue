@@ -166,7 +166,38 @@ async function modifyUserProfile() {
         imageAlt: "The uploaded picture",
       });
       user.value.profileImg = reader.result;
-      updateMember();
+      console.log("updateuser:", user);
+      updateMember(
+        {
+          userId,
+          profileImg: reader.result,
+        },
+        ({ data }) => {
+          user.value = data;
+
+          Swal.fire({
+            position: "top-end",
+            title: "사용자 정보가 변경되었습니다",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000,
+            width: "280px",
+            toast: true,
+          });
+        },
+        (error) => {
+          console.log(error);
+          Swal.fire({
+            position: "top-end",
+            title: "사용자 정보 변경에 실패했습니다",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 2000,
+            width: "280px",
+            toast: true,
+          });
+        }
+      );
     };
     reader.readAsDataURL(file);
   }
