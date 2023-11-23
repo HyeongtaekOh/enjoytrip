@@ -54,18 +54,6 @@ const moveAttraction = () => {
   });
 };
 
-const beforeAttraction = () => {
-  router.push({
-    name: "attraction-map",
-    params: {
-      mode: "search",
-    },
-    query: {
-      attractionIds: JSON.stringify(plan.value.attractionIds),
-    },
-  });
-};
-
 const moveDetail = () => {
   router.push({
     name: "plan-view",
