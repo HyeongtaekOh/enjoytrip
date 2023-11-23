@@ -12,6 +12,8 @@ import draggable from "vuedraggable";
 import PrevArrowImage from "@/assets/img/prev-arrow.png";
 import NextArrowImage from "@/assets/img/next-arrow.png";
 import CourseMarkerImage from "@/assets/img/course-marker.png";
+import StartMarkerImage from "@/assets/img/start-marker.png";
+import FinishMarkerImage from "@/assets/img/finish-marker.png";
 import Swal from "sweetalert2";
 
 const route = useRoute();
@@ -40,11 +42,22 @@ const info = ref({
   tel: "",
   firstImage: "",
 });
+
 const positions = ref([]);
 const pos = ref(null);
 const markers = ref([]);
 const modifyPlanId = ref(0);
 const keyword = ref(null);
+
+// 코스 경로 선
+const polyline = ref(null);
+// 코스 마커 리스트
+const courseMarkers = ref([]);
+// 코스 시작 점 마커
+const startDot = ref(null);
+// 코스 끝 점 마커
+const endDot = ref(null);
+
 if (route.query.selectedKeyword) {
   keyword.value = route.query.selectedKeyword;
 }
@@ -182,6 +195,21 @@ const initMap = () => {
   infoWindow.value = new kakao.maps.CustomOverlay({
     position: null,
     content: null,
+  });
+  polyline.value = new kakao.maps.Polyline({
+    map: map, // 선을 표시할 지도입니다
+    strokeWeight: 5, // 선의 두께 입니다
+    strokeColor: "#db4040", // 선의 색깔입니다
+    strokeOpacity: 0.7, // 선의 불투명도 입니다
+    strokeStyle: "solid", // 선의 스타일입니다
+  });
+  startDot.value = new kakao.maps.CustomOverlay({
+    content: `<span class="dot" style="overflow:hidden;float:left;width:12px;height:12px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/mini_circle.png');"></span>`,
+    zIndex: 1,
+  });
+  endDot.value = new kakao.maps.CustomOverlay({
+    content: `<span class="dot" style="overflow:hidden;float:left;width:12px;height:12px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/mini_circle.png');"></span>`,
+    zIndex: 1,
   });
 };
 
@@ -356,19 +384,57 @@ function updateNewPlan(data) {
 }
 
 const drawCourseMarkers = () => {
+  courseMarkers.value.forEach((courseMarker) => {
+    courseMarker.setMap(null);
+  });
+
+  courseMarkers.value = [];
+
   for (let i = 0; i < newPlan.value.length; i++) {
+    let imageSrc = CourseMarkerImage;
+    if (i === 0) {
+      imageSrc = StartMarkerImage;
+    } else if (i === newPlan.value.length - 1) {
+      imageSrc = FinishMarkerImage;
+    }
     let imageSize = new kakao.maps.Size(49, 50);
     let imgOptions = {
       offset: new kakao.maps.Point(25, 49),
     };
-    let markerImage = new kakao.maps.MarkerImage(CourseMarkerImage, imageSize, imgOptions);
+    let markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions);
 
     let courseMarker = new kakao.maps.Marker({
       position: new kakao.maps.LatLng(newPlan.value[i].latitude, newPlan.value[i].longitude),
       image: markerImage,
     });
 
+    courseMarkers.value.push(courseMarker);
     courseMarker.setMap(map);
+  }
+};
+
+const drawStartEndDots = () => {
+  if (startDot.value) {
+    startDot.value.setMap(null);
+  }
+  if (endDot.value) {
+    endDot.value.setMap(null);
+  }
+
+  if (newPlan.value.length > 0) {
+    startDot.value.setPosition(
+      new kakao.maps.LatLng(newPlan.value[0].latitude, newPlan.value[0].longitude)
+    );
+    startDot.value.setMap(map);
+  }
+  if (newPlan.value.length > 1) {
+    endDot.value.setPosition(
+      new kakao.maps.LatLng(
+        newPlan.value[newPlan.value.length - 1].latitude,
+        newPlan.value[newPlan.value.length - 1].longitude
+      )
+    );
+    endDot.value.setMap(map);
   }
 };
 
@@ -379,15 +445,8 @@ const drawPolyline = () => {
     linePath.push(new kakao.maps.LatLng(newPlan.value[i].latitude, newPlan.value[i].longitude));
   }
 
-  let polyline = new kakao.maps.Polyline({
-    path: linePath, // 선을 구성하는 좌표배열 입니다
-    strokeWeight: 5, // 선의 두께 입니다
-    strokeColor: "#db4040", // 선의 색깔입니다
-    strokeOpacity: 0.7, // 선의 불투명도 입니다
-    strokeStyle: "solid", // 선의 스타일입니다
-  });
-
-  polyline.setMap(map);
+  polyline.value.setPath(linePath);
+  polyline.value.setMap(map);
 };
 
 const setMapBounds = () => {
@@ -481,6 +540,10 @@ const handleDeletePlan = (element) => {
     console.log("index:", index);
     newPlan.value.splice(index, 1);
   }
+
+  drawPolyline();
+  drawCourseMarkers();
+  setMapBounds();
 };
 
 const clearAllOverlays = () => {

@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import courseImage from "@/assets/img/course-marker.png";
+import CourseMarkerImage from "@/assets/img/course-marker.png";
+import StartMarkerImage from "@/assets/img/start-marker.png";
+import FinishMarkerImage from "@/assets/img/finish-marker.png";
 const { VITE_KAKAO_JAVASCRIPT_APP_KEY } = import.meta.env;
 
 let map = null;
@@ -22,12 +24,35 @@ const initMap = () => {
 const drawCourse = (courses) => {
   let courseBounds = new kakao.maps.LatLngBounds();
 
-  courses.forEach((attraction) => {
-    let position = new kakao.maps.LatLng(attraction.latitude, attraction.longitude);
+  for (let i = 0; i < courses.length; i++) {
+    let position = new kakao.maps.LatLng(courses[i].latitude, courses[i].longitude);
+    let imageSrc = CourseMarkerImage;
+
+    if (i === 0 || i === courses.length - 1) {
+      if (i === 0) {
+        imageSrc = StartMarkerImage;
+      } else if (i === courses.length - 1) {
+        imageSrc = FinishMarkerImage;
+      }
+
+      let circleOverlay = new kakao.maps.CustomOverlay({
+        map: map,
+        content: `<span class="dot" style="overflow:hidden;float:left;width:12px;height:12px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/mini_circle.png');"></span>`,
+        position: position,
+        zIndex: 1,
+      });
+    }
+
     courseBounds.extend(position);
-    displayCourseMarker(position);
+    displayCourseMarker(position, imageSrc);
     coursePositions.push(position);
-  });
+  }
+  // courses.forEach((attraction) => {
+  //   let position = new kakao.maps.LatLng(attraction.latitude, attraction.longitude);
+  //   courseBounds.extend(position);
+  //   displayCourseMarker(position);
+  //   coursePositions.push(position);
+  // });
   // 코스에 포함된 여행지를 기준으로 선을 생성하고 지도위에 표시합니다
   const courseLine = new kakao.maps.Polyline({
     // 선을 표시할 지도입니다
@@ -43,12 +68,12 @@ const drawCourse = (courses) => {
   courseLine.setMap(map);
 };
 
-const displayCourseMarker = (position) => {
+const displayCourseMarker = (position, imageSrc) => {
   let imageSize = new kakao.maps.Size(49, 50);
   let imgOptions = {
     offset: new kakao.maps.Point(25, 49),
   };
-  let markerImage = new kakao.maps.MarkerImage(courseImage, imageSize, imgOptions);
+  let markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions);
 
   let courseMarker = new kakao.maps.Marker({
     position: position,
