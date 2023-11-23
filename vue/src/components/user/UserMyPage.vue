@@ -12,7 +12,7 @@ const user = ref({
   email: "",
   password: "",
   type: "",
-  profileImg: null,
+  profileImage: null,
 });
 
 onMounted(() => {
@@ -56,7 +56,7 @@ async function modifyUseremail() {
       },
       ({ data }) => {
         // 서버 업데이트 성공 후에 user를 업데이트합니다.
-        user.value = data;
+        getUser();
 
         Swal.fire({
           position: "top-end",
@@ -120,7 +120,7 @@ async function modifyUserpassword() {
         password: formValues[0],
       },
       ({ data }) => {
-        user.value = data;
+        getUser();
 
         Swal.fire({
           position: "top-end",
@@ -165,15 +165,15 @@ async function modifyUserProfile() {
         imageUrl: e.target.result,
         imageAlt: "The uploaded picture",
       });
-      user.value.profileImg = reader.result;
+      user.value.profileImage = reader.result;
       console.log("updateuser:", user);
       updateMember(
         {
           userId,
-          profileImg: reader.result,
+          profileImage: reader.result,
         },
         ({ data }) => {
-          user.value = data;
+          getUser();
 
           Swal.fire({
             position: "top-end",
@@ -213,7 +213,7 @@ async function modifyUserProfile() {
         <div class="card mt-3 m-auto border-0" style="max-width: 900px">
           <div class="row g-0">
             <div class="col-md-4">
-              <img v-if="user.profileImg" :src="user.value.profileImg" class="timg" />
+              <img v-if="user.profileImage" :src="user.profileImage" class="timg" />
               <img
                 v-else
                 src="https://source.unsplash.com/random/250x250/?food"

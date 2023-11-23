@@ -99,8 +99,10 @@ public class MemberServiceImpl implements MemberService {
 		log.info("update member : {}", memberDto);
 		try {
 			if (validateUpdateDto(memberDto)) {
-				String encodedPassword = encoder.encode(memberDto.getPassword());
-				memberDto.setPassword(encodedPassword);
+				if (memberDto.getPassword() != null) {
+					String encodedPassword = encoder.encode(memberDto.getPassword());
+					memberDto.setPassword(encodedPassword);
+				}
 				memberMapper.updateMember(memberDto);
 			} else {
 				throw new MemberException("기존 정보와 동일한 정보입니다.");
