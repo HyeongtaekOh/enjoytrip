@@ -66,6 +66,8 @@
 		<foreach collection="ids" item="id" open="(" separator="," close=")">
 			#{id}
 		</foreach>
+		order by
+			field(content_id, <foreach collection="ids" item="id" separator=", ">#{id}</foreach>)
 	</select>
 	
 	<select id="getTotalCountWithCondition" resultType="int">

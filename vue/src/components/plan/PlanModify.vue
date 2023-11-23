@@ -23,6 +23,7 @@ const plan = ref({
   departuresName: "",
   arrivalsId: "",
   arrivalsName: "",
+  attractions: [],
   createdTime: "",
   modifiedTime: "",
 });
