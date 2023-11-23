@@ -51,39 +51,31 @@ const handleDelete = () => {
 </script>
 <template>
   <div class="main">
-    <div class="row" @click="moveCenter(attraction.latitude, attraction.longitude)">
+    <div class="row">
       <div class="imgContainer">
-        <img
-          :src="
-            attraction.firstImage
-              ? attraction.firstImage
-              : 'http://localhost:5173/src/assets/img/noImage.jpg'
-          "
-          class="rowImage"
-        />
+        <img :src="
+          attraction.firstImage
+            ? attraction.firstImage
+            : 'http://localhost:5173/src/assets/img/noImage.jpg'
+        " class="rowImage" />
       </div>
       <div class="rowContents">
-        <div
-          class="plus"
-          @click="updateNewPlan"
-          v-if="!newPlan.some((plan) => plan.contentId === attraction.contentId)"
-        >
+        <div class="plus" @click="updateNewPlan" v-if="!newPlan.some((plan) => plan.contentId === attraction.contentId)">
           + 추가하기
         </div>
         <div class="plus" @click="handleDelete" v-else>- 삭제하기</div>
-        <div class="attraction-content">
+        <div class="attraction-content" @click="moveCenter(attraction.latitude, attraction.longitude)">
           <h1>{{ attraction.title }}</h1>
           <div>{{ attraction.addr1 }} {{ attraction.addr2 }}</div>
-          <div class="attraction-detail">
-            <router-link
-              :to="{
-                name: 'attraction-detail',
-                params: { contentId: attraction.contentId },
-              }"
-            >
-              자세히 보기</router-link
-            >
-          </div>
+        </div>
+        <div class="attraction-detail">
+          <button class="click-detail">
+            <router-link :to="{
+              name: 'attraction-detail',
+              params: { contentId: attraction.contentId },
+            }">
+              자세히 보기</router-link>
+          </button>
         </div>
       </div>
     </div>
@@ -96,8 +88,7 @@ const handleDelete = () => {
 
 @font-face {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
-    format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff") format("woff");
   font-weight: 600;
   font-style: 600;
 }
@@ -107,15 +98,40 @@ const handleDelete = () => {
   font-weight: 600;
 }
 
+.click-detail {
+  /* flex: 1 1 auto; */
+  border: none;
+  margin: 10px;
+  padding: 5px;
+  width: 120x;
+  height: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  /* text-shadow: 0px 0px 10px rgba(0,0,0,0.2);*/
+  box-shadow: 0 0 20px #eee;
+  border-radius: 10px;
+  background-image: linear-gradient(to right, #f6d365 0%, #fda085 51%, #f6d365 100%);
+}
+
+.click-detail:hover {
+  background-position: right center;
+  /* change the direction of the change here */
+}
+
 .attraction-detail {
   font-color: #ca3939;
 }
+
 .button-wrapper {
   position: absolute;
   left: 2px;
   bottom: 15px;
   z-index: 3;
 }
+
 .sidenav {
   height: 100%;
   width: 0;
@@ -254,6 +270,7 @@ const handleDelete = () => {
   width: 200px;
   height: 130px;
 }
+
 .desc .ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -285,14 +302,19 @@ const handleDelete = () => {
 .info .link {
   color: #03c75a;
 }
+
 .attraction-content.clicked {
-  background-color: #e0e0e0; /* 클릭되었을 때의 배경 색상 */
-  transition: background-color 0.3s; /* 부드러운 전환을 위한 트랜지션 */
+  background-color: #e0e0e0;
+  /* 클릭되었을 때의 배경 색상 */
+  transition: background-color 0.3s;
+  /* 부드러운 전환을 위한 트랜지션 */
 }
 
 .attraction-content:hover {
-  background-color: #f0f0f0; /* hover 시의 배경 색상 */
-  transition: background-color 0.3s; /* 부드러운 전환을 위한 트랜지션 */
+  background-color: #f0f0f0;
+  /* hover 시의 배경 색상 */
+  transition: background-color 0.3s;
+  /* 부드러운 전환을 위한 트랜지션 */
 }
 
 .attraction-content {
@@ -303,6 +325,7 @@ const handleDelete = () => {
   padding: 10px 0;
   cursor: pointer;
 }
+
 .attraction-content .link {
   color: #3cc1d8;
   font-size: 15px;
