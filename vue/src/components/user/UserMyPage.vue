@@ -12,11 +12,12 @@ const user = ref({
   email: "",
   password: "",
   type: "",
+  profileImg: null,
 });
 
 onMounted(() => {
   getUser();
-  console.log("user:", user);
+  // console.log("user:", user);
 });
 
 const getUser = () => {
@@ -24,6 +25,7 @@ const getUser = () => {
     userId,
     ({ data }) => {
       user.value = data;
+      console.log("user:", user);
     },
     (error) => {
       console.log(error);
@@ -145,6 +147,30 @@ async function modifyUserpassword() {
     );
   }
 }
+
+async function modifyUserProfile() {
+  const { value: file } = await Swal.fire({
+    title: "Select image",
+    input: "file",
+    inputAttributes: {
+      accept: "image/*",
+      "aria-label": "Upload your profile picture",
+    },
+  });
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      Swal.fire({
+        title: "Your uploaded picture",
+        imageUrl: e.target.result,
+        imageAlt: "The uploaded picture",
+      });
+      user.value.profileImg = reader.result;
+      updateMember();
+    };
+    reader.readAsDataURL(file);
+  }
+}
 </script>
 <template>
   <div class="container mypage-container">
@@ -156,7 +182,14 @@ async function modifyUserpassword() {
         <div class="card mt-3 m-auto border-0" style="max-width: 900px">
           <div class="row g-0">
             <div class="col-md-4">
-              <img src="https://source.unsplash.com/random/250x250/?food" class="img" alt="..." />
+              <img v-if="user.profileImg" :src="user.value.profileImg" class="timg" />
+              <img
+                v-else
+                src="https://source.unsplash.com/random/250x250/?food"
+                class="img"
+                alt="..."
+              />
+              <button class="btn-profile" @click="modifyUserProfile">이미지 변경</button>
             </div>
             <div class="col-md-8">
               <div class="card-body text-start">
@@ -235,6 +268,29 @@ async function modifyUserpassword() {
   background-image: linear-gradient(to right, #f6d365 0%, #fda085 51%, #f6d365 100%);
 }
 
+.btn-profile {
+  /* flex: 1 1 auto; */
+  border: none;
+  margin: 10px;
+  padding: 5px;
+  width: 120x;
+  height: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  /* text-shadow: 0px 0px 10px rgba(0,0,0,0.2);*/
+  box-shadow: 0 0 20px #eee;
+  border-radius: 10px;
+  background-image: linear-gradient(to right, #f6d365 0%, #fda085 51%, #f6d365 100%);
+}
+
+.btn-profile:hover {
+  background-position: right center;
+  /* change the direction of the change here */
+}
+
 .btn:hover {
   background-position: right center;
   /* change the direction of the change here */
@@ -250,6 +306,13 @@ async function modifyUserpassword() {
   width: 250px;
   height: 250px;
   border-radius: 70%;
-  margin: 10px;
+  margin: 20px;
+}
+
+.timg {
+  width: 250px;
+  height: 250px;
+  border-radius: 70%;
+  margin: 20px;
 }
 </style>
