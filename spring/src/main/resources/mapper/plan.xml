@@ -126,12 +126,19 @@
 	
 	<select id="findByCondition" resultMap="planMap">
 		select 
-			*
+			plan_id, p.user_id, name, description, theme, departures_id, departures_name, arrivals_id, arrivals_name, modified_time, hit
 		from
-			plan
+			plan as p
+		<if test="condition.username != null and condition.username != ''">
+			left join
+			member as m using (user_id)
+		</if>
 		<where>
 			<if test="condition.userId != null and condition.userId != 0">
 				and user_id = #{condition.userId}
+			</if>
+			<if test="condition.username != null and condition.username != ''">
+				and m.username = #{condition.username}
 			</if>
 			<if test="condition.theme != null and condition.theme != ''">
 				and theme = #{condition.theme}

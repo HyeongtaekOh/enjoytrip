@@ -9,7 +9,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-//@Configuration
+@Configuration
 public class RedisConfig {
 
     @Value("${spring.redis.host}")
@@ -18,22 +18,24 @@ public class RedisConfig {
     @Value("${spring.redis.port}")
     private int port;
 
-    @Value("${spring.redis.username}")
-    private String username;
-
-    @Value("${spring.redis.password}")
-    private String password;
+//    @Value("${spring.redis.username}")
+//    private String username;
+//
+//    @Value("${spring.redis.password}")
+//    private String password;
 
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName(host);
-        config.setPort(port);
-        config.setUsername(username);
-        config.setPassword(password);
-
-        return new LettuceConnectionFactory(config);
+//        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+//        config.setHostName(host);
+//        config.setPort(port);
+//        config.setUsername(username);
+//        config.setPassword(password);
+//
+//        return new LettuceConnectionFactory(config);
+    	
+    	return new LettuceConnectionFactory(host, port);
     }
 
     @Bean

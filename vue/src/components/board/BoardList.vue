@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
 import { listArticle } from "@/api/board";
+import Swal from "sweetalert2";
 
 import VSelect from "@/components/common/VSelect.vue";
 import BoardListItem from "@/components/board/item/BoardListItem.vue";
@@ -70,7 +71,18 @@ const moveWrite = () => {
 };
 
 const onClickPrevPage = () => {
-  if (currentPage.value == 1) return;
+  if (currentPage.value == 1) {
+    Swal.fire({
+      position: "center",
+      title: "첫 페이지입니다",
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 2000,
+      width: "260px",
+      toast: true,
+    });
+    return;
+  }
   router.push({
     name: "qna-list",
     query: {
@@ -80,7 +92,18 @@ const onClickPrevPage = () => {
 };
 
 const onClickNextPage = () => {
-  if (currentPage.value == qnaSearchResult.value.totalPage) return;
+  if (currentPage.value == qnaSearchResult.value.totalPage) {
+    Swal.fire({
+      position: "center",
+      title: "마지막 페이지입니다",
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 2000,
+      width: "290px",
+      toast: true,
+    });
+    return;
+  }
   router.push({
     name: "qna-list",
     query: {

@@ -155,11 +155,12 @@ watch(
   text-align: left;
   margin: 3px;
 }
+
 .panel {
   padding-right: 3em;
 }
 .no-reply {
-  padding: 40px;
+  padding: 60px 40px;
   text-align: center;
   color: darkgray;
   font-size: 200%;

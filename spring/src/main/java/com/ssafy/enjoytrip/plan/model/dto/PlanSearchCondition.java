@@ -16,6 +16,7 @@ import lombok.ToString;
 public class PlanSearchCondition {
 
 	private Integer userId;
+	private String username;
 	private String keyword;
 	private String theme;
 	private List<Integer> attractionIds;

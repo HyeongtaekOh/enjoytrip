@@ -3,16 +3,18 @@ import TheHeadingNavbar from "../components/layout/TheHeadingNavbar.vue";
 </script>
 
 <template>
-  <div class="background"></div>
-  <TheHeadingNavbar></TheHeadingNavbar>
-  <div class="container text-center mt-3 board-container">
-    <router-view></router-view>
+  <div>
+    <div class="background"></div>
+    <TheHeadingNavbar></TheHeadingNavbar>
+    <div class="container text-center mt-3 board-container">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
 <style scoped>
 @import "../assets/css/background.css";
-@import "../assets/css/common.css";
+/* @import "../assets/css/common.css"; */
 
 @font-face {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
@@ -29,6 +31,7 @@ import TheHeadingNavbar from "../components/layout/TheHeadingNavbar.vue";
   background-color: white;
   border-radius: 10px;
   animation: fadeIn 0.8s ease-out;
+  /* overflow-y: auto; */
 }
 
 @keyframes fadeIn {

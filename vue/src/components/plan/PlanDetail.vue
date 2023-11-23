@@ -213,6 +213,7 @@ const isUser = computed(() => {
     margin-top: -3px;
     padding-top: 15px;
     background-color: white;
+    border-radius: 0 0 10px 10px;
   }
 }
 </style>

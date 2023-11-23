@@ -3,12 +3,14 @@ package com.ssafy.enjoytrip.redis.utils;
 import com.ssafy.enjoytrip.member.model.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
-//@Service
+@Primary
+@Service
 @RequiredArgsConstructor
 public class RedisUtils implements RefreshTokenService {
 

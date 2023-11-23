@@ -10,23 +10,71 @@ import Swal from "sweetalert2";
 const auth = useAuthStore();
 const router = useRouter();
 
-updateUserContext();
+const updateUserContext = async () => {
+  let token = localStorage.getItem("jwt");
 
-function updateUserContext() {
-  const token = localStorage.getItem("jwt");
+  if (token == null) {
+    return;
+  }
 
-  validateToken(
+  // validateToken(
+  //   token,
+  //   () => {
+  //     const { userId, username, userType } = parseJwtPayload(token);
+  //     auth.loginUser({ userId, username, userType });
+  //   },
+  //   () => {
+  //     console.log("setup validate 실패");
+  //     auth.logoutUser();
+  //     localStorage.removeItem("jwt");
+  //   }
+  // );
+
+  let expired = false;
+  await validateToken(
     token,
     () => {
+      console.log("setup validate 성공");
       const { userId, username, userType } = parseJwtPayload(token);
       auth.loginUser({ userId, username, userType });
     },
-    () => {
-      auth.logoutUser();
-      localStorage.removeItem("jwt");
+    (error) => {
+      expired = true;
+      console.log("setup validate 실패");
     }
   );
-}
+
+  if (expired) {
+    await getRefreshToken(
+      token,
+      (res) => {
+        token = extractToken(res.headers.authorization);
+        const { userId, username, userType } = parseJwtPayload(token);
+        auth.loginUser({ userId, username, userType });
+        localStorage.setItem("jwt", token);
+      },
+      (error) => {
+        if (error.response && error.response.status == 400) {
+          auth.logoutUser();
+          localStorage.removeItem("jwt");
+          Swal.fire({
+            title: "세션이 만료되었습니다",
+            text: "다시 로그인하세요!",
+            icon: "warning",
+            timer: 3000,
+          });
+        } else if (error.response.status == 500) {
+          Swal.fire({
+            title: "개발자야 서버 켰니?",
+            text: "서버 켜고 테스트해라 ㅎㅎ",
+            icon: "warning",
+            timer: 3000,
+          });
+        }
+      }
+    );
+  }
+};
 
 serviceApi.interceptors.request.use(
   async (config) => {
@@ -40,6 +88,7 @@ serviceApi.interceptors.request.use(
       },
       (error) => {
         expired = true;
+        console.log("request interceptor validate 실패");
       }
     );
 
@@ -53,14 +102,12 @@ serviceApi.interceptors.request.use(
         (error) => {
           if (error.response && error.response.status == 400) {
             auth.logoutUser();
+            localStorage.removeItem("jwt");
             Swal.fire({
               title: "세션이 만료되었습니다",
               text: "다시 로그인하세요!",
               icon: "warning",
               timer: 3000,
-            });
-            router.push({
-              name: "home",
             });
           } else if (error.response.status == 500) {
             Swal.fire({
@@ -69,10 +116,10 @@ serviceApi.interceptors.request.use(
               icon: "warning",
               timer: 3000,
             });
-            router.push({
-              name: "home",
-            });
           }
+          router.push({
+            name: "home",
+          });
         }
       );
     }
@@ -100,10 +147,7 @@ serviceApi.interceptors.response.use(
       // 401 Unauthorized 응답 처리
 
       const token = localStorage.getItem("jwt");
-
-      if (token) {
-        localStorage.removeItem("jwt");
-      }
+      console.log("그냥 api 요청 중 401 error 발생");
       auth.logoutUser();
       Swal.fire({
         title: token ? "세션이 만료되었습니다" : "로그인하셨나요?",
@@ -111,9 +155,9 @@ serviceApi.interceptors.response.use(
         icon: "warning",
         timer: 3000,
       });
-      router.push({
-        name: "home",
-      });
+      if (token) {
+        localStorage.removeItem("jwt");
+      }
     } else if (error.response.status == 500) {
       Swal.fire({
         title: "개발자야 서버 켰니?",
@@ -121,10 +165,11 @@ serviceApi.interceptors.response.use(
         icon: "warning",
         timer: 3000,
       });
-      router.push({
-        name: "home",
-      });
     }
+
+    router.push({
+      name: "home",
+    });
   }
 );
 
@@ -135,6 +180,8 @@ function extractToken(header) {
 
   return null;
 }
+
+updateUserContext();
 </script>
 
 <template>
