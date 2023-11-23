@@ -1,15 +1,14 @@
 <script setup>
 import { ref, defineProps, defineEmits, onMounted } from "vue";
 
-const { attraction, map, newPlan, handleDeletePlan, markers, infoWindow } =
-  defineProps([
-    "attraction",
-    "map",
-    "newPlan",
-    "handleDeletePlan",
-    "markers",
-    "infoWindow",
-  ]);
+const { attraction, map, newPlan, handleDeletePlan, markers, infoWindow } = defineProps([
+  "attraction",
+  "map",
+  "newPlan",
+  "handleDeletePlan",
+  "markers",
+  "infoWindow",
+]);
 
 const emit = defineEmits(["showOverlay", "updateNewPlan", "handleDeletePlan"]);
 
@@ -52,10 +51,7 @@ const handleDelete = () => {
 </script>
 <template>
   <div class="main">
-    <div
-      class="row"
-      @click="moveCenter(attraction.latitude, attraction.longitude)"
-    >
+    <div class="row" @click="moveCenter(attraction.latitude, attraction.longitude)">
       <div class="imgContainer">
         <img
           :src="
@@ -70,9 +66,7 @@ const handleDelete = () => {
         <div
           class="plus"
           @click="updateNewPlan"
-          v-if="
-            !newPlan.some((plan) => plan.contentId === attraction.contentId)
-          "
+          v-if="!newPlan.some((plan) => plan.contentId === attraction.contentId)"
         >
           + 추가하기
         </div>
@@ -111,6 +105,10 @@ const handleDelete = () => {
 * {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
   font-weight: 600;
+}
+
+.attraction-detail {
+  font-color: #ca3939;
 }
 .button-wrapper {
   position: absolute;
@@ -301,7 +299,7 @@ const handleDelete = () => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  /* align-items: center; */
   padding: 10px 0;
   cursor: pointer;
 }
