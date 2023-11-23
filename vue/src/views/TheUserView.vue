@@ -10,7 +10,7 @@ import TheHeadingNavbar from "@/components/layout/TheHeadingNavbar.vue";
   </div>
 </template>
 
-<style>
+<style scoped>
 @import "../assets/css/background.css";
 @import "../assets/css/common.css";
 
