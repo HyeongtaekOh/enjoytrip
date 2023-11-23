@@ -80,4 +80,4 @@ Icon
 ._*
 
 # Redis
-!**/redis.properties
+**/redis.properties
