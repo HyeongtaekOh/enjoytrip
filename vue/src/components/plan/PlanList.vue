@@ -32,10 +32,12 @@ const planSearchResult = ref({
   totalCount: 0,
   totalPage: 1,
 });
-const currentPage = ref(parseInt(route.query.page) || 1);
 
 onBeforeRouteUpdate((to, from, next) => {
   planSearchCondition.value.page = parseInt(to.query.page) || 1;
+  selected.value = to.query.selected || "";
+  keyword.value = to.query.keyword || "";
+
   getPlanList();
   next();
 });
@@ -98,6 +100,8 @@ const onClickNextPage = () => {
 const searchPlansByCondition = () => {
   console.log("searchPlansByCondition");
 
+  console.log("selected.value :", selected.value);
+  console.log("keyword.value :", keyword.value);
   if (selected.value == "") {
     Swal.fire({
       position: "top-end",
@@ -131,17 +135,32 @@ const searchPlansByCondition = () => {
     planSearchCondition.value.keyword = "";
     planSearchCondition.value.username = keyword.value;
   }
-  // getPlansByCondition(
-  //   {
-  //     keyword: planSearchCondition.value.keyword,
-  //     selected: planSearchCondition.value.selected,
-  //   },
-  //   ({ data }) => {
-  //     console.log("get plan list :", data.plans);
-  //     planSearchResult.value = data;
-  //   },
-  //   (error) => console.log(error)
-  // );
+  getPlansByCondition(
+    planSearchCondition.value,
+    ({ data }) => {
+      planSearchResult.value = data;
+      Swal.fire({
+        position: "top-end",
+        title: "검색 완료",
+        text: `총 ${planSearchResult.value.totalCount}건의 계획이 검색되었습니다`,
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1200,
+        width: "380px",
+        toast: true,
+      });
+    },
+    (error) => console.log(error)
+  );
+
+  router.push({
+    name: "plan-list",
+    query: {
+      page: 1,
+      selected: selected.value,
+      keyword: keyword.value,
+    },
+  });
 };
 </script>
 
@@ -155,12 +174,17 @@ const searchPlansByCondition = () => {
         여행지 검색하고 계획 짜기
       </a-button>
       <div class="search-wrapper">
-        <a-select v-model="selected" placeholder="검색 조건" size="large" style="width: 130px">
+        <a-select
+          v-model:value="selected"
+          placeholder="검색 조건"
+          size="large"
+          style="width: 130px"
+        >
           <a-select-option value="keyword">제목+내용</a-select-option>
           <a-select-option value="username">작성자</a-select-option>
         </a-select>
         <a-input-search
-          v-model="keyword"
+          v-model:value="keyword"
           placeholder="검색어를 입력하세요"
           enter-button="Search"
           size="large"

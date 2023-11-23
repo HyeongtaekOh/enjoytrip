@@ -79,5 +79,3 @@ Icon
 # Thumbnails
 ._*
 
-# Redis
-**/redis.properties
