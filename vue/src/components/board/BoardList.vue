@@ -27,7 +27,7 @@ const qnaSearchCondition = ref({
   username: "",
   keyword: "",
   page: parseInt(route.query.page) || 1,
-  pageSize: 6,
+  pageSize: 9,
 });
 const currentPage = ref(parseInt(route.query.page) || 1);
 
@@ -196,30 +196,30 @@ const searchBoardByCondition = () => {
       </div>
       <div class="col-lg-10">
         <div class="row align-self-center mb-2">
-          <div class="col-md-2 text-start">
+          <div class="col-md-2 text-start qna-util-wrapper">
             <button type="button" class="btn btn-outline-primary btn-sm" @click="moveWrite">
               글쓰기
             </button>
+            <div class="search-wrapper">
+              <a-select
+                v-model:value="selected"
+                placeholder="검색 조건"
+                size="large"
+                style="width: 130px"
+              >
+                <a-select-option value="keyword">제목</a-select-option>
+                <a-select-option value="username">작성자</a-select-option>
+              </a-select>
+              <a-input-search
+                v-model:value="keyword"
+                placeholder="검색어를 입력하세요"
+                enter-button="Search"
+                size="large"
+                style="width: 500px; margin-left: 20px"
+                @search="searchBoardByCondition"
+              />
+            </div>
           </div>
-          <div class="search-wrapper">
-        <a-select
-          v-model:value="selected"
-          placeholder="검색 조건"
-          size="large"
-          style="width: 130px"
-        >
-          <a-select-option value="keyword">제목</a-select-option>
-          <a-select-option value="username">작성자</a-select-option>
-        </a-select>
-        <a-input-search
-          v-model:value="keyword"
-          placeholder="검색어를 입력하세요"
-          enter-button="Search"
-          size="large"
-          style="width: 500px; margin-left: 20px"
-          @search="searchBoardByCondition"
-        />
-      </div>
         </div>
         <table class="table table-hover">
           <thead>
@@ -232,7 +232,11 @@ const searchBoardByCondition = () => {
             </tr>
           </thead>
           <tbody>
-            <BoardListItem v-for="article in qnaSearchResult.qnas" :key="article.articleId" :article="article">
+            <BoardListItem
+              v-for="article in qnaSearchResult.qnas"
+              :key="article.articleId"
+              :article="article"
+            >
             </BoardListItem>
           </tbody>
         </table>
@@ -269,10 +273,17 @@ const searchBoardByCondition = () => {
       transform: translateY(6px);
     }
   }
-  .search-wrapper {
+
+  .qna-util-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .search-wrapper {
       width: 40vw;
       display: flex;
-      justify-content: flex-end;
+      justify-content: end;
       align-items: center;
 
       input {
@@ -281,5 +292,6 @@ const searchBoardByCondition = () => {
         font-size: 125%;
       }
     }
+  }
 }
 </style>

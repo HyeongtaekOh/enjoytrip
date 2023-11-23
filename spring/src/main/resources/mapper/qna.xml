@@ -33,25 +33,32 @@
 			</if>
 			<if test="condition.keyword != null and condition.keyword != ''">
 				and (
-					subject like concat('%', #{keyword}, '%') or
-					content like concat('%', #{keyword}, '%')
+					subject like concat('%', #{condition.keyword}, '%') or
+					content like concat('%', #{condition.keyword}, '%')
 				)
 			</if>
 		</where>
 	</select>
 	
 	<select id="findByCondition" resultMap="qnaBoardMap">
-		select *
+		select article_id, q.user_id, subject, content, hits, created_time, modified_time
 		from
-			qna_board
+			qna_board as q
+		<if test="condition.username != null and condition.username != ''">
+			left join
+			member as m using (user_id)
+		</if>
 		<where>
 			<if test="condition.userId != null and condition.userId != ''">
-				and user_id = #{userId}
+				and user_id = #{condition.userId}
+			</if>
+			<if test="condition.username != null and condition.username != ''">
+				and m.username = #{condition.username}
 			</if>
 			<if test="condition.keyword != null and condition.keyword != ''">
 				and (
-					subject like concat('%', #{keyword}, '%') or
-					content like concat('%', #{keyword}, '%')
+					subject like concat('%', #{condition.keyword}, '%') or
+					content like concat('%', #{condition.keyword}, '%')
 				)
 			</if>
 		</where>

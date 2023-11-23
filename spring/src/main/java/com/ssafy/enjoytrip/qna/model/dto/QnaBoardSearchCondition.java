@@ -14,6 +14,7 @@ import lombok.ToString;
 public class QnaBoardSearchCondition {
 
 	private String userId;
+	private String username;
 	private String keyword;
 	private Integer page;
 	private Integer pageSize; 
