@@ -7,5 +7,6 @@ CREATE TABLE member (
     email VARCHAR(255) NOT NULL,
     type VARCHAR(10),
     registered_time TIMESTAMP DEFAULT NOW(),
+    profile_image MEDIUMBLOB,
     PRIMARY KEY (user_id)
 );
