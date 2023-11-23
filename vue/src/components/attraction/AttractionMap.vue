@@ -85,6 +85,7 @@ if (route.query.attractionIds) {
       newPlan.value = data;
       drawPolyline();
       drawCourseMarkers();
+      drawStartEndDots();
       setMapBounds();
     },
     (e) => {
@@ -380,6 +381,7 @@ function updateNewPlan(data) {
 
   drawPolyline();
   drawCourseMarkers();
+  drawStartEndDots();
   setMapBounds();
 }
 
