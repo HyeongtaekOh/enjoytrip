@@ -28,39 +28,93 @@ function updateUserContext() {
   );
 }
 
+serviceApi.interceptors.request.use(
+  async (config) => {
+    // 요청이 전송되기 전에 실행될 코드
+    let token = localStorage.getItem("jwt"); // 로컬 스토리지에서 토큰을 가져옵니다.
+    let expired = false;
+    await validateToken(
+      token,
+      () => {
+        console.log("serviceApi request interceptor validate 성공");
+      },
+      (error) => {
+        expired = true;
+      }
+    );
+
+    if (expired) {
+      await getRefreshToken(
+        token,
+        (res) => {
+          token = extractToken(res.headers.authorization);
+          localStorage.setItem("jwt", token);
+        },
+        (error) => {
+          if (error.response && error.response.status == 400) {
+            auth.logoutUser();
+            Swal.fire({
+              title: "세션이 만료되었습니다",
+              text: "다시 로그인하세요!",
+              icon: "warning",
+              timer: 3000,
+            });
+            router.push({
+              name: "home",
+            });
+          } else if (error.response.status == 500) {
+            Swal.fire({
+              title: "개발자야 서버 켰니?",
+              text: "서버 켜고 테스트해라 ㅎㅎ",
+              icon: "warning",
+              timer: 3000,
+            });
+            router.push({
+              name: "home",
+            });
+          }
+        }
+      );
+    }
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`; // 토큰이 있다면 요청 헤더에 추가합니다.
+    }
+    return config;
+  },
+  (error) => {
+    console.error("request interceptor error :", error);
+    // 요청 오류가 발생했을 때 실행될 코드
+    return Promise.reject(error);
+  }
+);
+
 serviceApi.interceptors.response.use(
   (response) => {
     // 응답이 성공적으로 처리된 경우
     return response;
   },
-  async (error) => {
-    const originalRequest = error.config;
+  (error) => {
     // 오류가 발생한 경우
     if (error.response && error.response.status == 401) {
-      if (!originalRequest._retry) {
-        originalRequest._retry = true;
-        const accessToken = await refreshAccessToken();
-        if (accessToken) {
-          originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
-          return apiClient(originalRequest); // 실패한 요청 재시도
-        }
-      } else {
-        // 401 Unauthorized 응답 처리
-        if (localStorage.getItem("jwt")) {
-          localStorage.removeItem("jwt");
-        }
-        auth.logoutUser();
-        Swal.fire({
-          title: "로그인하셨나요?",
-          text: "로그인 후에 서비스를 이용하세요!",
-          icon: "warning",
-          timer: 3000,
-        });
-        router.push({
-          name: "home",
-        });
+      console.log("serviceApi response interceptor error :", error);
+      // 401 Unauthorized 응답 처리
+
+      const token = localStorage.getItem("jwt");
+
+      if (token) {
+        localStorage.removeItem("jwt");
       }
-    } else {
+      auth.logoutUser();
+      Swal.fire({
+        title: token ? "세션이 만료되었습니다" : "로그인하셨나요?",
+        text: token ? "다시 로그인하세요!" : "로그인 후에 서비스를 이용하세요!",
+        icon: "warning",
+        timer: 3000,
+      });
+      router.push({
+        name: "home",
+      });
+    } else if (error.response.status == 500) {
       Swal.fire({
         title: "개발자야 서버 켰니?",
         text: "서버 켜고 테스트해라 ㅎㅎ",
@@ -73,36 +127,6 @@ serviceApi.interceptors.response.use(
     }
   }
 );
-
-async function refreshAccessToken() {
-  try {
-    await getRefreshToken(
-      localStorage.getItem("jwt"),
-      (res) => {
-        const token = extractToken(header);
-        localStorage.setItem("jwt", token);
-        updateUserContext();
-      },
-      (error) => {
-        console.log(error);
-        Swal.fire({
-          position: "top-end",
-          title: "토큰 갱신 실패",
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-          width: "280px",
-          toast: true,
-        });
-      }
-    );
-
-    return localStorage.getItem("jwt");
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-}
 
 function extractToken(header) {
   if (header.startsWith("Bearer ")) {

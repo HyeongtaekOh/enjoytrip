@@ -71,7 +71,7 @@ public class JwtUtils {
     public String generateRefreshToken() {
         /* Refresh Token */
         // JWT Refresh Token 서명 키
-        SecretKey refreshTokenKey = Keys.hmacShaKeyFor(accessTokenSigningKey.getBytes(StandardCharsets.UTF_8));
+        SecretKey refreshTokenKey = Keys.hmacShaKeyFor(refreshTokenSigningKey.getBytes(StandardCharsets.UTF_8));
 
         /**
          * JWT Refresh Token Claims
@@ -113,8 +113,32 @@ public class JwtUtils {
         } catch (ExpiredJwtException e) {
             return null;
         }
-
+        System.out.println(accessClaims);
         return accessClaims.get(claimName, requiredType);
+    }
+    
+    public <T> T getUserIdFromExpiredJwt(String jwt, String claimName, Class<T> requiredType) {
+        SecretKey accessKey = Keys.hmacShaKeyFor(accessTokenSigningKey.getBytes(StandardCharsets.UTF_8));
+        Claims accessClaims = null;
+        try {
+            accessClaims = Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJwt(jwt).getBody();
+        } catch (ExpiredJwtException e) {
+        	accessClaims = e.getClaims();
+        }
+        System.out.println(accessClaims);
+        return accessClaims.get(claimName, requiredType);
+    }
+    
+    public boolean isExpiredRefreshToken(String refreshToken) {
+    	SecretKey refreshTokenKey = Keys.hmacShaKeyFor(refreshTokenSigningKey.getBytes(StandardCharsets.UTF_8));
+    	
+    	try {
+    		Jwts.parserBuilder().setSigningKey(refreshTokenKey).build().parseClaimsJws(refreshToken).getBody();
+    	} catch (ExpiredJwtException e) {
+			return true;
+		}
+    	
+    	return false;
     }
 
     private boolean isValidJwtFormat(String token) {

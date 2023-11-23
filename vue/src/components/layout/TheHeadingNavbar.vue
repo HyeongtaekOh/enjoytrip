@@ -1,7 +1,7 @@
 <script setup>
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
-import { validateToken, login, signup } from "@/api/auth";
+import { login, signup } from "@/api/auth";
 import { parseJwtPayload } from "@/util/jwt-utils";
 
 const auth = useAuthStore();
@@ -29,11 +29,11 @@ const handleLogin = (username, password) => {
   login(
     { username, password },
     (res) => {
-      console.log("login response header =", res.headers);
       const header = res.headers.authorization;
       const token = extractToken(header);
       localStorage.setItem("jwt", token);
-      updateUserContext();
+      const { userId, username, userType } = parseJwtPayload(token);
+      auth.loginUser({ userId, username, userType });
       Swal.fire({
         position: "top-end",
         title: "로그인되었습니다",
@@ -180,22 +180,6 @@ function extractToken(header) {
   }
 
   return null;
-}
-
-function updateUserContext() {
-  const token = localStorage.getItem("jwt");
-
-  validateToken(
-    token,
-    () => {
-      const { userId, username, userType } = parseJwtPayload(token);
-      auth.loginUser({ userId, username, userType });
-    },
-    (e) => {
-      console.log("update user context error =", e);
-      localStorage.removeItem("jwt");
-    }
-  );
 }
 </script>
 

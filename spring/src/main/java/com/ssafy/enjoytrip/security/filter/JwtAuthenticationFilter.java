@@ -1,18 +1,14 @@
 package com.ssafy.enjoytrip.security.filter;
 
-import com.ssafy.enjoytrip.member.model.dto.MemberDto;
-import com.ssafy.enjoytrip.member.model.service.MemberService;
-import com.ssafy.enjoytrip.member.model.service.RefreshTokenService;
-import com.ssafy.enjoytrip.security.authentication.UsernamePasswordAuthentication;
-import com.ssafy.enjoytrip.security.utils.CookieUtils;
-import com.ssafy.enjoytrip.security.utils.JwtUtils;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,16 +16,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.crypto.SecretKey;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Optional;
+import com.ssafy.enjoytrip.member.model.dto.MemberDto;
+import com.ssafy.enjoytrip.member.model.service.MemberService;
+import com.ssafy.enjoytrip.security.authentication.UsernamePasswordAuthentication;
+import com.ssafy.enjoytrip.security.utils.JwtUtils;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -37,17 +30,7 @@ import java.util.Optional;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtils jwtUtils;
-	private final CookieUtils cookieUtils;
 	private final MemberService memberService;
-	private final RefreshTokenService refreshTokenService;
-
-	@Value("${jwt.accessToken.signing.key}")
-	private String accessTokenSigningKey;
-
-	@Value("${jwt.refreshToken.signing.key}")
-	private String refreshTokenSigningKey;
-
-	private final String TOKEN_PREFIX = "Bearer ";
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

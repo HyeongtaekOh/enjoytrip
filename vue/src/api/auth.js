@@ -1,4 +1,4 @@
-import { authApi } from "../util/http-commons";
+import { authApi } from "@/util/http-commons";
 
 const api = authApi();
 
@@ -20,18 +20,26 @@ const signup = (signupForm, success, fail) => {
   api.post("/signup", signupForm).then(success).catch(fail);
 };
 
-const validateToken = (token, success, fail) => {
-  api
-    .get("/validate-token", { headers: { Authorization: "Bearer " + token } })
-    .then(success)
-    .catch(fail);
+const validateToken = async (token, success, fail) => {
+  try {
+    const response = await api.get("/validate-token", {
+      headers: { Authorization: "Bearer " + token },
+    });
+    success(response);
+  } catch (error) {
+    fail(error);
+  }
 };
 
-const getRefreshToken = (token, success, fail) => {
-  api
-    .get("/refresh-token", { headers: { Authorization: "Bearer " + token } })
-    .then(success)
-    .catch(fail);
+const getRefreshToken = async (token, success, fail) => {
+  try {
+    const response = await api.get("/refresh-token", {
+      headers: { Authorization: "Bearer " + token },
+    });
+    success(response);
+  } catch (error) {
+    fail(error);
+  }
 };
 
 export { login, signup, validateToken, getRefreshToken };

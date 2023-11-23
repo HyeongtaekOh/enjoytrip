@@ -53,6 +53,7 @@ public class AuthController {
 
             // Redis에 Refresh Token 저장
             refreshTokenService.setData(member.getUsername(), jwtRefreshToken);
+            log.info("refresh token store | {} : {}", member.getUsername(), jwtRefreshToken);
 
             // Access Token을 Response Header에 추가
             HttpHeaders responseHeaders = new HttpHeaders();

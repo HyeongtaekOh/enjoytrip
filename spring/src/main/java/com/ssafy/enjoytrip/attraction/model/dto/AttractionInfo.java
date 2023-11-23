@@ -1,7 +1,5 @@
 package com.ssafy.enjoytrip.attraction.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,9 +45,7 @@ public class AttractionInfo {
 	@ApiParam(value = "Map Level")
 	private String mlevel;
 	
-	@JsonIgnore
 	private AttractionDetail detail;
-	@JsonIgnore
 	private AttractionDescription description;
 	
 }

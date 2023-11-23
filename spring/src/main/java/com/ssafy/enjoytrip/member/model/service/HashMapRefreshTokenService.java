@@ -1,6 +1,6 @@
 package com.ssafy.enjoytrip.member.model.service;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HashMapRefreshTokenService implements RefreshTokenService {
 	
-	HashMap<String, Object> store = new HashMap<String, Object>();
+	ConcurrentHashMap<String, Object> store = new ConcurrentHashMap<String, Object>();
 
 	@Override
 	public void setData(String key, Object value) {

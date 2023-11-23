@@ -6,6 +6,8 @@ import com.ssafy.enjoytrip.member.model.service.RefreshTokenService;
 import com.ssafy.enjoytrip.security.utils.CookieUtils;
 import com.ssafy.enjoytrip.security.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -17,6 +19,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UtilController {
@@ -42,13 +45,21 @@ public class UtilController {
 		String jwt = jwtUtils.extractToken(request);
 
 		if (jwt == null) {
+			log.info("refresh token | jwt is null");
 			return ResponseEntity.badRequest().build();
 		}
 
-		Integer userId = jwtUtils.getUserIdFromJwt(jwt, "userId", Integer.class);
+		Integer userId = jwtUtils.getUserIdFromExpiredJwt(jwt, "userId", Integer.class);
+		
+		if (userId == null) {
+			log.info("refresh token | claims do not have userId field");
+			return ResponseEntity.badRequest().build();
+		}
+		
 		Optional<MemberDto> m = memberService.getMemberById(userId);
 
 		if (!m.isPresent()) {
+			log.info("refresh token | member does not exist | userId = {}", userId);
 			return ResponseEntity.badRequest().build();
 		}
 
@@ -57,39 +68,41 @@ public class UtilController {
 		Optional<Cookie> cookie = cookieUtils.getCookie(request, "refreshToken");
 
 		if (!cookie.isPresent()) {
+			log.info("refresh token | refreshToken cookie does not exist");
 			return ResponseEntity.badRequest().build();
 		}
 
-		String refreshToken = cookieUtils.deserialize(cookie.get(), String.class);
+		String refreshToken = cookie.get().getValue();
+		log.info("deserialized refresh token = {}", refreshToken);
 
 		if (refreshToken == null) {
+			log.info("refresh token | get refreshToken value fail");
+			return ResponseEntity.badRequest().build();
+		}
+		
+		if (jwtUtils.isExpiredRefreshToken(refreshToken)) {
+			log.info("refresh token | refresh token is expired");
 			return ResponseEntity.badRequest().build();
 		}
 
-		String redisRefreshToken = refreshTokenService.getData(member.getUsername());
+		String storedRefreshToken = refreshTokenService.getData(member.getUsername());
+		log.info("stored refresh token = {}", storedRefreshToken);
 
-		if (!refreshToken.equals(redisRefreshToken)) {
+		if (!refreshToken.equals(storedRefreshToken)) {
+			log.info("refresh token | refresh token is not matched");
 			return ResponseEntity.badRequest().build();
 		}
 
 		String newAccessToken = jwtUtils.generateAccessToken(member);
+		String newRefreshToken = jwtUtils.generateRefreshToken();
+		
+		refreshTokenService.setData(member.getUsername(), newRefreshToken);
+		log.info("updated refresh token store | {} : {}", member.getUsername(), newRefreshToken);
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("Authorization", TOKEN_PREFIX + newAccessToken);
 
-//				.ifPresent(cookie -> {
-//			String refreshToken = cookieUtils.deserialize(cookie, String.class);
-//			if (refreshToken == null) {
-//				return;
-//			}
-//			String redisRefreshToken = refreshTokenService.getData(username);
-//			if (refreshToken.equals(redisRefreshToken)) {
-//				String newAccessToken = jwtUtils.generateAccessToken(username);
-////				cookieUtils.addCookie(response, "accessToken", newAccessToken, (int) (jwtUtils.getAccessTokenExpiration() / 1000));
-//			}
-//		}
-
-		ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
+		ResponseCookie responseCookie = ResponseCookie.from("refreshToken", newRefreshToken)
 				.httpOnly(true)
 				.secure(false)
 				.path("/")
