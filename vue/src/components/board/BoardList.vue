@@ -29,7 +29,6 @@ const qnaSearchCondition = ref({
   page: parseInt(route.query.page) || 1,
   pageSize: 9,
 });
-const currentPage = ref(parseInt(route.query.page) || 1);
 
 onBeforeRouteUpdate((to, from, next) => {
   qnaSearchCondition.value.page = parseInt(to.query.page) || 1;
@@ -69,13 +68,6 @@ onBeforeRouteUpdate((to, from, next) => {
   next();
 });
 
-const param = ref({
-  userId: "",
-  keyword: "",
-  page: computed(() => currentPage.value),
-  pageSize: 9,
-});
-
 onMounted(() => {
   qnaSearchCondition.value.page = parseInt(route.query.page) || 1;
   selected.value = route.query.selected || "";
@@ -92,13 +84,11 @@ onMounted(() => {
 });
 
 const getQnaList = () => {
-  console.log("서버에서 글목록 얻어오자!!!", param.value);
-  // API 호출
   listArticle(
-    param.value,
+    qnaSearchCondition.value,
     ({ data }) => {
-      console.log("response data =", data);
       qnaSearchResult.value = data;
+      console.log("qnaSearchResult.value :", qnaSearchResult.value);
     },
     (error) => {
       console.log("BoardList getArticle List : error =", error);
@@ -111,7 +101,7 @@ const moveWrite = () => {
 };
 
 const onClickPrevPage = () => {
-  if (currentPage.value == 1) {
+  if (qnaSearchCondition.value.page == 1) {
     Swal.fire({
       position: "center",
       title: "첫 페이지입니다",
@@ -136,7 +126,7 @@ const onClickPrevPage = () => {
 };
 
 const onClickNextPage = () => {
-  if (currentPage.value == qnaSearchResult.value.totalPage) {
+  if (qnaSearchCondition.value.page == qnaSearchResult.value.totalPage) {
     Swal.fire({
       position: "center",
       title: "마지막 페이지입니다",
@@ -242,16 +232,16 @@ const searchBoardByCondition = () => {
         </table>
       </div>
       <div class="page-util-wrapper">
-        <a-button type="text" shape="round" size="large" @click="onClickPrevPage">
-          <img :src="PrevArrowImage" alt="이전 페이지" style="width: 16px; border-radius: 50%" />
-        </a-button>
-        <span style="margin: 0px 10px 0px 10px; font-size: 180%; font-weight: 900">{{
-          currentPage
-        }}</span>
-        <a-button type="text" shape="round" size="large" @click="onClickNextPage">
-          <img :src="NextArrowImage" alt="이전 페이지" style="width: 16px; border-radius: 50%" />
-        </a-button>
-      </div>
+      <a-button type="text" shape="round" size="large" @click="onClickPrevPage">
+        <img :src="PrevArrowImage" alt="이전 페이지" style="width: 30px; border-radius: 50%" />
+      </a-button>
+      <span style="margin: 10px 10px 0 10px; font-size: 250%; font-weight: 900">{{
+        qnaSearchCondition.page
+      }}</span>
+      <a-button type="text" shape="round" size="large" @click="onClickNextPage">
+        <img :src="NextArrowImage" alt="이전 페이지" style="width: 30px; border-radius: 50%" />
+      </a-button>
+    </div>
     </div>
   </div>
 </template>
