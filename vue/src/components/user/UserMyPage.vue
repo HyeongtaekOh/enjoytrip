@@ -90,8 +90,8 @@ async function modifyUserpassword() {
   const { value: formValues } = await Swal.fire({
     title: "새로운 비밀번호를 입력하세요",
     html: `
-    <input id="swal-input1" class="swal2-input">
-    <input id="swal-input2" class="swal2-input">
+    <input id="swal-input1" class="swal2-input" placeholder="새로운 비밀번호">
+    <input id="swal-input2" class="swal2-input" placeholder="비밀번호 확인">
   `,
     focusConfirm: false,
     preConfirm: () => {
