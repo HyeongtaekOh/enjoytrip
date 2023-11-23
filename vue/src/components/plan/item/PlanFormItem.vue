@@ -45,7 +45,7 @@ const moveAttraction = () => {
   router.push({
     name: "attraction-map",
     params: {
-      mode: "modify",
+      mode: type === "regist" ? "search" : "modify",
     },
     query: {
       planId: plan.value.planId,
@@ -203,7 +203,7 @@ const onSubmit = () => {
       ></textarea>
     </div>
     <div class="col-auto text-center plan-form-button-wrapper">
-      <button type="button" class="btn btn-outline-danger mb-3 me-2" @click="beforeAttraction">
+      <button type="button" class="btn btn-outline-danger mb-3 me-2" @click="moveAttraction">
         코스 수정하기
       </button>
       <button type="submit" class="btn btn-outline-primary mb-3" v-if="type === 'regist'">
