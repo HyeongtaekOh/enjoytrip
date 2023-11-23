@@ -31,6 +31,7 @@ public class MemberServiceImpl implements MemberService {
 	public boolean duplicateCheck(String username) {
 		try {
 			int count = memberMapper.duplicateUsernameCheck(username);
+			log.info("duplicate count : {}", count);
 			return count > 0;
 		} catch (SQLException e) {
 			throw new MemberException("중복 체크 중 에러 발생.");

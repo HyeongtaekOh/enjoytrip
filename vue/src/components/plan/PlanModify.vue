@@ -23,51 +23,47 @@ const plan = ref({
   departuresName: "",
   arrivalsId: "",
   arrivalsName: "",
-  attractions: [],
   createdTime: "",
   modifiedTime: "",
 });
+const attractions = ref([]);
 
 getPlanById(
   planId,
   ({ data }) => {
     plan.value = data;
+    getAttractionsByIds(
+      attractionIds,
+      ({ data }) => {
+        console.log("data :", data);
+        attractions.value = data;
+        console.log("attractions :", attractions.value);
+      },
+      (e) => {
+        console.log("getAttractions error :", e);
+      }
+    );
   },
   (e) => {
     console.log("getPlan error :", e);
-  }
-);
-
-getAttractionsByIds(
-  attractionIds,
-  ({ data }) => {
-    console.log("data :", data);
-    plan.value.attractions = data;
-    console.log("attractions :", plan.value.attractions);
-  },
-  (e) => {
-    console.log("getAttractions error :", e);
   }
 );
 </script>
 
 <template>
   <div class="modify-container">
-    <div
-      v-if="plan.name.length > 0 && plan.attractions.length > 0"
-      class="modify-content-container"
-    >
+    <div v-if="plan.name.length > 0 && attractions.length > 0" class="modify-content-container">
       <div class="modify-content">
         <div class="modify-content-header">
           <h1 class="modify-content-title">여행 계획 수정</h1>
         </div>
 
         <div class="modify-content-body">
-          <PlanFormItem :attractions="plan.attractions" type="modify" :plan="plan" />
+          <PlanFormItem :attractions="attractions" type="modify" :plan="plan" />
         </div>
       </div>
 
-      <PlanMap :attractions="plan.attractions" />
+      <PlanMap :attractions="attractions" />
     </div>
     <div v-else class="loading-container">
       <img :src="InterParkImage" class="loading" />

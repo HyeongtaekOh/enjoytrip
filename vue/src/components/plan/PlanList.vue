@@ -1,6 +1,6 @@
 <script setup>
 import { EditOutlined } from "@ant-design/icons-vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
 import { getPlansByCondition } from "../../api/plan";
 import PlanListItem from "./item/PlanListItem.vue";
@@ -38,7 +38,33 @@ onBeforeRouteUpdate((to, from, next) => {
   selected.value = to.query.selected || "";
   keyword.value = to.query.keyword || "";
 
-  getPlanList();
+  if (selected.value == "keyword") {
+    planSearchCondition.value.username = "";
+    planSearchCondition.value.keyword = keyword.value;
+  } else if (selected.value == "username") {
+    planSearchCondition.value.keyword = "";
+    planSearchCondition.value.username = keyword.value;
+  }
+
+  getPlansByCondition(
+    planSearchCondition.value,
+    ({ data }) => {
+      planSearchResult.value = data;
+      Swal.fire({
+        position: "top-end",
+        title: "검색 완료",
+        text: `총 ${
+          planSearchResult.value.totalCount > 0 ? planSearchResult.value.totalCount : 0
+        }건의 계획이 검색되었습니다`,
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1200,
+        width: "380px",
+        toast: true,
+      });
+    },
+    (error) => console.log(error)
+  );
   next();
 });
 
@@ -53,7 +79,21 @@ const getPlanList = () => {
   );
 };
 
-getPlanList();
+onMounted(() => {
+  planSearchCondition.value.page = parseInt(route.query.page) || 1;
+  selected.value = route.query.selected || "";
+  keyword.value = route.query.keyword || "";
+
+  if (selected.value == "keyword") {
+    planSearchCondition.value.username = "";
+    planSearchCondition.value.keyword = keyword.value;
+  } else if (selected.value == "username") {
+    planSearchCondition.value.keyword = "";
+    planSearchCondition.value.username = keyword.value;
+  }
+
+  getPlanList();
+});
 
 const onClickPrevPage = () => {
   if (planSearchCondition.value.page == 1) {
@@ -68,10 +108,15 @@ const onClickPrevPage = () => {
     });
     return;
   }
+
+  planSearchCondition.value.page--;
+
   router.push({
     name: "plan-list",
     query: {
-      page: planSearchCondition.value.page - 1,
+      page: planSearchCondition.value.page,
+      selected: selected.value,
+      keyword: keyword.value,
     },
   });
 };
@@ -89,10 +134,15 @@ const onClickNextPage = () => {
     });
     return;
   }
+
+  planSearchCondition.value.page++;
+
   router.push({
     name: "plan-list",
     query: {
-      page: planSearchCondition.value.page + 1,
+      page: planSearchCondition.value.page,
+      selected: selected.value,
+      keyword: keyword.value,
     },
   });
 };
@@ -114,44 +164,6 @@ const searchPlansByCondition = () => {
     });
     return;
   }
-
-  if (keyword.value == "") {
-    Swal.fire({
-      position: "top-end",
-      title: "검색어를 입력하세요",
-      icon: "warning",
-      showConfirmButton: false,
-      timer: 1200,
-      width: "310px",
-      toast: true,
-    });
-    return;
-  }
-
-  if (selected.value == "keyword") {
-    planSearchCondition.value.username = "";
-    planSearchCondition.value.keyword = keyword.value;
-  } else if (selected.value == "username") {
-    planSearchCondition.value.keyword = "";
-    planSearchCondition.value.username = keyword.value;
-  }
-  getPlansByCondition(
-    planSearchCondition.value,
-    ({ data }) => {
-      planSearchResult.value = data;
-      Swal.fire({
-        position: "top-end",
-        title: "검색 완료",
-        text: `총 ${planSearchResult.value.totalCount}건의 계획이 검색되었습니다`,
-        icon: "success",
-        showConfirmButton: false,
-        timer: 1200,
-        width: "380px",
-        toast: true,
-      });
-    },
-    (error) => console.log(error)
-  );
 
   router.push({
     name: "plan-list",

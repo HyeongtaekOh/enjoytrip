@@ -58,24 +58,10 @@ const displayCourseMarker = (position) => {
   courseMarker.setMap(map);
 };
 
-const displayCircleDot = (position) => {
-  // 클릭 지점을 표시할 빨간 동그라미 커스텀오버레이를 생성합니다
-  var circleOverlay = new kakao.maps.CustomOverlay({
-    content: '<span class="dot"></span>',
-    position: position,
-    zIndex: 6,
-  });
-  console.log(circleOverlay.getVisible());
-  // 지도에 표시합니다
-  circleOverlay.setMap(map);
-
-  // 배열에 추가합니다
-  dots.push({ circle: circleOverlay });
-};
-
 onMounted(async () => {
   if (window.kakao && window.kakao.maps) {
     initMap();
+    console.log("PlanMap props attractions =", props.attractions);
     drawCourse(props.attractions);
   } else {
     const script = document.createElement("script");
@@ -85,7 +71,7 @@ onMounted(async () => {
     script.onload = () => {
       kakao.maps.load(() => {
         initMap();
-        console.log("attractions =", props.attractions);
+        console.log("PlanMap props attractions =", props.attractions);
         drawCourse(props.attractions);
       });
     };

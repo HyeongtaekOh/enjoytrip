@@ -86,7 +86,7 @@ const handleSignup = (username, password, email) => {
     }
   );
 };
-console.log(auth.getUser);
+
 const showLoginForm = async () => {
   const { value: formValues } = await Swal.fire({
     title: "로그인하세요!",

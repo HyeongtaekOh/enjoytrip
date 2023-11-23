@@ -5,7 +5,7 @@ import { useAuthStore } from "@/stores/auth";
 import Swal from "sweetalert2";
 import CommentListItem from "@/components/comment/item/CommentListItem.vue";
 
-const { contentId, type } = defineProps({ contentId: String, type: String });
+const { contentId, type } = defineProps({ contentId: Number, type: String });
 const auth = useAuthStore();
 
 const comments = ref([]);

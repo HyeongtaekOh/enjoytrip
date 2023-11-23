@@ -10,6 +10,7 @@ const onEnter = () => {
   console.log(keyword.value);
   router.push({
     name: "attraction-map",
+    params: { mode: "search" },
     query: { selectedKeyword: keyword.value },
   });
 };
