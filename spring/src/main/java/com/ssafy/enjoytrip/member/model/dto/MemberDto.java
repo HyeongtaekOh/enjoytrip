@@ -17,4 +17,5 @@ public class MemberDto {
     private String email;
     private MemberType type;
     private String registeredTime;
+    private String profileImage;
 }

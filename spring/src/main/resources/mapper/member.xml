@@ -12,6 +12,7 @@
 		<result column="email" property="email" />
 		<result column="type" property="type" />
 		<result column="registered_time" property="registeredTime" />
+		<result column="profile_image" property="profileImage" />
 	</resultMap>
 
 	<select id="duplicateUsernameCheck" parameterType="String"
