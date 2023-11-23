@@ -20,7 +20,8 @@ onMounted(() => {
 });
 
 const getUser = () => {
-  getMemberById(userId,
+  getMemberById(
+    userId,
     ({ data }) => {
       user.value = data;
     },
@@ -35,7 +36,7 @@ async function modifyUseremail() {
     title: "Input email address",
     input: "email",
     inputLabel: "Your email address",
-    inputPlaceholder: "Enter your email address"
+    inputPlaceholder: "Enter your email address",
   });
   if (email) {
     Swal.fire(`Entered email: ${email}`);
@@ -94,9 +95,9 @@ async function modifyUserpassword() {
     preConfirm: () => {
       return [
         document.getElementById("swal-input1").value,
-        document.getElementById("swal-input2").value
+        document.getElementById("swal-input2").value,
       ];
-    }
+    },
   });
   if (formValues[0] !== formValues[1]) {
     Swal.fire({
@@ -160,20 +161,29 @@ async function modifyUserpassword() {
             <div class="col-md-8">
               <div class="card-body text-start">
                 <ul class="list-group list-group-flush">
-                  <li class="list-group-item">{{ user.username }}</li>
-                  <li class="list-group-item" style="display: flex; justify-content: space-between;">{{ user.password }}
-                    <button class="btn" @click="modifyUserpassword"> 수정</button></li>
-                  <li class="list-group-item" style="display: flex; justify-content: space-between;">{{ user.email }}
-                    <button class="btn" @click="modifyUseremail"> 수정</button></li>
+                  <li class="list-group-item">
+                    <span> ID : </span>
+                    <span>
+                      {{ user.username }}
+                    </span>
+                  </li>
+                  <li class="list-group-item" style="display: flex; justify-content: space-between">
+                    <span> 비밀번호 : ********</span>
+                    <span>
+                      <button class="btn" @click="modifyUserpassword">수정</button>
+                    </span>
+                  </li>
+                  <li class="list-group-item" style="display: flex; justify-content: space-between">
+                    <sapn>Email : {{ user.email }}</sapn>
+                    <button class="btn" @click="modifyUseremail">수정</button>
+                  </li>
                   <li class="list-group-item">{{ user.type }}</li>
                 </ul>
-
               </div>
             </div>
           </div>
         </div>
-        <div>
-        </div>
+        <div></div>
       </div>
     </div>
   </div>
@@ -182,7 +192,8 @@ async function modifyUserpassword() {
 <style scoped>
 @font-face {
   font-family: "GangwonEduHyeonokT_OTFMediumA";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff") format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
+    format("woff");
   font-weight: 600;
   font-style: 600;
 }

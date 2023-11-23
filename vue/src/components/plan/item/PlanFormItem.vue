@@ -6,6 +6,7 @@ import { registPlan, updatePlan } from "@/api/plan";
 import RightArrowImage from "@/assets/img/right-arrow.png";
 import Swal from "sweetalert2";
 
+const { defineProps } = "vue";
 const props = defineProps({
   attractions: Array,
   type: String,
@@ -43,6 +44,22 @@ onMounted(() => {
 const moveAttraction = () => {
   router.push({
     name: "attraction-map",
+    params: {
+      mode: "modify",
+    },
+    query: {
+      planId: plan.value.planId,
+      attractionIds: JSON.stringify(plan.value.attractionIds),
+    },
+  });
+};
+
+const beforeAttraction = () => {
+  router.push({
+    name: "attraction-map",
+    params: {
+      mode: "search",
+    },
     query: {
       attractionIds: JSON.stringify(plan.value.attractionIds),
     },
@@ -186,7 +203,7 @@ const onSubmit = () => {
       ></textarea>
     </div>
     <div class="col-auto text-center plan-form-button-wrapper">
-      <button type="button" class="btn btn-outline-danger mb-3 me-2" @click="moveAttraction">
+      <button type="button" class="btn btn-outline-danger mb-3 me-2" @click="beforeAttraction">
         코스 수정하기
       </button>
       <button type="submit" class="btn btn-outline-primary mb-3" v-if="type === 'regist'">

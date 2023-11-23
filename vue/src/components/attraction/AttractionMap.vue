@@ -13,7 +13,12 @@ import PrevArrowImage from "@/assets/img/prev-arrow.png";
 import NextArrowImage from "@/assets/img/next-arrow.png";
 import Swal from "sweetalert2";
 
+const route = useRoute();
 const router = useRouter();
+
+// const mode = ref(route.params?.mode || "serach");
+// const lat = ref(route.params?.lat || 33.450701);
+// const lng = ref(route.params?.lng || 126.570667);
 
 const selectedSido = ref("0");
 const selectedGugun = ref("0");
@@ -37,14 +42,25 @@ const info = ref({
 const positions = ref([]);
 const pos = ref(null);
 const markers = ref([]);
-
-const route = useRoute();
+const modifyPlanId = ref(0);
 const keyword = ref(null);
 if (route.query.selectedKeyword) {
   keyword.value = route.query.selectedKeyword;
 }
 
 let attractionIds = [];
+
+const mode = ref("search");
+
+if (route.params.mode === "modify") {
+  mode.value = "modify";
+}
+
+if (route.query.planId) {
+  modifyPlanId.value = route.query.planId;
+  console.log("modifyPlanId:", modifyPlanId.value);
+}
+
 if (route.query.attractionIds) {
   attractionIds = JSON.parse(route.query.attractionIds);
 
@@ -59,7 +75,6 @@ if (route.query.attractionIds) {
     }
   );
 }
-const modifyPlan = ref([]);
 
 const attractionSearchResult = ref({
   attractions: [],
@@ -122,10 +137,7 @@ onMounted(() => {
     document.head.appendChild(script);
   }
   makeSido();
-  watch(
-    [selectedSido, selectedGugun, selectedType, selectedKeyword],
-    searchAttraction
-  );
+  watch([selectedSido, selectedGugun, selectedType, selectedKeyword], searchAttraction);
 });
 
 watch(
@@ -140,10 +152,7 @@ watch(
     positions.value = [];
     attractionSearchResult.value.attractions.forEach((attraction) => {
       let obj = {};
-      obj.latlng = new kakao.maps.LatLng(
-        attraction.latitude,
-        attraction.longitude
-      );
+      obj.latlng = new kakao.maps.LatLng(attraction.latitude, attraction.longitude);
       obj.title = attraction.title;
       obj.addr1 = attraction.addr1;
       obj.firstImage = attraction.firstImage;
@@ -201,8 +210,7 @@ const loadMarkers = () => {
           firstImage: position.firstImage,
         };
         if (!info.value.firstImage.includes("tong")) {
-          info.value.firstImage =
-            "http://http://localhost:5173/src/assets/img/noImage.jpg";
+          info.value.firstImage = "http://http://localhost:5173/src/assets/img/noImage.jpg";
         }
         setInfoWindow();
         infoWindow.value.setMap(map);
@@ -338,12 +346,7 @@ function updateNewPlan(data) {
   var linePath = [];
   linePath = [];
   for (var i = 0; i < newPlan.value.length; i++) {
-    linePath.push(
-      new kakao.maps.LatLng(
-        newPlan.value[i].latitude,
-        newPlan.value[i].longitude
-      )
-    );
+    linePath.push(new kakao.maps.LatLng(newPlan.value[i].latitude, newPlan.value[i].longitude));
   }
 
   let markerImg = `<div style="position:relative;"><svg style="filter: drop-shadow(0px 0px 5px rgb(0 0 0 / 0.6));" xmlns="http://www.w3.org/2000/svg" fill="#0395a5" width="50px" height="50px" viewBox="0 0 1920 1920">
@@ -355,7 +358,6 @@ function updateNewPlan(data) {
     "data:image/svg+xml;charset=utf-8," + encodeURIComponent(markerImg),
     new kakao.maps.Size(50, 50)
   );
-
 
   var polyline = new kakao.maps.Polyline({
     path: linePath, // 선을 구성하는 좌표배열 입니다
@@ -404,6 +406,18 @@ const handlePlanButtonClick = () => {
   });
 };
 
+const ModifyPlanButtonClick = () => {
+  const contentIds = newPlan.value.map((plan) => plan.contentId);
+
+  console.log("contentIds:", contentIds);
+
+  router.push({
+    name: "plan-modify",
+    params: { planId: modifyPlanId.value },
+    query: { attractionIds: JSON.stringify(contentIds) },
+  });
+};
+
 const resetPlan = () => {
   newPlan.value = [];
 };
@@ -428,9 +442,7 @@ const handleDragEnd = () => {
 const handleDeletePlan = (element) => {
   console.log("element:", element);
   // 삭제 버튼 클릭 시 실행되는 함수
-  const index = newPlan.value.findIndex(
-    (plan) => plan.contentId === element.contentId
-  );
+  const index = newPlan.value.findIndex((plan) => plan.contentId === element.contentId);
   console.log("index:", index);
   if (index !== -1) {
     console.log("index:", index);
@@ -493,24 +505,16 @@ const showOverlay = ({ lat, lng, attraction }) => {
   <div class="contents">
     <div class="button-wrapper">
       <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
-      <link
-        rel="stylesheet"
-        href="https://www.w3schools.com/lib/w3-colors-2020.css"
-      />
+      <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-2020.css" />
 
       <div id="app" class="w3-container">
-        <button
-          class="w3-button w3-xlarge w3-circle w3-2020-amberglow"
-          @click="handleButtonClick"
-        >
+        <button class="w3-button w3-xlarge w3-circle w3-2020-amberglow" @click="handleButtonClick">
           +
         </button>
       </div>
       <div id="mySidenav" class="sidenav">
         <h2>NewPlan</h2>
-        <a href="javascript:void(0)" class="closebtn" @click="closeNav"
-          >&times;</a
-        >
+        <a href="javascript:void(0)" class="closebtn" @click="closeNav">&times;</a>
         <div class="list">
           <draggable
             class="list-group"
@@ -524,18 +528,12 @@ const showOverlay = ({ lat, lng, attraction }) => {
             <template #item="{ element }">
               <li class="list-group-item">
                 <i
-                  :class="
-                    element.fixed
-                      ? 'fa fa-anchor'
-                      : 'glyphicon glyphicon-pushpin'
-                  "
+                  :class="element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'"
                   @click="element.fixed = !element.fixed"
                   aria-hidden="true"
                 ></i>
                 {{ element.title }}
-                <span class="delete-button" @click="handleDeletePlan(element)">
-                  -삭제
-                </span>
+                <span class="delete-button" @click="handleDeletePlan(element)"> -삭제 </span>
               </li>
             </template>
           </draggable>
@@ -543,14 +541,19 @@ const showOverlay = ({ lat, lng, attraction }) => {
         <button
           class="plan-button w3-xlarge w3-circle w3-2020-amberglow"
           @click="handlePlanButtonClick"
+          v-if="mode === 'search'"
         >
           계획 등록
         </button>
-        <br />
         <button
           class="plan-button w3-xlarge w3-circle w3-2020-amberglow"
-          @click="resetPlan"
+          @click="ModifyPlanButtonClick"
+          v-else
         >
+          계획 수정
+        </button>
+        <br />
+        <button class="plan-button w3-xlarge w3-circle w3-2020-amberglow" @click="resetPlan">
           초기화
         </button>
       </div>
@@ -623,29 +626,18 @@ const showOverlay = ({ lat, lng, attraction }) => {
     </div>
     <div class="page-util-wrapper">
       <a-button type="text" shape="round" size="large" @click="onClickPrevPage">
-        <img
-          :src="PrevArrowImage"
-          alt="이전 페이지"
-          style="width: 30px; border-radius: 50%"
-        />
+        <img :src="PrevArrowImage" alt="이전 페이지" style="width: 30px; border-radius: 50%" />
       </a-button>
-      <span
-        style="margin: 10px 10px 0 10px; font-size: 250%; font-weight: 900"
-        >{{ currentPage }}</span
-      >
+      <span style="margin: 10px 10px 0 10px; font-size: 250%; font-weight: 900">{{
+        currentPage
+      }}</span>
       <a-button type="text" shape="round" size="large" @click="onClickNextPage">
-        <img
-          :src="NextArrowImage"
-          alt="이전 페이지"
-          style="width: 30px; border-radius: 50%"
-        />
+        <img :src="NextArrowImage" alt="이전 페이지" style="width: 30px; border-radius: 50%" />
       </a-button>
     </div>
     <div id="map" class="map">
       <div class="test">
-        <button class="clear-all-btn" @click="clearAllOverlays">
-          모두 지우기
-        </button>
+        <button class="clear-all-btn" @click="clearAllOverlays">모두 지우기</button>
       </div>
     </div>
   </div>

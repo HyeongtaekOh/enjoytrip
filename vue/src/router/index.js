@@ -70,18 +70,18 @@ const router = createRouter({
       path: "/attraction",
       name: "attraction",
       component: () => import("@/views/AttractionView.vue"),
-      redirect: { name: "attraction-map" },
+      redirect: { name: "attraction-map", params: { mode: "search" } },
       children: [
         {
-          path: "map",
+          path: "map/:mode",
           name: "attraction-map",
           component: () => import("@/components/attraction/AttractionMap.vue"),
         },
         {
-          path:"detail/:contentId",
-          name:"attraction-detail",
+          path: "detail/:contentId",
+          name: "attraction-detail",
           component: () => import("@/components/attraction/AttractionDetail.vue"),
-        }
+        },
       ],
     },
     {
