@@ -35,7 +35,7 @@
 	<select id="findByUsername" parameterType="String"
 			resultMap="memberMap">
 		select
-			user_id, username, password, email, type, registered_time
+			user_id, username, password, email, type, registered_time, profile_image
 		from
 			member
 		where
@@ -58,7 +58,7 @@
 			<if test="email != null and email != ''">
 				email = #{email},
 			</if>
-			<if test="profile_image != null and profile_image != ''">
+			<if test="profileImage != null">
 				profile_image = #{profileImage},
 			</if>
 		</trim>

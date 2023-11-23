@@ -11,6 +11,7 @@ import AttractionItem from "@/components/attraction/item/AttractionItem.vue";
 import draggable from "vuedraggable";
 import PrevArrowImage from "@/assets/img/prev-arrow.png";
 import NextArrowImage from "@/assets/img/next-arrow.png";
+import CourseMarkerImage from "@/assets/img/course-marker.png";
 import Swal from "sweetalert2";
 
 const route = useRoute();
@@ -69,6 +70,9 @@ if (route.query.attractionIds) {
     ({ data }) => {
       attractions.value = data;
       newPlan.value = data;
+      drawPolyline();
+      drawCourseMarkers();
+      setMapBounds();
     },
     (e) => {
       console.log("getAttractions error :", e);
@@ -133,7 +137,10 @@ onMounted(() => {
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${
       import.meta.env.VITE_KAKAO_JAVASCRIPT_APP_KEY
     }&libraries=services,clusterer`;
-    script.onload = () => kakao.maps.load(() => initMap());
+    script.onload = () =>
+      kakao.maps.load(() => {
+        initMap();
+      });
     document.head.appendChild(script);
   }
   makeSido();
@@ -343,23 +350,36 @@ function updateNewPlan(data) {
   newPlan.value.push(data.plan);
   console.log("newPlan:", newPlan.value);
 
-  var linePath = [];
-  linePath = [];
-  for (var i = 0; i < newPlan.value.length; i++) {
+  drawPolyline();
+  drawCourseMarkers();
+  setMapBounds();
+}
+
+const drawCourseMarkers = () => {
+  for (let i = 0; i < newPlan.value.length; i++) {
+    let imageSize = new kakao.maps.Size(49, 50);
+    let imgOptions = {
+      offset: new kakao.maps.Point(25, 49),
+    };
+    let markerImage = new kakao.maps.MarkerImage(CourseMarkerImage, imageSize, imgOptions);
+
+    let courseMarker = new kakao.maps.Marker({
+      position: new kakao.maps.LatLng(newPlan.value[i].latitude, newPlan.value[i].longitude),
+      image: markerImage,
+    });
+
+    courseMarker.setMap(map);
+  }
+};
+
+const drawPolyline = () => {
+  const linePath = [];
+
+  for (let i = 0; i < newPlan.value.length; i++) {
     linePath.push(new kakao.maps.LatLng(newPlan.value[i].latitude, newPlan.value[i].longitude));
   }
 
-  let markerImg = `<div style="position:relative;"><svg style="filter: drop-shadow(0px 0px 5px rgb(0 0 0 / 0.6));" xmlns="http://www.w3.org/2000/svg" fill="#0395a5" width="50px" height="50px" viewBox="0 0 1920 1920">
-    <path d="M956.952 0c-362.4 0-657 294.6-657 656.88 0 180.6 80.28 347.88 245.4 511.56 239.76 237.96 351.6 457.68 351.6 691.56v60h120v-60c0-232.8 110.28-446.16 357.6-691.44 165.12-163.8 245.4-331.08 245.4-511.68 0-362.28-294.6-656.88-663-656.88" fill-rule="evenodd"/>
-
-</svg><span style="position:absolute; top:10%; left:50%;font-family:'NanumSquareNeo-ExtraBold';color:white;
-    transform: translate(-50%, 0);">${i + 1}</span></div>`;
-  var markerImage = new kakao.maps.MarkerImage(
-    "data:image/svg+xml;charset=utf-8," + encodeURIComponent(markerImg),
-    new kakao.maps.Size(50, 50)
-  );
-
-  var polyline = new kakao.maps.Polyline({
+  let polyline = new kakao.maps.Polyline({
     path: linePath, // 선을 구성하는 좌표배열 입니다
     strokeWeight: 5, // 선의 두께 입니다
     strokeColor: "#db4040", // 선의 색깔입니다
@@ -368,7 +388,20 @@ function updateNewPlan(data) {
   });
 
   polyline.setMap(map);
-}
+};
+
+const setMapBounds = () => {
+  console.log("newPlan.value:", newPlan.value);
+  const courseBounds = new kakao.maps.LatLngBounds();
+
+  for (let i = 0; i < newPlan.value.length; i++) {
+    courseBounds.extend(
+      new kakao.maps.LatLng(newPlan.value[i].latitude, newPlan.value[i].longitude)
+    );
+  }
+
+  map.setBounds(courseBounds);
+};
 
 let isSidebarOpen = false;
 
