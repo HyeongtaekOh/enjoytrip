@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 
 const route = useRoute();
 const router = useRouter();
+const entered = ref(false);
 
 const moveToRegist = () => {
   router.push({ name: "attraction" });
@@ -50,18 +51,22 @@ onBeforeRouteUpdate((to, from, next) => {
     planSearchCondition.value,
     ({ data }) => {
       planSearchResult.value = data;
-      Swal.fire({
-        position: "top-end",
-        title: "검색 완료",
-        text: `총 ${
-          planSearchResult.value.totalCount > 0 ? planSearchResult.value.totalCount : 0
-        }건의 계획이 검색되었습니다`,
-        icon: "success",
-        showConfirmButton: false,
-        timer: 1200,
-        width: "380px",
-        toast: true,
-      });
+
+      if (entered.value) {
+        entered.value = false;
+        Swal.fire({
+          position: "top-end",
+          title: "검색 완료",
+          text: `총 ${
+            planSearchResult.value.totalCount > 0 ? planSearchResult.value.totalCount : 0
+          }건의 계획이 검색되었습니다`,
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1200,
+          width: "380px",
+          toast: true,
+        });
+      }
     },
     (error) => console.log(error)
   );
@@ -164,7 +169,7 @@ const searchPlansByCondition = () => {
     });
     return;
   }
-
+  entered.value = true;
   router.push({
     name: "plan-list",
     query: {
