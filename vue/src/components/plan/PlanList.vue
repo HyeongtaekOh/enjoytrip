@@ -287,7 +287,6 @@ const searchPlansByCondition = () => {
     .grid-item {
       /* 게시물 스타일링 */
       background-color: aliceblue;
-      // border: 1px solid ghostwhite;
       border-radius: 10px;
       height: 14rem;
     }

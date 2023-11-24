@@ -112,7 +112,18 @@ onBeforeRouteUpdate((to, from, next) => {
 });
 
 const onClickPrevPage = () => {
-  if (currentPage.value == 1) return;
+  if (currentPage.value == 1) {
+    Swal.fire({
+      position: "center",
+      title: "첫 페이지입니다",
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 2000,
+      width: "260px",
+      toast: true,
+    });
+    return;
+  }
   router.push({
     name: "attraction-map",
     query: {
@@ -122,7 +133,18 @@ const onClickPrevPage = () => {
 };
 
 const onClickNextPage = () => {
-  if (currentPage.value == attractionSearchResult.value.totalPage) return;
+  if (currentPage.value == attractionSearchResult.value.totalPage) {
+    Swal.fire({
+      position: "center",
+      title: "마지막 페이지입니다",
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 2000,
+      width: "290px",
+      toast: true,
+    });
+    return;
+  }
   router.push({
     name: "attraction-map",
     query: {
@@ -611,7 +633,7 @@ const showOverlay = ({ lat, lng, attraction }) => {
         </button>
       </div>
       <div id="mySidenav" class="sidenav">
-        <h2>NewPlan</h2>
+        <h2 style="text-align: center">나만의 여행 계획!</h2>
         <a href="javascript:void(0)" class="closebtn" @click="closeNav">&times;</a>
         <div class="list">
           <draggable

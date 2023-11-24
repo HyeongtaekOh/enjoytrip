@@ -57,7 +57,9 @@ CREATE TABLE qna_board (
     hits int DEFAULT 0,
     created_time TIMESTAMP DEFAULT NOW(),
     modified_time TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (article_id)
+    PRIMARY KEY (article_id),
+    CONSTRAINT qna_member_fk FOREIGN KEY (user_id)
+        REFERENCES member (user_id)
 );
 
 CREATE TABLE comment (
@@ -69,5 +71,7 @@ CREATE TABLE comment (
     user_name VARCHAR(30) NOT NULL,
     created_time TIMESTAMP DEFAULT NOW(),
     modified_time TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (comment_id)
+    PRIMARY KEY (comment_id),
+    CONSTRAINT comment_member_fk FOREIGN KEY (user_id)
+        REFERENCES member (user_id)
 );

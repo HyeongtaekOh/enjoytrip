@@ -199,7 +199,7 @@ function extractToken(header) {
         <router-link :to="{ name: 'plan' }">여행계획</router-link>
       </div>
       <div class="navbar_item">
-        <router-link :to="{ name: 'qna' }">게시판</router-link>
+        <router-link :to="{ name: 'qna' }">Q&A</router-link>
       </div>
     </div>
     <div class="loginLogoutContainer">

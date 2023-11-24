@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import defaultImage from "@/assets/img/noImage.jpg";
+import DefaultImage from "@/assets/img/noImage.jpg";
+import PlayArrowIcon from "@/assets/img/play-arrow.png";
+import PlayRightArrowIcon from "@/assets/img/play-right-arrow.png";
 
 const { plan } = defineProps({ plan: Object });
 const router = useRouter();
@@ -19,7 +21,7 @@ const prevSlide = () => {
 };
 
 const onImageError = (e) => {
-  e.target.src = defaultImage;
+  e.target.src = DefaultImage;
 };
 
 const moveToDetail = () => {
@@ -47,7 +49,7 @@ const moveToDetail = () => {
         <a-carousel arrows :dots="false" ref="imgCarousel">
           <img
             v-for="(attraction, index) in plan.attractions"
-            :src="attraction.firstImage || defaultImage"
+            :src="attraction.firstImage || DefaultImage"
             :key="attraction.contentId"
             @error="onImageError"
           />
@@ -63,7 +65,7 @@ const moveToDetail = () => {
         </div>
         <div class="carousel-button-wrapper">
           <button @click="prevSlide">왼쪽</button>
-          <button @click="moveToDetail">계획 상세</button>
+          <button @click="moveToDetail">상세보기</button>
           <button @click="nextSlide">오른쪽</button>
         </div>
       </div>
@@ -177,6 +179,14 @@ const moveToDetail = () => {
         display: flex;
         justify-content: center;
         align-items: center;
+
+        @font-face {
+          font-family: "GangwonEduHyeonokT_OTFMediumA";
+          src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
+            format("woff");
+          font-weight: 600;
+          font-style: 600;
+        }
       }
     }
   }
