@@ -131,7 +131,7 @@ const isUser = computed(() => {
                 <p style="font-size: 170%">
                   <span class="fw-bold">{{ plan.username }}</span> <br />
                   <span class="text-secondary fw-light">
-                    {{ plan.createdTime }} 조회 : {{ plan.hit }}
+                    {{ plan.modifiedTime }}
                   </span>
                 </p>
               </div>

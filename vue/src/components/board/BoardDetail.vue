@@ -112,12 +112,12 @@ function onDeleteArticle() {
                 <p style="font-size: 170%">
                   <span class="fw-bold">{{ article.username }}</span> <br />
                   <span class="text-secondary fw-light">
-                    {{ article.modifiedTime }} 조회 : {{ article.hits }}
+                    {{ article.modifiedTime }}
                   </span>
                 </p>
               </div>
             </div>
-            <div class="col-md-4 align-self-center text-end" style="font-size: 175%">댓글 : 17</div>
+            <div class="col-md-4 align-self-center text-end" style="font-size: 175%"></div>
             <div class="divider mb-3"></div>
             <div class="text-secondary" style="font-size: 200%; white-space: pre-line">
               {{ article.content }}
