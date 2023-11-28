@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.enjoytrip.comment.model.dto.CommentDto;
 import com.ssafy.enjoytrip.comment.model.service.CommentService;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,12 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
-@Api(value = "Comment API")
-//@CrossOrigin(origins = { "*" })
 public class CommentController {
 	private final CommentService service;
 
-	@ApiOperation(value = "댓글 등록", notes = "새로운 댓글 등록")
 	@PostMapping()
 	public ResponseEntity<?> registComment(@RequestBody CommentDto commentDto){
 		log.info("controller | regist comment : {}", commentDto);
@@ -41,7 +36,6 @@ public class CommentController {
 		return new ResponseEntity<CommentDto>(commentDto, HttpStatus.CREATED);
 	}
 
-	@ApiOperation(value = "댓글 수정", notes = "고유 번호(ID)에 해당하는 댓글 내용 수정")
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateComment(@PathVariable Integer id, @RequestBody CommentDto commentDto, Principal principal){
 		log.info("controller | update comment : {}", commentDto);
@@ -50,8 +44,7 @@ public class CommentController {
 		service.update(commentDto);
 		return ResponseEntity.ok("OK");
 	}
-	
-	@ApiOperation(value = "댓글 삭제", notes = "고유 번호(ID)에 해당하는 댓글 내용 삭제")
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteComment(@PathVariable Integer id, Principal principal){
 		log.info("controller | delete comment : {}", id);

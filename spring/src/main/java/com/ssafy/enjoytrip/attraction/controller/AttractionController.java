@@ -17,10 +17,6 @@ import com.ssafy.enjoytrip.attraction.model.service.GugunService;
 import com.ssafy.enjoytrip.attraction.model.service.SidoService;
 import com.ssafy.enjoytrip.exception.AttractionException;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,20 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/attraction")
-@Api(value = "관광지 API", description = "관광지 정보")
-//@CrossOrigin(origins = {"*"})
 public class AttractionController {
 	
 	private final AttractionService attractionService;
 	private final SidoService sidoService;
 	private final GugunService gugunService;
-	
-	@ApiOperation(value = "관광지 ID 조회", notes = "고유번호(id)에 해당하는 관광지 정보 조회")
-	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "OK", response = AttractionInfo.class),
-			@ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request")
-	})
+
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getAttractionById(@PathVariable int id) {
 		
@@ -63,12 +51,6 @@ public class AttractionController {
 		return new ResponseEntity<List<AttractionInfo>>(list, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "관광지 조건 검색", notes = "검색 조건(시/도, 구/군, 관광지 유형) 기반으로 검색")
-	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "OK", response = AttractionSearchResult.class),
-			@ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request")
-	})
 	@GetMapping("")
 	public ResponseEntity<?> getAttractionsByCondition(@RequestParam(defaultValue = "0") Integer sidoCode,
 			@RequestParam(defaultValue = "0") Integer gugunCode, 

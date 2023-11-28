@@ -5,54 +5,53 @@
  */
 
 plugins {
-    id 'java-library'
-    id 'maven-publish'
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
-repositories {
-    mavenLocal()
-    maven {
-        url = uri('https://repo.maven.apache.org/maven2/')
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    api 'org.springframework.boot:spring-boot-starter-web:2.7.17'
-    api 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.1'
-    api 'javax.servlet:jstl:1.2'
-    api 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.82'
-    api 'io.springfox:springfox-swagger-ui:2.9.2'
-    api 'io.springfox:springfox-swagger2:2.9.2'
-    api 'com.fasterxml.jackson.core:jackson-databind:2.13.5'
-    api 'org.springframework.boot:spring-boot-starter-security:2.7.17'
-    api 'io.jsonwebtoken:jjwt-api:0.11.5'
-    api 'org.springframework.boot:spring-boot-starter-aop:2.7.17'
-    api 'org.springframework.data:spring-data-redis:2.7.17'
-    api 'io.lettuce:lettuce-core:6.1.10.RELEASE'
-    runtimeOnly 'org.springframework.boot:spring-boot-devtools:2.7.17'
-    runtimeOnly 'com.mysql:mysql-connector-j:8.0.33'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'io.lettuce:lettuce-core:6.2.6.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '3.2.0'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+
+
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.17'
-    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.3.1'
 
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
-    testCompileOnly 'org.projectlombok:lombok:1.18.30'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 group = 'com.ssafy'
 version = '0.0.1-SNAPSHOT'
 description = 'EnjoyTrip_Spring_seoul_team10'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
+java {
+    sourceCompatibility = '17'
 }
 
 tasks.withType(JavaCompile) {
@@ -61,4 +60,8 @@ tasks.withType(JavaCompile) {
 
 tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }
