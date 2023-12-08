@@ -1,22 +1,20 @@
 package com.ssafy.enjoytrip.member.model.service;
 
-import java.sql.SQLException;
-import java.util.Optional;
-
+import com.ssafy.enjoytrip.exception.DuplicatedMemberException;
+import com.ssafy.enjoytrip.exception.MemberException;
+import com.ssafy.enjoytrip.member.model.dto.LoginVo;
+import com.ssafy.enjoytrip.member.model.dto.MemberDto;
+import com.ssafy.enjoytrip.member.model.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ssafy.enjoytrip.exception.DuplicatedMemberException;
-import com.ssafy.enjoytrip.exception.MemberException;
-import com.ssafy.enjoytrip.member.model.dto.LoginVo;
-import com.ssafy.enjoytrip.member.model.dto.MemberDto;
-import com.ssafy.enjoytrip.member.model.mapper.MemberMapper;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.sql.SQLException;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,12 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberServiceImpl implements MemberService {
 
 	private final PasswordEncoder encoder;
-	private final MemberMapper memberMapper;
+	private final MemberRepository memberRepository;
 
 	@Override
 	public boolean duplicateCheck(String username) {
 		try {
-			int count = memberMapper.duplicateUsernameCheck(username);
+			int count = memberRepository.duplicateUsernameCheck(username);
 			log.info("duplicate count : {}", count);
 			return count > 0;
 		} catch (SQLException e) {
@@ -41,7 +39,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public Optional<MemberDto> getMemberById(Integer userId) {
 		try {
-			return memberMapper.findById(userId);
+			return memberRepository.findById(userId);
 		} catch (SQLException e) {
 			throw new UsernameNotFoundException(e.getMessage());
 		}
@@ -50,7 +48,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public Optional<MemberDto> getMemberByUsername(String username) {
 		try {
-			return memberMapper.findByUsername(username);
+			return memberRepository.findByUsername(username);
 		} catch (SQLException e) {
 			throw new UsernameNotFoundException("존재하지 않는 사용자입니다.");
 		}
@@ -68,7 +66,7 @@ public class MemberServiceImpl implements MemberService {
 			}
 
 			memberDto.setPassword(encoder.encode(memberDto.getPassword()));
-			memberMapper.insertMember(memberDto);
+			memberRepository.insertMember(memberDto);
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -103,7 +101,7 @@ public class MemberServiceImpl implements MemberService {
 					String encodedPassword = encoder.encode(memberDto.getPassword());
 					memberDto.setPassword(encodedPassword);
 				}
-				memberMapper.updateMember(memberDto);
+				memberRepository.updateMember(memberDto);
 			} else {
 				throw new MemberException("기존 정보와 동일한 정보입니다.");
 			}
@@ -116,7 +114,7 @@ public class MemberServiceImpl implements MemberService {
 	public void deleteMember(Integer userId) {
 		log.info("delete member : {}", userId);
 		try {
-			memberMapper.deleteMember(userId);
+			memberRepository.deleteMember(userId);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
