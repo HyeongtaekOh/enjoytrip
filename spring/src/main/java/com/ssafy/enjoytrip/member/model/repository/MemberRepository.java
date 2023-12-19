@@ -7,15 +7,15 @@ import java.util.Optional;
 
 public interface MemberRepository {
 
-    Integer duplicateUsernameCheck(String username);
+    Integer duplicateUsernameCheck(String username) throws SQLException;
 
-    Optional<MemberDto> findById(Integer userId);
+    Optional<MemberDto> findById(Integer userId) throws SQLException;
 
-    Optional<MemberDto> findByUsername(String username);
+    Optional<MemberDto> findByUsername(String username) throws SQLException;
 
-    void insertMember(MemberDto memberDto);
+    void insertMember(MemberDto memberDto) throws SQLException;
 
-    void updateMember(MemberDto memberDto);
+    void updateMember(MemberDto memberDto) throws SQLException;
 
-    void deleteMember(Integer userId);
+    void deleteMember(Integer userId) throws SQLException;
 }
