@@ -54,5 +54,6 @@ public class Plan {
     private AttractionInfo arrivals;
 
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("planOrder ASC")
     private List<PlanAttractionSequence> planAttractionSequences = new ArrayList<>();
 }
