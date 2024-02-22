@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.ssafy.enjoytrip.attraction.model.dto.*;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,9 @@ public class AttractionServiceImpl implements AttractionService {
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(
+			cacheNames = "attraction",
+			key = "'attractions:'+ #condition.sidoCode +':'+ #condition.gugunCode +':'+ #condition.contentTypeId +':'+ #condition.keyword +':'+ #page")
 	public AttractionSearchResult findByCondition(AttractionSearchCondition condition, int page) {
 		try {
 			int pageSize = condition.getPageSize() != null && condition.getPageSize() > 0 ? condition.getPageSize()
