@@ -1,4 +1,4 @@
-# AdventureJourney
+# EnjoyTrip
 
 ## 프로젝트 소개
 여행 계획을 관리하는 웹 사이트
